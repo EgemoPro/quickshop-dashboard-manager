@@ -72,7 +72,7 @@ const Index = () => {
               <h1 className="text-3xl font-bold text-gray-900">Boutique</h1>
               <p className="text-gray-600 mt-1">Bienvenue sur votre tableau de bord</p>
             </div>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" onClick={() => window.location.href = '/settings'}>
               <Settings className="h-5 w-5" />
             </Button>
           </div>
@@ -136,14 +136,15 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { title: "Ajouter un produit", icon: Package2 },
-              { title: "Gérer les commandes", icon: ShoppingCart },
-              { title: "Voir les statistiques", icon: TrendingUp },
+              { title: "Ajouter un produit", icon: Package2, href: "/products" },
+              { title: "Gérer les commandes", icon: ShoppingCart, href: "/orders" },
+              { title: "Voir les statistiques", icon: TrendingUp, href: "/" },
             ].map((item) => (
               <Button
                 key={item.title}
                 variant="outline"
                 className="h-auto py-4 px-6 justify-between hover:bg-gray-50"
+                onClick={() => window.location.href = item.href}
               >
                 <div className="flex items-center gap-3">
                   <item.icon className="h-5 w-5" />
