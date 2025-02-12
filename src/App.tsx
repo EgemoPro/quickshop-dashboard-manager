@@ -6,11 +6,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useIsMobile } from "./hooks/use-mobile";
-import { Home, Package2, ShoppingCart, Settings as SettingsIcon } from "lucide-react";
+import { Home, Package2, ShoppingCart, Settings as SettingsIcon, MessageCircle } from "lucide-react";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
+import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,11 @@ const Navigation = () => {
     { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
   ];
 
+  const mobileNavigationItems = [
+    ...navigationItems,
+    { to: "/chat", icon: MessageCircle, label: "Chat" },
+  ];
+
   if (isMobile) {
     return (
       <motion.div
@@ -51,8 +57,8 @@ const Navigation = () => {
         animate={{ y: 0 }}
         className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg"
       >
-        <nav className="grid grid-cols-4 w-full">
-          {navigationItems.map((item) => (
+        <nav className="grid grid-cols-5 w-full">
+          {mobileNavigationItems.map((item) => (
             <NavigationItem key={item.to} {...item} />
           ))}
         </nav>
@@ -85,6 +91,7 @@ const AppContent = () => {
         <Route path="/products" element={<Products />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Navigation />
