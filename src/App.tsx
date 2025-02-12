@@ -22,7 +22,7 @@ const NavigationItem = ({ to, icon: Icon, label }: { to: string; icon: any; labe
   return (
     <Link
       to={to}
-      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors ${
+      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors w-full ${
         isActive
           ? "text-primary bg-primary/10"
           : "text-gray-500 hover:text-primary hover:bg-primary/5"
@@ -49,9 +49,9 @@ const Navigation = () => {
       <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2"
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg"
       >
-        <nav className="flex justify-around items-center">
+        <nav className="grid grid-cols-4 w-full">
           {navigationItems.map((item) => (
             <NavigationItem key={item.to} {...item} />
           ))}
@@ -64,7 +64,7 @@ const Navigation = () => {
     <motion.div
       initial={{ x: -100 }}
       animate={{ x: 0 }}
-      className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 py-4"
+      className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 py-4 shadow-lg"
     >
       <nav className="flex flex-col items-center gap-4">
         {navigationItems.map((item) => (
@@ -79,7 +79,7 @@ const AppContent = () => {
   const isMobile = useIsMobile();
   
   return (
-    <div className={`min-h-screen bg-gray-50 ${isMobile ? "pb-20" : "pl-16"}`}>
+    <div className={`min-h-screen bg-gray-50 ${isMobile ? "pb-20" : "pl-16"} transition-all duration-300`}>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/products" element={<Products />} />
