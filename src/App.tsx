@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useIsMobile } from "./hooks/use-mobile";
-import { Home, Package2, ShoppingCart, Settings } from "lucide-react";
+import { Home, Package2, ShoppingCart, Settings as SettingsIcon } from "lucide-react";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
@@ -41,7 +41,7 @@ const Navigation = () => {
     { to: "/", icon: Home, label: "Accueil" },
     { to: "/products", icon: Package2, label: "Produits" },
     { to: "/orders", icon: ShoppingCart, label: "Commandes" },
-    { to: "/settings", icon: Settings, label: "Paramètres" },
+    { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
   ];
 
   if (isMobile) {
