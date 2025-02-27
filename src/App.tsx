@@ -12,6 +12,7 @@ import Products from "./pages/Products";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
 import Chat from "./pages/Chat";
+import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,12 @@ const NavigationItem = ({ to, icon: Icon, label }: { to: string; icon: any; labe
 
 const Navigation = () => {
   const isMobile = useIsMobile();
+  const location = useLocation();
+  
+  // Ne pas afficher la navigation sur la landing page
+  if (location.pathname === "/landing") {
+    return null;
+  }
 
   const navigationItems = [
     { to: "/", icon: Home, label: "Accueil" },
@@ -55,7 +62,7 @@ const Navigation = () => {
       <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg"
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-10"
       >
         <nav className="grid grid-cols-5 w-full">
           {mobileNavigationItems.map((item) => (
@@ -70,7 +77,7 @@ const Navigation = () => {
     <motion.div
       initial={{ x: -100 }}
       animate={{ x: 0 }}
-      className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 py-4 shadow-lg"
+      className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 py-4 shadow-lg z-10"
     >
       <nav className="flex flex-col items-center gap-4">
         {navigationItems.map((item) => (
@@ -83,15 +90,23 @@ const Navigation = () => {
 
 const AppContent = () => {
   const isMobile = useIsMobile();
+  const location = useLocation();
+  
+  // Ne pas ajouter de padding sur la landing page
+  const isLandingPage = location.pathname === "/landing";
+  const contentClass = isLandingPage 
+    ? "min-h-screen bg-white" 
+    : `min-h-screen bg-gray-50 ${isMobile ? "pb-20" : "pl-16"} transition-all duration-300`;
   
   return (
-    <div className={`min-h-screen bg-gray-50 ${isMobile ? "pb-20" : "pl-16"} transition-all duration-300`}>
+    <div className={contentClass}>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/products" element={<Products />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/landing" element={<Landing />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Navigation />
