@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 import {
   Package2,
   ShoppingCart,
@@ -25,6 +26,64 @@ import {
 
 const LandingPage = () => {
   const [activeTab, setActiveTab] = useState("login");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    confirmPassword: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    // Simuler un délai d'authentification
+    setTimeout(() => {
+      setIsLoading(false);
+      // Pour l'instant, on considère tous les logins comme réussis
+      toast({
+        title: "Connexion réussie",
+        description: "Bienvenue sur QuickShop!",
+      });
+      // Rediriger vers le dashboard
+      navigate("/dashboard");
+    }, 1500);
+  };
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validation simple
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Erreur d'inscription",
+        description: "Les mots de passe ne correspondent pas.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    // Simuler un délai d'inscription
+    setTimeout(() => {
+      setIsLoading(false);
+      toast({
+        title: "Inscription réussie",
+        description: "Votre compte a été créé avec succès!",
+      });
+      // Rediriger vers le dashboard
+      navigate("/dashboard");
+    }, 1500);
+  };
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -143,10 +202,17 @@ const LandingPage = () => {
                   <TabsTrigger value="register">Inscription</TabsTrigger>
                 </TabsList>
                 <TabsContent value="login">
-                  <div className="space-y-4">
+                  <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="votre@email.com" />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="votre@email.com" 
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
@@ -155,55 +221,96 @@ const LandingPage = () => {
                           Mot de passe oublié?
                         </Link>
                       </div>
-                      <Input id="password" type="password" />
+                      <Input 
+                        id="password" 
+                        type="password" 
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
-                    <Button className="w-full">Se connecter</Button>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? "Connexion en cours..." : "Se connecter"}
+                    </Button>
                     <div className="text-center text-sm text-gray-500 mt-4">
                       Pas encore de compte?{" "}
                       <button 
+                        type="button"
                         className="text-blue-600 hover:underline" 
                         onClick={() => setActiveTab("register")}
                       >
                         S'inscrire
                       </button>
                     </div>
-                  </div>
+                  </form>
                 </TabsContent>
                 <TabsContent value="register">
-                  <div className="space-y-4">
+                  <form onSubmit={handleRegister} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="first-name">Prénom</Label>
-                        <Input id="first-name" />
+                        <Label htmlFor="firstName">Prénom</Label>
+                        <Input 
+                          id="firstName" 
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="last-name">Nom</Label>
-                        <Input id="last-name" />
+                        <Label htmlFor="lastName">Nom</Label>
+                        <Input 
+                          id="lastName" 
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          required
+                        />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="votre@email.com" />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="votre@email.com" 
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="password">Mot de passe</Label>
-                      <Input id="password" type="password" />
+                      <Input 
+                        id="password" 
+                        type="password" 
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
-                      <Input id="confirm-password" type="password" />
+                      <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                      <Input 
+                        id="confirmPassword" 
+                        type="password" 
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
-                    <Button className="w-full">S'inscrire</Button>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? "Inscription en cours..." : "S'inscrire"}
+                    </Button>
                     <div className="text-center text-sm text-gray-500 mt-4">
                       Déjà un compte?{" "}
                       <button 
+                        type="button"
                         className="text-blue-600 hover:underline" 
                         onClick={() => setActiveTab("login")}
                       >
                         Se connecter
                       </button>
                     </div>
-                  </div>
+                  </form>
                 </TabsContent>
               </Tabs>
             </Card>
@@ -441,10 +548,10 @@ const LandingPage = () => {
             rapide et sécurisée pour développer votre activité.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button size="lg" className="font-semibold px-8 py-6">
+            <Button size="lg" className="font-semibold px-8 py-6" onClick={() => setActiveTab("register")}>
               Commencer maintenant
             </Button>
-            <Button size="lg" variant="outline" className="font-semibold px-8 py-6">
+            <Button size="lg" variant="outline" className="font-semibold px-8 py-6" onClick={() => window.location.href = "/chat"}>
               Discuter avec un expert
             </Button>
           </div>

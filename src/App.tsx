@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useIsMobile } from "./hooks/use-mobile";
 import { Home, Package2, ShoppingCart, Settings as SettingsIcon, MessageCircle } from "lucide-react";
@@ -46,7 +46,7 @@ const Navigation = () => {
   }
 
   const navigationItems = [
-    { to: "/", icon: Home, label: "Accueil" },
+    { to: "/dashboard", icon: Home, label: "Accueil" },
     { to: "/products", icon: Package2, label: "Produits" },
     { to: "/orders", icon: ShoppingCart, label: "Commandes" },
     { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
@@ -101,7 +101,10 @@ const AppContent = () => {
   return (
     <div className={contentClass}>
       <Routes>
-        <Route path="/" element={<Index />} />
+        {/* Rediriger la racine vers landing */}
+        <Route path="/" element={<Navigate to="/landing" replace />} />
+        {/* Dashboard (anciennement index) */}
+        <Route path="/dashboard" element={<Index />} />
         <Route path="/products" element={<Products />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/settings" element={<Settings />} />
