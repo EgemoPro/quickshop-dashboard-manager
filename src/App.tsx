@@ -26,12 +26,12 @@ const NavigationItem = ({ to, icon: Icon, label }: { to: string; icon: any; labe
       to={to}
       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors w-full ${
         isActive
-          ? "text-primary bg-primary/10"
-          : "text-gray-500 hover:text-primary hover:bg-primary/5"
+          ? "text-gray-900 bg-primary/5"
+          : "text-gray-500/50 hover:text-primary hover:bg-primary/5"
       }`}
     >
-      <Icon className="h-5 w-5" />
-      <span className="text-xs font-medium">{label}</span>
+      <Icon className="h-8 w-5 p-.5" />
+      {/* <span className="text-xs font-medium">{label}</span> */}
     </Link>
   );
 };
@@ -64,7 +64,7 @@ const Navigation = () => {
         animate={{ y: 0 }}
         className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-10"
       >
-        <nav className="grid grid-cols-5 w-full">
+        <nav className="grid grid-cols-5 w-full p-1">
           {mobileNavigationItems.map((item) => (
             <NavigationItem key={item.to} {...item} />
           ))}
@@ -77,7 +77,7 @@ const Navigation = () => {
     <motion.div
       initial={{ x: -100 }}
       animate={{ x: 0 }}
-      className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 py-4 shadow-lg z-10"
+      className="fixed left-0 top-0 bottom-0 w-16 p-2 bg-white border-r border-gray-200 py-4 shadow-lg z-10"
     >
       <nav className="flex flex-col items-center gap-4">
         {navigationItems.map((item) => (
