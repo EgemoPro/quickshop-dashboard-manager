@@ -6,14 +6,28 @@ import { Button } from "@/components/ui/button";
 import { BarChart3 } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { setPeriod } from "@/store/slices/salesSlice";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 
 interface SalesChartProps {
   darkMode: boolean;
 }
 
+const CustomTooltip = ({ active, payload, label, darkMode }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className={`p-3 rounded-md shadow-md ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'}`}>
+        <p className="font-medium text-sm">{`${label}`}</p>
+        <p className="text-sm text-blue-500">{`Ventes: ${payload[0].value}`}</p>
+        <p className="text-sm text-purple-500">{`Revenus: ${payload[1].value}€`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
   const dispatch = useAppDispatch();
-  const { period } = useAppSelector(state => state.sales);
+  const { salesData, period } = useAppSelector(state => state.sales);
 
   return (
     <motion.div
@@ -57,13 +71,79 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
         </CardHeader>
         <CardContent>
           <div className="h-[300px] w-full">
-            {/* Recharts Line Chart sera inséré ici */}
-            <div className="w-full h-full rounded-lg bg-gradient-to-b from-blue-100 to-blue-50 dark:from-blue-900/20 dark:to-gray-800 flex items-center justify-center p-4">
-              <div className="text-center">
-                <BarChart3 className="h-8 w-8 mx-auto mb-2 text-blue-500 dark:text-blue-400" />
-                <p className="text-sm text-gray-600 dark:text-gray-300">Graphique d'évolution des ventes</p>
-              </div>
-            </div>
+            {period === "week" ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={salesData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#eee'} />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fill: darkMode ? '#bbb' : '#666' }}
+                    axisLine={{ stroke: darkMode ? '#555' : '#ddd' }}
+                  />
+                  <YAxis 
+                    tick={{ fill: darkMode ? '#bbb' : '#666' }}
+                    axisLine={{ stroke: darkMode ? '#555' : '#ddd' }}
+                  />
+                  <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+                  <Legend wrapperStyle={{ bottom: 0 }} />
+                  <Bar 
+                    dataKey="ventes" 
+                    name="Ventes" 
+                    fill={darkMode ? "#60a5fa" : "#3b82f6"} 
+                    radius={[4, 4, 0, 0]} 
+                  />
+                  <Bar 
+                    dataKey="revenus" 
+                    name="Revenus (€)" 
+                    fill={darkMode ? "#c084fc" : "#8b5cf6"} 
+                    radius={[4, 4, 0, 0]} 
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={salesData}>
+                  <defs>
+                    <linearGradient id="colorVentes" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={darkMode ? "#60a5fa" : "#3b82f6"} stopOpacity={0.8} />
+                      <stop offset="95%" stopColor={darkMode ? "#60a5fa" : "#3b82f6"} stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorRevenus" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={darkMode ? "#c084fc" : "#8b5cf6"} stopOpacity={0.8} />
+                      <stop offset="95%" stopColor={darkMode ? "#c084fc" : "#8b5cf6"} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#eee'} />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fill: darkMode ? '#bbb' : '#666' }}
+                    axisLine={{ stroke: darkMode ? '#555' : '#ddd' }}
+                  />
+                  <YAxis 
+                    tick={{ fill: darkMode ? '#bbb' : '#666' }}
+                    axisLine={{ stroke: darkMode ? '#555' : '#ddd' }}
+                  />
+                  <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+                  <Legend wrapperStyle={{ bottom: 0 }} />
+                  <Area 
+                    type="monotone" 
+                    dataKey="ventes" 
+                    name="Ventes" 
+                    stroke={darkMode ? "#60a5fa" : "#3b82f6"} 
+                    fillOpacity={1} 
+                    fill="url(#colorVentes)" 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="revenus" 
+                    name="Revenus (€)" 
+                    stroke={darkMode ? "#c084fc" : "#8b5cf6"} 
+                    fillOpacity={1} 
+                    fill="url(#colorRevenus)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </CardContent>
       </Card>

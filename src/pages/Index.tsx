@@ -13,6 +13,7 @@ import RecentOrders from "@/components/dashboard/RecentOrders";
 import ProductPerformance from "@/components/dashboard/ProductPerformance";
 import LowStockProducts from "@/components/dashboard/LowStockProducts";
 import RecentMessages from "@/components/dashboard/RecentMessages";
+import ModuleSystem from "@/components/dashboard/ModuleSystem";
 
 const DashboardContent = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -132,6 +133,9 @@ const DashboardContent = () => {
 
             {/* Low Stock Alert */}
             <LowStockProducts darkMode={darkMode} />
+
+            {/* Module System - NEW */}
+            <ModuleSystem darkMode={darkMode} />
 
             {/* Recent Messages */}
             <RecentMessages darkMode={darkMode} />

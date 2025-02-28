@@ -1,8 +1,9 @@
 
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAppSelector } from "@/store/hooks";
+import ProductPerformanceChart from "./ProductPerformanceChart";
 
 interface ProductPerformanceProps {
   darkMode: boolean;
@@ -10,6 +11,13 @@ interface ProductPerformanceProps {
 
 const ProductPerformance: React.FC<ProductPerformanceProps> = ({ darkMode }) => {
   const { productPerformance } = useAppSelector(state => state.products);
+
+  const chartData = useMemo(() => [
+    { name: 'Électronique', value: 40, color: '#8b5cf6' },
+    { name: 'Mode', value: 25, color: '#3b82f6' },
+    { name: 'Maison', value: 20, color: '#10b981' },
+    { name: 'Sports', value: 15, color: '#f59e0b' },
+  ], []);
 
   return (
     <motion.div
@@ -26,13 +34,7 @@ const ProductPerformance: React.FC<ProductPerformanceProps> = ({ darkMode }) => 
         </CardHeader>
         <CardContent>
           <div className="h-[200px] w-full">
-            {/* Recharts Pie Chart sera inséré ici */}
-            <div className="w-full h-full rounded-lg bg-gradient-to-b from-purple-100 to-purple-50 dark:from-purple-900/20 dark:to-gray-800 flex items-center justify-center p-4">
-              <div className="text-center">
-                <div className="h-16 w-16 mx-auto mb-2 rounded-full border-8 border-purple-200 dark:border-purple-800/30 border-t-purple-500 animate-spin" />
-                <p className="text-sm text-gray-600 dark:text-gray-300">Graphique de répartition des catégories</p>
-              </div>
-            </div>
+            <ProductPerformanceChart darkMode={darkMode} data={chartData} />
           </div>
         </CardContent>
       </Card>
