@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +6,8 @@ import { BrowserRouter, Routes, Route, useLocation, Link, Navigate } from "react
 import { motion } from "framer-motion";
 import { useIsMobile } from "./hooks/use-mobile";
 import { Home, Package2, ShoppingCart, Settings as SettingsIcon, MessageCircle } from "lucide-react";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
@@ -40,7 +41,6 @@ const Navigation = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   
-  // Ne pas afficher la navigation sur la landing page
   if (location.pathname === "/landing") {
     return null;
   }
@@ -92,7 +92,6 @@ const AppContent = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   
-  // Ne pas ajouter de padding sur la landing page
   const isLandingPage = location.pathname === "/landing";
   const contentClass = isLandingPage 
     ? "min-h-screen bg-white" 
@@ -101,9 +100,7 @@ const AppContent = () => {
   return (
     <div className={contentClass}>
       <Routes>
-        {/* Rediriger la racine vers landing */}
         <Route path="/" element={<Navigate to="/landing" replace />} />
-        {/* Dashboard (anciennement index) */}
         <Route path="/dashboard" element={<Index />} />
         <Route path="/products" element={<Products />} />
         <Route path="/orders" element={<Orders />} />
@@ -118,15 +115,17 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <Provider store={store}>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </Provider>
 );
 
 export default App;
