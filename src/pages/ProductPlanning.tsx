@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { Calendar, momentLocalizer, Views } from "react-big-calendar";
+import React, { useEffect } from "react";
+import { Calendar, momentLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -9,78 +9,50 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar as CalendarIcon, Plus, MessageCircle, Package2, Filter } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, MessageCircle, Package2, Filter, Loader2 } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { 
+  setActiveTab, 
+  setSearchTerm, 
+  setLoading,
+  type ScheduledEvent 
+} from "@/store/slices/planningSlice";
 
-// Create a date localizer for react-big-calendar
-const localize = {
-  format: (date: Date, format: string) => format(date, format, { locale: fr }),
-  parse: (str: string, format: string) => parse(str, format, new Date(), { locale: fr }),
+// Create a proper localizer for react-big-calendar
+const localizer = {
+  format: (date: Date, formatStr: string) => format(date, formatStr, { locale: fr }),
+  parse: (str: string, formatStr: string) => parse(str, formatStr, new Date(), { locale: fr }),
   startOfWeek: (date: Date) => startOfWeek(date, { locale: fr }),
   getDay: (date: Date) => getDay(date),
-  localize: fr,
-};
-
-const localizer = {
-  ...localize,
+  localize: {
+    month: (n: number) => fr.localize?.month(n),
+    day: (n: number) => fr.localize?.day(n),
+    dayPeriod: (n: number) => fr.localize?.dayPeriod(n),
+    era: (n: number) => fr.localize?.era(n),
+    ordinalNumber: (n: number) => fr.localize?.ordinalNumber(n),
+    quarter: (n: number) => fr.localize?.quarter(n),
+  },
   formats: {
     dateFormat: 'dd',
     dayFormat: 'dd ddd',
     monthHeaderFormat: 'MMMM yyyy',
     dayHeaderFormat: 'dddd MMM dd',
     dayRangeHeaderFormat: ({ start, end }: { start: Date, end: Date }) => 
-      `${format(start, 'dd MMM yyyy')} - ${format(end, 'dd MMM yyyy')}`,
+      `${format(start, 'dd MMM yyyy', { locale: fr })} - ${format(end, 'dd MMM yyyy', { locale: fr })}`,
   },
 };
 
-// Event types
-type EventType = "product" | "message";
-
-interface ScheduledEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  type: EventType;
-  description?: string;
-  productId?: string;
-}
-
-// Sample data
-const generateSampleEvents = (): ScheduledEvent[] => {
-  const today = new Date();
-  
-  return [
-    {
-      id: "1",
-      title: "Promotion T-shirt Premium",
-      start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 10, 0),
-      end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 11, 0),
-      type: "product",
-      productId: "PRD-12345"
-    },
-    {
-      id: "2",
-      title: "Annonce Nouvelle Collection",
-      start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 3, 14, 0),
-      end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 3, 15, 0),
-      type: "message",
-      description: "Message pour annoncer l'arrivée de la nouvelle collection d'été"
-    },
-    {
-      id: "3",
-      title: "Promotion Jean Classique",
-      start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5, 9, 0),
-      end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5, 10, 0),
-      type: "product",
-      productId: "PRD-23456"
-    }
-  ];
-};
-
 const ProductPlanning = () => {
-  const [events, setEvents] = useState<ScheduledEvent[]>(generateSampleEvents());
-  const [activeTab, setActiveTab] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const dispatch = useAppDispatch();
+  const { events, isLoading, activeTab, searchTerm } = useAppSelector(state => state.planning);
+
+  useEffect(() => {
+    // Simulate data loading
+    dispatch(setLoading(true));
+    setTimeout(() => {
+      dispatch(setLoading(false));
+    }, 1000);
+  }, [dispatch]);
 
   // Filter events based on active tab and search term
   const filteredEvents = events.filter(event => {
@@ -96,6 +68,16 @@ const ProductPlanning = () => {
     
     return matchesType && matchesSearch;
   });
+
+  // Handle tab change
+  const handleTabChange = (value: string) => {
+    dispatch(setActiveTab(value));
+  };
+
+  // Handle search
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setSearchTerm(e.target.value));
+  };
 
   // Custom event component
   const EventComponent = ({ event }: { event: ScheduledEvent }) => (
@@ -117,7 +99,7 @@ const ProductPlanning = () => {
     <div className="container p-4 md:p-6 mx-auto animate-fade-in">
       <h1 className="text-2xl font-bold mb-6">Planning de Publication</h1>
       
-      <Card className="mb-6">
+      <Card className="mb-6 relative">
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center flex-wrap gap-4">
             <CardTitle>Calendrier des Publications</CardTitle>
@@ -135,7 +117,7 @@ const ProductPlanning = () => {
         </CardHeader>
         <CardContent>
           <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full sm:w-auto">
               <TabsList>
                 <TabsTrigger value="all">Tous</TabsTrigger>
                 <TabsTrigger value="products">Produits</TabsTrigger>
@@ -148,7 +130,7 @@ const ProductPlanning = () => {
                 placeholder="Rechercher..."
                 className="max-w-sm"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearch}
               />
               <Button variant="ghost" size="icon" className="ml-2">
                 <Filter className="h-4 w-4" />
@@ -156,7 +138,14 @@ const ProductPlanning = () => {
             </div>
           </div>
           
-          <div className="h-[600px]">
+          <div className="h-[600px] relative">
+            {isLoading ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-10">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <span className="ml-2 text-sm font-medium">Chargement du calendrier...</span>
+              </div>
+            ) : null}
+            
             <Calendar
               localizer={localizer as any}
               events={filteredEvents}
@@ -166,7 +155,6 @@ const ProductPlanning = () => {
               components={{
                 event: EventComponent as any,
               }}
-              views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
               messages={{
                 next: "Suivant",
                 previous: "Précédent",
@@ -201,69 +189,83 @@ const ProductPlanning = () => {
       </Card>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-2">
+        <Card className="md:col-span-2 relative">
           <CardHeader>
             <CardTitle>Publications Programmées</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {filteredEvents.length > 0 ? (
-                filteredEvents.map(event => (
-                  <div key={event.id} className="flex justify-between items-center p-3 border rounded-lg hover:bg-slate-50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className={`rounded-md p-2 ${event.type === "product" ? "bg-blue-100" : "bg-green-100"}`}>
-                        {event.type === "product" ? (
-                          <Package2 className="h-5 w-5" />
-                        ) : (
-                          <MessageCircle className="h-5 w-5" />
-                        )}
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+                <span>Chargement des publications...</span>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredEvents.length > 0 ? (
+                  filteredEvents.map(event => (
+                    <div key={event.id} className="flex justify-between items-center p-3 border rounded-lg hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className={`rounded-md p-2 ${event.type === "product" ? "bg-blue-100" : "bg-green-100"}`}>
+                          {event.type === "product" ? (
+                            <Package2 className="h-5 w-5" />
+                          ) : (
+                            <MessageCircle className="h-5 w-5" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-medium">{event.title}</h3>
+                          <p className="text-sm text-gray-500">
+                            {format(event.start, "EEEE d MMMM yyyy, HH:mm", { locale: fr })}
+                          </p>
+                        </div>
                       </div>
                       <div>
-                        <h3 className="font-medium">{event.title}</h3>
-                        <p className="text-sm text-gray-500">
-                          {format(event.start, "EEEE d MMMM yyyy, HH:mm", { locale: fr })}
-                        </p>
+                        <Button variant="ghost" size="sm">Modifier</Button>
                       </div>
                     </div>
-                    <div>
-                      <Button variant="ghost" size="sm">Modifier</Button>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center p-6 text-gray-500">
+                    Aucune publication programmée correspondant à vos critères.
                   </div>
-                ))
-              ) : (
-                <div className="text-center p-6 text-gray-500">
-                  Aucune publication programmée correspondant à vos critères.
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="relative">
           <CardHeader>
             <CardTitle>Statistiques</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>Publications totales</span>
-                <span className="font-bold">{events.length}</span>
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+                <span>Chargement...</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span>Produits</span>
-                <span className="font-bold">{events.filter(e => e.type === "product").length}</span>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span>Publications totales</span>
+                  <span className="font-bold">{events.length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Produits</span>
+                  <span className="font-bold">{events.filter(e => e.type === "product").length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Messages</span>
+                  <span className="font-bold">{events.filter(e => e.type === "message").length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Ce mois-ci</span>
+                  <span className="font-bold">
+                    {events.filter(e => e.start.getMonth() === new Date().getMonth()).length}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span>Messages</span>
-                <span className="font-bold">{events.filter(e => e.type === "message").length}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Ce mois-ci</span>
-                <span className="font-bold">
-                  {events.filter(e => e.start.getMonth() === new Date().getMonth()).length}
-                </span>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>
