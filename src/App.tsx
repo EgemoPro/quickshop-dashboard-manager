@@ -49,12 +49,8 @@ const Navigation = () => {
     { to: "/dashboard", icon: Home, label: "Accueil" },
     { to: "/products", icon: Package2, label: "Produits" },
     { to: "/orders", icon: ShoppingCart, label: "Commandes" },
-    { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
-  ];
-
-  const mobileNavigationItems = [
-    ...navigationItems,
     { to: "/chat", icon: MessageCircle, label: "Chat" },
+    { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
   ];
 
   if (isMobile) {
@@ -65,7 +61,7 @@ const Navigation = () => {
         className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-10"
       >
         <nav className="grid grid-cols-5 w-full p-1">
-          {mobileNavigationItems.map((item) => (
+          {navigationItems.map((item) => (
             <NavigationItem key={item.to} {...item} />
           ))}
         </nav>

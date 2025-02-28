@@ -1,17 +1,17 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  BarChart3, 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  ShoppingCart, 
+import {
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  ShoppingCart,
   Package2,
   DollarSign,
   ArrowUpRight,
@@ -57,7 +57,7 @@ const generateRecentOrders = () => {
     id: `ORD-${faker.string.numeric(6)}`,
     customer: faker.person.fullName(),
     date: faker.date.recent({ days: 5 }).toLocaleDateString(),
-    amount: faker.finance.amount({ min: 50, max: 500, dec: 2, symbol: '€' }),
+    amount: faker.finance.amount({ min: 50, max: 500, dec: 2, symbol: 'XOA' }),
     status: faker.helpers.arrayElement(['Livrée', 'En cours', 'En attente', 'Annulée']),
     products: faker.number.int({ min: 1, max: 5 }),
   }));
@@ -69,7 +69,7 @@ const generateLowStockProducts = () => {
     name: faker.commerce.productName(),
     stock: faker.number.int({ min: 1, max: 10 }),
     category: faker.commerce.department(),
-    price: faker.commerce.price({ min: 10, max: 200, dec: 2, symbol: '€' }),
+    price: faker.commerce.price({ min: 10, max: 200, dec: 2, symbol: 'XOA' }),
   }));
 };
 
@@ -89,26 +89,26 @@ const Dashboard = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [period, setPeriod] = useState("month");
-  
+
   // Donnees
   const salesData = generateSalesData();
   const productPerformance = generateProductPerformance();
   const recentOrders = generateRecentOrders();
   const lowStockProducts = generateLowStockProducts();
   const recentMessages = generateRecentMessages();
-  
+
   // Statistiques
   const stats = {
-    totalSales: "12 478€",
+    totalSales: "12 478XOA",
     salesGrowth: "+12.5%",
     newCustomers: "76",
     customerGrowth: "+5.2%",
     pendingOrders: "23",
     orderGrowth: "+8.9%",
-    avgOrderValue: "124€",
+    avgOrderValue: "124XOA",
     valueGrowth: "+3.7%"
   };
-  
+
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
@@ -144,12 +144,12 @@ const Dashboard = () => {
             <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="relative">
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            
+
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
               <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
             </Button>
-            
+
             <div className="hidden sm:flex items-center space-x-3">
               <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                 <UserCircle className="h-7 w-7" />
@@ -177,7 +177,7 @@ const Dashboard = () => {
               <h1 className="text-2xl sm:text-3xl font-bold">Bonjour, Alex Dupont 👋</h1>
               <p className={`mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Voici les performances de votre boutique</p>
             </div>
-            
+
             <div className="flex mt-4 sm:mt-0 space-x-2 w-full sm:w-auto">
               <div className="flex-1 sm:flex-none">
                 <Button variant="outline" className="w-full sm:w-auto">
@@ -197,7 +197,7 @@ const Dashboard = () => {
 
         {/* Stats Cards */}
         <section className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          <motion.div 
+          <motion.div
             custom={0}
             variants={fadeInUp}
             initial="hidden"
@@ -223,7 +223,7 @@ const Dashboard = () => {
             </Card>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             custom={1}
             variants={fadeInUp}
             initial="hidden"
@@ -249,7 +249,7 @@ const Dashboard = () => {
             </Card>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             custom={2}
             variants={fadeInUp}
             initial="hidden"
@@ -275,7 +275,7 @@ const Dashboard = () => {
             </Card>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             custom={3}
             variants={fadeInUp}
             initial="hidden"
@@ -322,22 +322,22 @@ const Dashboard = () => {
                       </CardDescription>
                     </div>
                     <div className="flex space-x-2">
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant={period === "week" ? "default" : "outline"}
                         onClick={() => setPeriod("week")}
                       >
                         Semaine
                       </Button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant={period === "month" ? "default" : "outline"}
                         onClick={() => setPeriod("month")}
                       >
                         Mois
                       </Button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant={period === "year" ? "default" : "outline"}
                         onClick={() => setPeriod("year")}
                       >
@@ -384,11 +384,10 @@ const Dashboard = () => {
                   <ScrollArea className="h-[320px] pr-4">
                     <div className="space-y-4">
                       {recentOrders.map((order, index) => (
-                        <div 
+                        <div
                           key={order.id}
-                          className={`p-4 rounded-lg border ${
-                            darkMode ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-100 hover:bg-gray-50'
-                          } transition-colors duration-200`}
+                          className={`p-4 rounded-lg border ${darkMode ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-100 hover:bg-gray-50'
+                            } transition-colors duration-200`}
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
@@ -404,11 +403,11 @@ const Dashboard = () => {
                               </div>
                             </div>
                             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                              <Badge 
+                              <Badge
                                 variant={
                                   order.status === "Livrée" ? "default" :
-                                  order.status === "En cours" ? "secondary" :
-                                  order.status === "En attente" ? "outline" : "destructive"
+                                    order.status === "En cours" ? "secondary" :
+                                      order.status === "En attente" ? "outline" : "destructive"
                                 }
                                 className="justify-center sm:justify-start"
                               >
@@ -478,11 +477,10 @@ const Dashboard = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {lowStockProducts.map((product) => (
-                      <div 
+                      <div
                         key={product.id}
-                        className={`p-3 rounded-lg border ${
-                          darkMode ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-100 hover:bg-gray-50'
-                        } transition-colors duration-200`}
+                        className={`p-3 rounded-lg border ${darkMode ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-100 hover:bg-gray-50'
+                          } transition-colors duration-200`}
                       >
                         <div className="flex justify-between items-start">
                           <div>
@@ -525,14 +523,14 @@ const Dashboard = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {recentMessages.map((message) => (
-                      <div 
+                      <div
                         key={message.id}
                         className={`p-3 rounded-lg border ${message.isNew ? 'border-blue-200 dark:border-blue-800/50 bg-blue-50 dark:bg-blue-900/10' : darkMode ? 'border-gray-700' : 'border-gray-100'} transition-colors duration-200`}
                       >
                         <div className="flex gap-3">
-                          <img 
-                            src={message.avatar} 
-                            alt={message.customer} 
+                          <img
+                            src={message.avatar}
+                            alt={message.customer}
                             className="w-10 h-10 rounded-full object-cover"
                           />
                           <div className="flex-1 min-w-0">

@@ -8,11 +8,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Package2, Plus, Edit, Trash2 } from "lucide-react";
 
 const products = [
-  { id: 1, name: "T-shirt Premium", price: "29,99 €", stock: 45, status: "En stock" },
-  { id: 2, name: "Jeans Classique", price: "79,99 €", stock: 12, status: "Stock faible" },
-  { id: 3, name: "Chaussures de Sport", price: "99,99 €", stock: 0, status: "Rupture" },
-  { id: 4, name: "Veste d'Hiver", price: "149,99 €", stock: 28, status: "En stock" },
-  { id: 5, name: "Sac à Main", price: "59,99 €", stock: 15, status: "En stock" },
+  { id: 1, name: "T-shirt Premium", price: "29,99 XOA", stock: 45, status: "En stock" },
+  { id: 2, name: "Jeans Classique", price: "79,99 XOA", stock: 12, status: "Stock faible" },
+  { id: 3, name: "Chaussures de Sport", price: "99,99 XOA", stock: 0, status: "Rupture" },
+  { id: 4, name: "Veste d'Hiver", price: "149,99 XOA", stock: 28, status: "En stock" },
+  { id: 5, name: "Sac à Main", price: "59,99 XOA", stock: 15, status: "En stock" },
 ];
 
 const Products = () => {
