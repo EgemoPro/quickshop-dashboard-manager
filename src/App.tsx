@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useIsMobile } from "./hooks/use-mobile";
-import { Home, Package2, ShoppingCart, Settings as SettingsIcon, MessageCircle } from "lucide-react";
+import { Home, Package2, ShoppingCart, Settings as SettingsIcon, MessageCircle, Calendar } from "lucide-react";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import Index from "./pages/Index";
@@ -15,6 +16,7 @@ import Settings from "./pages/Settings";
 import Chat from "./pages/Chat";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
+import ProductPlanning from "./pages/ProductPlanning";
 
 const queryClient = new QueryClient();
 
@@ -49,11 +51,12 @@ const Navigation = () => {
     { to: "/dashboard", icon: Home, label: "Accueil" },
     { to: "/products", icon: Package2, label: "Produits" },
     { to: "/orders", icon: ShoppingCart, label: "Commandes" },
+    { to: "/planning", icon: Calendar, label: "Planning" },
     { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
   ];
 
   const mobileNavigationItems = [
-    ...navigationItems,
+    ...navigationItems.slice(0, 4),
     { to: "/chat", icon: MessageCircle, label: "Chat" },
   ];
 
@@ -104,6 +107,7 @@ const AppContent = () => {
         <Route path="/dashboard" element={<Index />} />
         <Route path="/products" element={<Products />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/planning" element={<ProductPlanning />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/landing" element={<Landing />} />
