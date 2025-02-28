@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,12 @@ import {
   PlusCircle,
   CheckCircle2,
   ChevronDown,
-  ArrowRight
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Menu,
+  X,
+  Mail
 } from "lucide-react";
 
 const LandingPage = () => {
@@ -45,7 +50,25 @@ const LandingPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  // Refs pour la navigation fluide
+  const heroRef = useRef<HTMLElement>(null);
+  const advantagesRef = useRef<HTMLElement>(null);
+  const dashboardRef = useRef<HTMLElement>(null);
+  const testimonialsRef = useRef<HTMLElement>(null);
+  const faqRef = useRef<HTMLElement>(null);
+  const ctaRef = useRef<HTMLElement>(null);
+
+  const scrollToSection = (ref: React.RefObject<HTMLElement>) => {
+    if (ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth' });
+      setMobileMenuOpen(false);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -205,11 +228,96 @@ const LandingPage = () => {
     }
   ];
 
+  // Navbar items pour la navigation fluide
+  const navItems = [
+    { name: "Accueil", ref: heroRef },
+    { name: "Avantages", ref: advantagesRef },
+    { name: "Dashboard", ref: dashboardRef },
+    { name: "Témoignages", ref: testimonialsRef },
+    { name: "FAQ", ref: faqRef },
+    { name: "Démarrer", ref: ctaRef }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 overflow-x-hidden">
+      {/* Barre de navigation fixe */}
+      <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex justify-between items-center py-3">
+            <div className="flex items-center">
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                QuickShop
+              </span>
+            </div>
+            
+            {/* Navigation Desktop */}
+            <nav className="hidden md:flex items-center space-x-8">
+              {navItems.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => scrollToSection(item.ref)}
+                  className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                >
+                  {item.name}
+                </button>
+              ))}
+              <Button onClick={() => setActiveTab("login")} variant="outline" className="ml-2">
+                Connexion
+              </Button>
+              <Button onClick={() => setActiveTab("register")} className="bg-blue-600 hover:bg-blue-700">
+                Inscription
+              </Button>
+            </nav>
+            
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <Button variant="ghost" size="sm" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white border-t border-gray-100"
+          >
+            <div className="px-4 py-3 space-y-3">
+              {navItems.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => scrollToSection(item.ref)}
+                  className="block w-full text-left py-2 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                >
+                  {item.name}
+                </button>
+              ))}
+              <div className="flex flex-col space-y-2 pt-2 pb-3">
+                <Button onClick={() => {
+                  setActiveTab("login");
+                  setMobileMenuOpen(false);
+                }} variant="outline" className="w-full">
+                  Connexion
+                </Button>
+                <Button onClick={() => {
+                  setActiveTab("register");
+                  setMobileMenuOpen(false);
+                }} className="w-full bg-blue-600 hover:bg-blue-700">
+                  Inscription
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </header>
+
       <div className="mx-auto">
         {/* Hero Section */}
-        <section className="py-8 sm:py-12 md:py-16 px-4 md:px-8 lg:px-16 relative">
+        <section ref={heroRef} className="pt-24 pb-8 sm:pt-28 sm:pb-12 md:pt-32 md:pb-16 px-4 md:px-8 lg:px-16 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-70"></div>
           <div className="max-w-7xl mx-auto relative">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
@@ -268,14 +376,18 @@ const LandingPage = () => {
                         <form onSubmit={handleLogin} className="space-y-4 px-4 sm:px-6">
                           <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input 
-                              id="email" 
-                              type="email" 
-                              placeholder="votre@email.com" 
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              required
-                            />
+                            <div className="relative">
+                              <Input 
+                                id="email" 
+                                type="email" 
+                                placeholder="votre@email.com" 
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                required
+                                className="pl-10"
+                              />
+                              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            </div>
                           </div>
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
@@ -284,13 +396,24 @@ const LandingPage = () => {
                                 Mot de passe oublié?
                               </Link>
                             </div>
-                            <Input 
-                              id="password" 
-                              type="password" 
-                              value={formData.password}
-                              onChange={handleInputChange}
-                              required
-                            />
+                            <div className="relative">
+                              <Input 
+                                id="password" 
+                                type={showPassword ? "text" : "password"}
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                required
+                                className="pl-10"
+                              />
+                              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                              <button 
+                                type="button"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              </button>
+                            </div>
                           </div>
                           <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 py-5 sm:py-6 text-base" disabled={isLoading}>
                             {isLoading ? "Connexion en cours..." : "Se connecter"}
@@ -331,34 +454,60 @@ const LandingPage = () => {
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input 
-                              id="email" 
-                              type="email" 
-                              placeholder="votre@email.com" 
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              required
-                            />
+                            <div className="relative">
+                              <Input 
+                                id="email" 
+                                type="email" 
+                                placeholder="votre@email.com" 
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                required
+                                className="pl-10"
+                              />
+                              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            </div>
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="password">Mot de passe</Label>
-                            <Input 
-                              id="password" 
-                              type="password" 
-                              value={formData.password}
-                              onChange={handleInputChange}
-                              required
-                            />
+                            <div className="relative">
+                              <Input 
+                                id="password" 
+                                type={showPassword ? "text" : "password"}
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                required
+                                className="pl-10"
+                              />
+                              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                              <button 
+                                type="button"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              </button>
+                            </div>
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                            <Input 
-                              id="confirmPassword" 
-                              type="password" 
-                              value={formData.confirmPassword}
-                              onChange={handleInputChange}
-                              required
-                            />
+                            <div className="relative">
+                              <Input 
+                                id="confirmPassword" 
+                                type={showConfirmPassword ? "text" : "password"}
+                                value={formData.confirmPassword}
+                                onChange={handleInputChange}
+                                required
+                                className="pl-10"
+                              />
+                              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                              <button 
+                                type="button"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              >
+                                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              </button>
+                            </div>
                           </div>
                           <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 py-5 sm:py-6 text-base" disabled={isLoading}>
                             {isLoading ? "Inscription en cours..." : "Commencez gratuitement"}
@@ -422,7 +571,7 @@ const LandingPage = () => {
         </section>
 
         {/* Avantages Section */}
-        <section className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-white">
+        <section ref={advantagesRef} className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-white">
           <div className="max-w-7xl mx-auto">
             <motion.div 
               className="text-center mb-12 sm:mb-16"
@@ -460,7 +609,7 @@ const LandingPage = () => {
         </section>
         
         {/* Dashboard Preview Section */}
-        <section className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-gray-50 relative overflow-hidden">
+        <section ref={dashboardRef} className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-gray-50 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-70"></div>
           <div className="max-w-7xl mx-auto relative">
             <motion.div 
@@ -607,7 +756,7 @@ const LandingPage = () => {
         </section>
 
         {/* Testimonials */}
-        <section className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-white">
+        <section ref={testimonialsRef} className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-white">
           <div className="max-w-7xl mx-auto">
             <motion.div 
               className="text-center mb-12 sm:mb-16"
@@ -655,7 +804,7 @@ const LandingPage = () => {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-gray-50">
+        <section ref={faqRef} className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-gray-50">
           <div className="max-w-4xl mx-auto">
             <motion.div 
               className="text-center mb-12 sm:mb-16"
@@ -702,7 +851,7 @@ const LandingPage = () => {
         </section>
 
         {/* Final CTA */}
-        <section className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
+        <section ref={ctaRef} className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
           <div className="max-w-5xl mx-auto text-center">
             <motion.h2 
               className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 sm:mb-6"
