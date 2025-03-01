@@ -25,12 +25,12 @@ const localizer = {
   startOfWeek: (date: Date) => startOfWeek(date, { locale: fr }),
   getDay: (date: Date) => getDay(date),
   localize: {
-    month: (n: number) => fr.localize?.month(n),
-    day: (n: number) => fr.localize?.day(n),
-    dayPeriod: (n: number) => fr.localize?.dayPeriod(n),
-    era: (n: number) => fr.localize?.era(n),
-    ordinalNumber: (n: number) => fr.localize?.ordinalNumber(n),
-    quarter: (n: number) => fr.localize?.quarter(n),
+    month: (n: number) => fr.localize?.month(n as any) || "",
+    day: (n: number) => fr.localize?.day(n as any) || "",
+    dayPeriod: (n: number) => fr.localize?.dayPeriod(n as any) || "",
+    era: (n: number) => fr.localize?.era(n as any) || "",
+    ordinalNumber: (n: number) => fr.localize?.ordinalNumber(n) || "",
+    quarter: (n: number) => fr.localize?.quarter(n as any) || "",
   },
   formats: {
     dateFormat: 'dd',
