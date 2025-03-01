@@ -23,12 +23,12 @@ const generateLowStockProducts = (): Product[] => {
     "Enceinte Bluetooth", "Lampe de Bureau", "Tapis de Yoga", "Crème Hydratante"
   ];
   
-  return Array.from({ length: 4 }, (_, i) => {
+  return Array.from({ length: 8 }, (_, i) => {
     const id = `PRD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
     return {
       id,
       name: products[Math.floor(Math.random() * products.length)],
-      stock: Math.floor(Math.random() * 10) + 1,
+      stock: Math.floor(Math.random() * 20),
       category: categories[Math.floor(Math.random() * categories.length)],
       price: `${(Math.random() * 190 + 10).toFixed(2)}€`,
     };
@@ -57,6 +57,18 @@ export const productsSlice = createSlice({
     setLowStockProducts: (state, action: PayloadAction<Product[]>) => {
       state.lowStockProducts = action.payload;
     },
+    addProduct: (state, action: PayloadAction<Product>) => {
+      state.lowStockProducts.push(action.payload);
+    },
+    updateProduct: (state, action: PayloadAction<Product>) => {
+      const index = state.lowStockProducts.findIndex(p => p.id === action.payload.id);
+      if (index !== -1) {
+        state.lowStockProducts[index] = action.payload;
+      }
+    },
+    deleteProduct: (state, action: PayloadAction<string>) => {
+      state.lowStockProducts = state.lowStockProducts.filter(p => p.id !== action.payload);
+    },
     updateProductStock: (state, action: PayloadAction<{ id: string; stock: number }>) => {
       const { id, stock } = action.payload;
       const product = state.lowStockProducts.find(product => product.id === id);
@@ -76,5 +88,15 @@ export const productsSlice = createSlice({
   },
 });
 
-export const { setLowStockProducts, updateProductStock, setProductPerformance, setLoading, setError } = productsSlice.actions;
+export const { 
+  setLowStockProducts, 
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  updateProductStock, 
+  setProductPerformance, 
+  setLoading, 
+  setError 
+} = productsSlice.actions;
+
 export default productsSlice.reducer;
