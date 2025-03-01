@@ -1,30 +1,18 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import {
-  Store,
-  Mail,
-  Bell,
-  CreditCard,
-  Languages,
-  Shield,
-  Save,
-  Globe,
-  Smartphone,
-  Palette,
-  FileText,
-  LockKeyhole
-} from "lucide-react";
+import { Save } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+
+// Import the newly created components
+import StoreInfoCard from "@/components/settings/StoreInfoCard";
+import NotificationsCard from "@/components/settings/NotificationsCard";
+import RegionalSettingsCard from "@/components/settings/RegionalSettingsCard";
+import SecurityCard from "@/components/settings/SecurityCard";
+import PaymentCard from "@/components/settings/PaymentCard";
+import PrivacyCard from "@/components/settings/PrivacyCard";
+import PasswordDialog from "@/components/settings/PasswordDialog";
 
 // Type for settings
 interface StoreSettings {
@@ -162,6 +150,14 @@ const Settings = () => {
     }, 1000);
   };
 
+  // Handle password data change
+  const handlePasswordDataChange = (field: string, value: string) => {
+    setPasswordData({
+      ...passwordData,
+      [field]: value
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <motion.div
@@ -193,345 +189,58 @@ const Settings = () => {
         </header>
 
         <div className="grid gap-8">
-          <Card className="p-6">
-            <div className="flex items-center gap-4 mb-6">
-              <Store className="h-6 w-6 text-gray-500" />
-              <h2 className="text-xl font-semibold">Informations de la boutique</h2>
-            </div>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="store-name">Nom de la boutique</Label>
-                <Input 
-                  id="store-name" 
-                  value={settings.storeName} 
-                  onChange={(e) => handleInputChange("storeName", e.target.value)} 
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="store-description">Description</Label>
-                <Textarea 
-                  id="store-description" 
-                  value={settings.storeDescription}
-                  onChange={(e) => handleInputChange("storeDescription", e.target.value)}
-                  rows={3} 
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="store-address">Adresse</Label>
-                <Input 
-                  id="store-address" 
-                  value={settings.storeAddress}
-                  onChange={(e) => handleInputChange("storeAddress", e.target.value)}
-                />
-              </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="store-email">Email</Label>
-                  <Input 
-                    id="store-email" 
-                    type="email"
-                    value={settings.storeEmail}
-                    onChange={(e) => handleInputChange("storeEmail", e.target.value)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="store-phone">Téléphone</Label>
-                  <Input 
-                    id="store-phone" 
-                    value={settings.storePhone}
-                    onChange={(e) => handleInputChange("storePhone", e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-          </Card>
+          {/* Store Information */}
+          <StoreInfoCard
+            storeName={settings.storeName}
+            storeDescription={settings.storeDescription}
+            storeAddress={settings.storeAddress}
+            storeEmail={settings.storeEmail}
+            storePhone={settings.storePhone}
+            onInputChange={handleInputChange}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <Bell className="h-6 w-6 text-gray-500" />
-                <h2 className="text-xl font-semibold">Notifications</h2>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Notifications par email</Label>
-                    <p className="text-sm text-gray-500">Recevoir des notifications pour les nouvelles commandes</p>
-                  </div>
-                  <Switch 
-                    checked={settings.notifications.emailNotifications}
-                    onCheckedChange={() => handleNotificationToggle("emailNotifications")}
-                  />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Alertes de stock</Label>
-                    <p className="text-sm text-gray-500">Être notifié quand le stock est faible</p>
-                  </div>
-                  <Switch 
-                    checked={settings.notifications.stockAlerts}
-                    onCheckedChange={() => handleNotificationToggle("stockAlerts")}
-                  />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Mises à jour des commandes</Label>
-                    <p className="text-sm text-gray-500">Recevoir des notifications lors des changements de statut</p>
-                  </div>
-                  <Switch 
-                    checked={settings.notifications.orderUpdates}
-                    onCheckedChange={() => handleNotificationToggle("orderUpdates")}
-                  />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Emails marketing</Label>
-                    <p className="text-sm text-gray-500">Recevoir des emails promotionnels</p>
-                  </div>
-                  <Switch 
-                    checked={settings.notifications.marketingEmails}
-                    onCheckedChange={() => handleNotificationToggle("marketingEmails")}
-                  />
-                </div>
-              </div>
-            </Card>
+            {/* Notifications */}
+            <NotificationsCard
+              notifications={settings.notifications}
+              onToggle={handleNotificationToggle}
+            />
 
-            <Card className="p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <Globe className="h-6 w-6 text-gray-500" />
-                <h2 className="text-xl font-semibold">Paramètres régionaux</h2>
-              </div>
-              <div className="space-y-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="language">Langue</Label>
-                  <Select
-                    value={settings.language}
-                    onValueChange={(value) => handleInputChange("language", value)}
-                  >
-                    <SelectTrigger id="language">
-                      <SelectValue placeholder="Sélectionnez une langue" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="fr">Français</SelectItem>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Español</SelectItem>
-                      <SelectItem value="de">Deutsch</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="currency">Devise</Label>
-                  <Select
-                    value={settings.currency}
-                    onValueChange={(value) => handleInputChange("currency", value)}
-                  >
-                    <SelectTrigger id="currency">
-                      <SelectValue placeholder="Sélectionnez une devise" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="EUR">Euro (€)</SelectItem>
-                      <SelectItem value="USD">Dollar US ($)</SelectItem>
-                      <SelectItem value="GBP">Livre Sterling (£)</SelectItem>
-                      <SelectItem value="CAD">Dollar Canadien (C$)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="theme">Thème</Label>
-                  <Select
-                    value={settings.theme}
-                    onValueChange={(value) => handleInputChange("theme", value)}
-                  >
-                    <SelectTrigger id="theme">
-                      <SelectValue placeholder="Sélectionnez un thème" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">Clair</SelectItem>
-                      <SelectItem value="dark">Sombre</SelectItem>
-                      <SelectItem value="system">Système</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </Card>
+            {/* Regional Settings */}
+            <RegionalSettingsCard
+              language={settings.language}
+              currency={settings.currency}
+              theme={settings.theme}
+              onSettingChange={handleInputChange}
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <Shield className="h-6 w-6 text-gray-500" />
-                <h2 className="text-xl font-semibold">Sécurité</h2>
-              </div>
-              <div className="space-y-4">
-                <p className="text-sm text-gray-500">Gérez les paramètres de sécurité de votre boutique.</p>
-                
-                <div className="grid gap-2">
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start"
-                    onClick={() => setShowPasswordDialog(true)}
-                  >
-                    <LockKeyhole className="h-4 w-4 mr-2" />
-                    Changer le mot de passe
-                  </Button>
-                </div>
-                
-                <div className="grid gap-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Shield className="h-4 w-4 mr-2" />
-                    Activer l'authentification à deux facteurs
-                  </Button>
-                </div>
-                
-                <div className="grid gap-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Consulter le journal d'activité
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            {/* Security */}
+            <SecurityCard
+              onPasswordDialogOpen={() => setShowPasswordDialog(true)}
+            />
 
-            <Card className="p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <CreditCard className="h-6 w-6 text-gray-500" />
-                <h2 className="text-xl font-semibold">Paiement</h2>
-              </div>
-              <div className="space-y-4">
-                <p className="text-sm text-gray-500">Configurez les méthodes de paiement acceptées par votre boutique.</p>
-                
-                <div className="grid gap-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    <CreditCard className="h-4 w-4 mr-2" />
-                    Configurer les moyens de paiement
-                  </Button>
-                </div>
-                
-                <div className="grid gap-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Mail className="h-4 w-4 mr-2" />
-                    Modèles d'emails de facturation
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            {/* Payment */}
+            <PaymentCard />
           </div>
           
-          <Card className="p-6">
-            <div className="flex items-center gap-4 mb-6">
-              <Palette className="h-6 w-6 text-gray-500" />
-              <h2 className="text-xl font-semibold">Confidentialité</h2>
-            </div>
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <Label>Consentement aux cookies</Label>
-                <RadioGroup 
-                  value={settings.privacySettings.cookieConsent}
-                  onValueChange={(value) => handlePrivacyChange("cookieConsent", value)}
-                  className="grid gap-3"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="essential" id="essential" />
-                    <Label htmlFor="essential" className="cursor-pointer">Cookies essentiels uniquement</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="functional" id="functional" />
-                    <Label htmlFor="functional" className="cursor-pointer">Cookies fonctionnels</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="all" id="all" />
-                    <Label htmlFor="all" className="cursor-pointer">Tous les cookies</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Partage de données</Label>
-                    <p className="text-sm text-gray-500">Autoriser le partage de données avec nos partenaires</p>
-                  </div>
-                  <Switch 
-                    checked={settings.privacySettings.dataSharing}
-                    onCheckedChange={(checked) => handlePrivacyChange("dataSharing", checked)}
-                  />
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Analytiques</Label>
-                    <p className="text-sm text-gray-500">Collecter des données anonymes pour améliorer l'expérience</p>
-                  </div>
-                  <Switch 
-                    checked={settings.privacySettings.analytics}
-                    onCheckedChange={(checked) => handlePrivacyChange("analytics", checked)}
-                  />
-                </div>
-              </div>
-            </div>
-          </Card>
+          {/* Privacy */}
+          <PrivacyCard
+            privacySettings={settings.privacySettings}
+            onPrivacyChange={handlePrivacyChange}
+          />
         </div>
         
-        {/* Change Password Dialog */}
-        <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Changer le mot de passe</DialogTitle>
-              <DialogDescription>
-                Entrez votre mot de passe actuel et votre nouveau mot de passe ci-dessous.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="current-password">Mot de passe actuel</Label>
-                <Input
-                  id="current-password"
-                  type="password"
-                  value={passwordData.currentPassword}
-                  onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="new-password">Nouveau mot de passe</Label>
-                <Input
-                  id="new-password"
-                  type="password"
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
-                <Input
-                  id="confirm-password"
-                  type="password"
-                  value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                />
-              </div>
-              {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowPasswordDialog(false)}>
-                Annuler
-              </Button>
-              <Button onClick={handlePasswordChange}>
-                Changer le mot de passe
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        {/* Password Dialog */}
+        <PasswordDialog
+          open={showPasswordDialog}
+          onOpenChange={setShowPasswordDialog}
+          passwordData={passwordData}
+          passwordError={passwordError}
+          onPasswordDataChange={handlePasswordDataChange}
+          onPasswordChange={handlePasswordChange}
+        />
       </motion.div>
     </div>
   );
