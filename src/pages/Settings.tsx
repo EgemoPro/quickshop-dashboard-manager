@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,7 @@ import {
   Languages,
   Shield,
   Save,
-  Planet,
+  Globe,
   Smartphone,
   Palette,
   FileText,
@@ -302,7 +301,7 @@ const Settings = () => {
 
             <Card className="p-6">
               <div className="flex items-center gap-4 mb-6">
-                <Planet className="h-6 w-6 text-gray-500" />
+                <Globe className="h-6 w-6 text-gray-500" />
                 <h2 className="text-xl font-semibold">Paramètres régionaux</h2>
               </div>
               <div className="space-y-4">
