@@ -1,6 +1,5 @@
-
 import React, { useEffect } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -18,29 +17,15 @@ import {
   type ScheduledEvent 
 } from "@/store/slices/planningSlice";
 
+const locales = { fr };
 // Create a proper localizer for react-big-calendar
-const localizer = {
-  format: (date: Date, formatStr: string) => format(date, formatStr, { locale: fr }),
-  parse: (str: string, formatStr: string) => parse(str, formatStr, new Date(), { locale: fr }),
-  startOfWeek: (date: Date) => startOfWeek(date, { locale: fr }),
-  getDay: (date: Date) => getDay(date),
-  localize: {
-    month: (n: number) => fr.localize?.month(n as any) || "",
-    day: (n: number) => fr.localize?.day(n as any) || "",
-    dayPeriod: (n: number) => fr.localize?.dayPeriod(n as any) || "",
-    era: (n: number) => fr.localize?.era(n as any) || "",
-    ordinalNumber: (n: number) => fr.localize?.ordinalNumber(n) || "",
-    quarter: (n: number) => fr.localize?.quarter(n as any) || "",
-  },
-  formats: {
-    dateFormat: 'dd',
-    dayFormat: 'dd ddd',
-    monthHeaderFormat: 'MMMM yyyy',
-    dayHeaderFormat: 'dddd MMM dd',
-    dayRangeHeaderFormat: ({ start, end }: { start: Date, end: Date }) => 
-      `${format(start, 'dd MMM yyyy', { locale: fr })} - ${format(end, 'dd MMM yyyy', { locale: fr })}`,
-  },
-};
+const localizer = dateFnsLocalizer({
+  format: (date, formatStr) => format(date, formatStr, { locale: fr }),
+  parse: (str, formatStr) => parse(str, formatStr, new Date()),
+  startOfWeek: (date) => startOfWeek(date, { locale: fr }),
+  getDay,
+  locales
+});
 
 const ProductPlanning = () => {
   const dispatch = useAppDispatch();
@@ -147,7 +132,7 @@ const ProductPlanning = () => {
             ) : null}
             
             <Calendar
-              localizer={localizer as any}
+              localizer={localizer}
               events={filteredEvents}
               startAccessor="start"
               endAccessor="end"
