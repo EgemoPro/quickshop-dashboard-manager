@@ -6,6 +6,7 @@ import ordersReducer from "./slices/ordersSlice";
 import productsReducer from "./slices/productsSlice";
 import messagesReducer from "./slices/messagesSlice";
 import planningReducer from "./slices/planningSlice";
+import settingsReducer from "./slices/settingsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     products: productsReducer,
     messages: messagesReducer,
     planning: planningReducer,
+    settings: settingsReducer,
   },
 });
 

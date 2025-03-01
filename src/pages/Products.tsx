@@ -8,15 +8,18 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package2, Plus, Edit, Trash2, Search, Filter, AlertTriangle } from "lucide-react";
+import { Package2, Plus, Edit, Trash2, Search, Filter, AlertTriangle, Image as ImageIcon } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addProduct, deleteProduct, updateProduct, setLoading, type Product } from "@/store/slices/productsSlice";
+import { addProduct, deleteProduct, updateProduct, setLoading, type Product, ProductImage } from "@/store/slices/productsSlice";
 import { useToast } from "@/components/ui/use-toast";
+import ImageUploader from "@/components/products/ImageUploader";
+import CategorySelect from "@/components/products/CategorySelect";
 
 const Products = () => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const { lowStockProducts, isLoading } = useAppSelector((state) => state.products);
+  const { currencySymbol } = useAppSelector((state) => state.settings);
   
   // Local state for UI
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,6 +36,7 @@ const Products = () => {
     price: "",
     stock: 0,
     category: "Vêtements",
+    images: [] as ProductImage[],
   });
 
   // Filter products based on search and status
@@ -54,12 +58,17 @@ const Products = () => {
 
   // Handle adding a new product
   const handleAddProduct = () => {
+    const priceWithSymbol = formState.price.includes(currencySymbol) 
+      ? formState.price 
+      : `${formState.price} ${currencySymbol}`;
+      
     const newProduct: Product = {
       id: `PRD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
       name: formState.name,
-      price: `${formState.price} €`,
+      price: priceWithSymbol,
       stock: formState.stock,
       category: formState.category,
+      images: formState.images,
     };
     
     dispatch(addProduct(newProduct));
@@ -76,12 +85,16 @@ const Products = () => {
   const handleEditProduct = () => {
     if (!currentProduct) return;
     
+    const priceValue = formState.price.replace(currencySymbol, '').trim();
+    const priceWithSymbol = `${priceValue} ${currencySymbol}`;
+    
     const updatedProduct: Product = {
       ...currentProduct,
       name: formState.name,
-      price: `${formState.price.replace(' €', '')} €`,
+      price: priceWithSymbol,
       stock: formState.stock,
       category: formState.category,
+      images: formState.images,
     };
     
     dispatch(updateProduct(updatedProduct));
@@ -114,11 +127,20 @@ const Products = () => {
     setCurrentProduct(product);
     setFormState({
       name: product.name,
-      price: product.price.replace(' €', ''),
+      price: product.price.replace(currencySymbol, '').trim(),
       stock: product.stock,
       category: product.category,
+      images: product.images || [],
     });
     setIsEditModalOpen(true);
+  };
+
+  // Handle image changes
+  const handleImagesChange = (images: ProductImage[]) => {
+    setFormState({
+      ...formState,
+      images,
+    });
   };
 
   // Reset form state
@@ -128,6 +150,7 @@ const Products = () => {
       price: "",
       stock: 0,
       category: "Vêtements",
+      images: [],
     });
     setCurrentProduct(null);
   };
@@ -202,11 +225,27 @@ const Products = () => {
                     >
                       <div className="flex items-center justify-between flex-wrap gap-4">
                         <div className="flex items-center gap-4">
-                          <Package2 className="h-8 w-8 text-gray-400" />
+                          {product.images && product.images.length > 0 ? (
+                            <img 
+                              src={product.images[0].url} 
+                              alt={product.name}
+                              className="h-12 w-12 object-cover rounded"
+                            />
+                          ) : (
+                            <Package2 className="h-8 w-8 text-gray-400" />
+                          )}
                           <div>
                             <h3 className="font-medium">{product.name}</h3>
                             <p className="text-sm text-gray-500">Prix: {product.price}</p>
                             <p className="text-sm text-gray-500">Catégorie: {product.category}</p>
+                            <div className="flex items-center mt-1">
+                              {product.images && product.images.length > 0 && (
+                                <span className="text-xs text-gray-400 flex items-center">
+                                  <ImageIcon className="h-3 w-3 mr-1" /> 
+                                  {product.images.length} image{product.images.length > 1 ? 's' : ''}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
@@ -251,7 +290,7 @@ const Products = () => {
 
         {/* Add Product Modal */}
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>Ajouter un produit</DialogTitle>
               <DialogDescription>
@@ -259,64 +298,65 @@ const Products = () => {
               </DialogDescription>
             </DialogHeader>
             
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="name" className="text-right font-medium">
-                  Nom
-                </label>
-                <Input
-                  id="name"
-                  value={formState.name}
-                  onChange={(e) => setFormState({...formState, name: e.target.value})}
-                  className="col-span-3"
-                />
+            <div className="grid gap-6 py-4">
+              <div className="grid gap-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right font-medium">
+                    Nom
+                  </Label>
+                  <Input
+                    id="name"
+                    value={formState.name}
+                    onChange={(e) => setFormState({...formState, name: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="price" className="text-right font-medium">
+                    Prix ({currencySymbol})
+                  </Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    value={formState.price}
+                    onChange={(e) => setFormState({...formState, price: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="stock" className="text-right font-medium">
+                    Stock
+                  </Label>
+                  <Input
+                    id="stock"
+                    type="number"
+                    value={formState.stock}
+                    onChange={(e) => setFormState({...formState, stock: parseInt(e.target.value) || 0})}
+                    className="col-span-3"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <div className="text-right font-medium">
+                    Catégorie
+                  </div>
+                  <div className="col-span-3">
+                    <CategorySelect 
+                      selectedCategory={formState.category} 
+                      onCategoryChange={(category) => setFormState({...formState, category})}
+                    />
+                  </div>
+                </div>
               </div>
               
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="price" className="text-right font-medium">
-                  Prix (€)
-                </label>
-                <Input
-                  id="price"
-                  type="number"
-                  value={formState.price}
-                  onChange={(e) => setFormState({...formState, price: e.target.value})}
-                  className="col-span-3"
+              <div className="space-y-2">
+                <Label className="font-medium">Images</Label>
+                <ImageUploader 
+                  images={formState.images}
+                  onImagesChange={handleImagesChange}
                 />
-              </div>
-              
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="stock" className="text-right font-medium">
-                  Stock
-                </label>
-                <Input
-                  id="stock"
-                  type="number"
-                  value={formState.stock}
-                  onChange={(e) => setFormState({...formState, stock: parseInt(e.target.value) || 0})}
-                  className="col-span-3"
-                />
-              </div>
-              
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="category" className="text-right font-medium">
-                  Catégorie
-                </label>
-                <Select
-                  value={formState.category}
-                  onValueChange={(value) => setFormState({...formState, category: value})}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Vêtements">Vêtements</SelectItem>
-                    <SelectItem value="Électronique">Électronique</SelectItem>
-                    <SelectItem value="Maison">Maison</SelectItem>
-                    <SelectItem value="Sports">Sports</SelectItem>
-                    <SelectItem value="Beauté">Beauté</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
             
@@ -333,7 +373,7 @@ const Products = () => {
 
         {/* Edit Product Modal */}
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>Modifier le produit</DialogTitle>
               <DialogDescription>
@@ -341,63 +381,64 @@ const Products = () => {
               </DialogDescription>
             </DialogHeader>
             
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="edit-name" className="text-right font-medium">
-                  Nom
-                </label>
-                <Input
-                  id="edit-name"
-                  value={formState.name}
-                  onChange={(e) => setFormState({...formState, name: e.target.value})}
-                  className="col-span-3"
-                />
+            <div className="grid gap-6 py-4">
+              <div className="grid gap-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-name" className="text-right font-medium">
+                    Nom
+                  </Label>
+                  <Input
+                    id="edit-name"
+                    value={formState.name}
+                    onChange={(e) => setFormState({...formState, name: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-price" className="text-right font-medium">
+                    Prix ({currencySymbol})
+                  </Label>
+                  <Input
+                    id="edit-price"
+                    value={formState.price}
+                    onChange={(e) => setFormState({...formState, price: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="edit-stock" className="text-right font-medium">
+                    Stock
+                  </Label>
+                  <Input
+                    id="edit-stock"
+                    type="number"
+                    value={formState.stock}
+                    onChange={(e) => setFormState({...formState, stock: parseInt(e.target.value) || 0})}
+                    className="col-span-3"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <div className="text-right font-medium">
+                    Catégorie
+                  </div>
+                  <div className="col-span-3">
+                    <CategorySelect 
+                      selectedCategory={formState.category} 
+                      onCategoryChange={(category) => setFormState({...formState, category})}
+                    />
+                  </div>
+                </div>
               </div>
               
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="edit-price" className="text-right font-medium">
-                  Prix (€)
-                </label>
-                <Input
-                  id="edit-price"
-                  value={formState.price}
-                  onChange={(e) => setFormState({...formState, price: e.target.value})}
-                  className="col-span-3"
+              <div className="space-y-2">
+                <Label className="font-medium">Images</Label>
+                <ImageUploader 
+                  images={formState.images}
+                  onImagesChange={handleImagesChange}
                 />
-              </div>
-              
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="edit-stock" className="text-right font-medium">
-                  Stock
-                </label>
-                <Input
-                  id="edit-stock"
-                  type="number"
-                  value={formState.stock}
-                  onChange={(e) => setFormState({...formState, stock: parseInt(e.target.value) || 0})}
-                  className="col-span-3"
-                />
-              </div>
-              
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="edit-category" className="text-right font-medium">
-                  Catégorie
-                </label>
-                <Select
-                  value={formState.category}
-                  onValueChange={(value) => setFormState({...formState, category: value})}
-                >
-                  <SelectTrigger className="col-span-3" id="edit-category">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Vêtements">Vêtements</SelectItem>
-                    <SelectItem value="Électronique">Électronique</SelectItem>
-                    <SelectItem value="Maison">Maison</SelectItem>
-                    <SelectItem value="Sports">Sports</SelectItem>
-                    <SelectItem value="Beauté">Beauté</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
             

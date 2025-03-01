@@ -1,17 +1,30 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+export interface ProductImage {
+  id: string;
+  url: string;
+  name: string;
+}
+
 export interface Product {
   id: string;
   name: string;
   stock: number;
   category: string;
   price: string;
+  images: ProductImage[];
+}
+
+export interface Category {
+  id: string;
+  name: string;
 }
 
 interface ProductsState {
   lowStockProducts: Product[];
   productPerformance: Array<{ name: string; value: number }>;
+  categories: Category[];
   isLoading: boolean;
   error: string | null;
 }
@@ -31,6 +44,7 @@ const generateLowStockProducts = (): Product[] => {
       stock: Math.floor(Math.random() * 20),
       category: categories[Math.floor(Math.random() * categories.length)],
       price: `${(Math.random() * 190 + 10).toFixed(2)}€`,
+      images: [],
     };
   });
 };
@@ -46,6 +60,13 @@ const generateProductPerformance = () => {
 const initialState: ProductsState = {
   lowStockProducts: generateLowStockProducts(),
   productPerformance: generateProductPerformance(),
+  categories: [
+    { id: '1', name: 'Vêtements' },
+    { id: '2', name: 'Électronique' },
+    { id: '3', name: 'Maison' },
+    { id: '4', name: 'Sports' },
+    { id: '5', name: 'Beauté' },
+  ],
   isLoading: false,
   error: null,
 };
@@ -79,6 +100,26 @@ export const productsSlice = createSlice({
     setProductPerformance: (state, action: PayloadAction<Array<{ name: string; value: number }>>) => {
       state.productPerformance = action.payload;
     },
+    addProductImage: (state, action: PayloadAction<{ productId: string; image: ProductImage }>) => {
+      const { productId, image } = action.payload;
+      const product = state.lowStockProducts.find(p => p.id === productId);
+      if (product) {
+        product.images.push(image);
+      }
+    },
+    removeProductImage: (state, action: PayloadAction<{ productId: string; imageId: string }>) => {
+      const { productId, imageId } = action.payload;
+      const product = state.lowStockProducts.find(p => p.id === productId);
+      if (product) {
+        product.images = product.images.filter(img => img.id !== imageId);
+      }
+    },
+    addCategory: (state, action: PayloadAction<Category>) => {
+      state.categories.push(action.payload);
+    },
+    removeCategory: (state, action: PayloadAction<string>) => {
+      state.categories = state.categories.filter(cat => cat.id !== action.payload);
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
@@ -94,7 +135,11 @@ export const {
   updateProduct,
   deleteProduct,
   updateProductStock, 
-  setProductPerformance, 
+  setProductPerformance,
+  addProductImage,
+  removeProductImage,
+  addCategory,
+  removeCategory, 
   setLoading, 
   setError 
 } = productsSlice.actions;

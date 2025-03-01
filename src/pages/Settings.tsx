@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useAppDispatch } from "@/store/hooks";
+import { updateSettings } from "@/store/slices/settingsSlice";
 
 // Import the newly created components
 import StoreInfoCard from "@/components/settings/StoreInfoCard";
@@ -21,9 +23,6 @@ interface StoreSettings {
   storeAddress: string;
   storeEmail: string;
   storePhone: string;
-  currency: string;
-  language: string;
-  theme: string;
   notifications: {
     emailNotifications: boolean;
     stockAlerts: boolean;
@@ -39,6 +38,7 @@ interface StoreSettings {
 
 const Settings = () => {
   const { toast } = useToast();
+  const dispatch = useAppDispatch();
   
   // Initial settings state
   const [settings, setSettings] = useState<StoreSettings>({
@@ -47,9 +47,6 @@ const Settings = () => {
     storeAddress: "123 Rue du Commerce, 75001 Paris",
     storeEmail: "contact@masuperboutique.com",
     storePhone: "+33 1 23 45 67 89",
-    currency: "EUR",
-    language: "fr",
-    theme: "light",
     notifications: {
       emailNotifications: true,
       stockAlerts: true,
@@ -207,12 +204,7 @@ const Settings = () => {
             />
 
             {/* Regional Settings */}
-            <RegionalSettingsCard
-              language={settings.language}
-              currency={settings.currency}
-              theme={settings.theme}
-              onSettingChange={handleInputChange}
-            />
+            <RegionalSettingsCard />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

@@ -4,20 +4,31 @@ import { Globe } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setCurrency, setLanguage, setTheme } from "@/store/slices/settingsSlice";
 
-interface RegionalSettingsCardProps {
-  language: string;
-  currency: string;
-  theme: string;
-  onSettingChange: (field: string, value: string) => void;
-}
+const RegionalSettingsCard = () => {
+  const dispatch = useAppDispatch();
+  const { language, currency, theme } = useAppSelector((state) => state.settings);
 
-const RegionalSettingsCard = ({
-  language,
-  currency,
-  theme,
-  onSettingChange,
-}: RegionalSettingsCardProps) => {
+  const handleCurrencyChange = (value: string) => {
+    dispatch(setCurrency(value));
+  };
+
+  const handleLanguageChange = (value: string) => {
+    dispatch(setLanguage(value));
+  };
+
+  const handleThemeChange = (value: string) => {
+    dispatch(setTheme(value));
+    // Apply theme to document
+    if (value === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
   return (
     <Card className="p-6">
       <div className="flex items-center gap-4 mb-6">
@@ -29,7 +40,7 @@ const RegionalSettingsCard = ({
           <Label htmlFor="language">Langue</Label>
           <Select
             value={language}
-            onValueChange={(value) => onSettingChange("language", value)}
+            onValueChange={handleLanguageChange}
           >
             <SelectTrigger id="language">
               <SelectValue placeholder="Sélectionnez une langue" />
@@ -47,7 +58,7 @@ const RegionalSettingsCard = ({
           <Label htmlFor="currency">Devise</Label>
           <Select
             value={currency}
-            onValueChange={(value) => onSettingChange("currency", value)}
+            onValueChange={handleCurrencyChange}
           >
             <SelectTrigger id="currency">
               <SelectValue placeholder="Sélectionnez une devise" />
@@ -65,7 +76,7 @@ const RegionalSettingsCard = ({
           <Label htmlFor="theme">Thème</Label>
           <Select
             value={theme}
-            onValueChange={(value) => onSettingChange("theme", value)}
+            onValueChange={handleThemeChange}
           >
             <SelectTrigger id="theme">
               <SelectValue placeholder="Sélectionnez un thème" />
