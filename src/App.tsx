@@ -9,6 +9,8 @@ import { useIsMobile } from "./hooks/use-mobile";
 import { Home, Package2, ShoppingCart, Settings as SettingsIcon, MessageCircle, Calendar } from "lucide-react";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
+import { useState } from "react";
+import DashboardHeader from "./components/dashboard/DashboardHeader";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
@@ -91,6 +93,35 @@ const Navigation = () => {
   );
 };
 
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  const [darkMode, setDarkMode] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  
+  // Don't show header on landing page
+  if (location.pathname === "/landing") {
+    return <>{children}</>;
+  }
+  
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+  
+  return (
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-800'}`}>
+      <DashboardHeader 
+        darkMode={darkMode} 
+        toggleDarkMode={toggleDarkMode} 
+        mobileMenuOpen={mobileMenuOpen} 
+        setMobileMenuOpen={setMobileMenuOpen} 
+      />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        {children}
+      </main>
+    </div>
+  );
+};
+
 const AppContent = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
@@ -104,12 +135,12 @@ const AppContent = () => {
     <div className={contentClass}>
       <Routes>
         <Route path="/" element={<Navigate to="/landing" replace />} />
-        <Route path="/dashboard" element={<Index />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/planning" element={<ProductPlanning />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/chat" element={<Chat />} />
+        <Route path="/dashboard" element={<DashboardLayout><Index /></DashboardLayout>} />
+        <Route path="/products" element={<DashboardLayout><Products /></DashboardLayout>} />
+        <Route path="/orders" element={<DashboardLayout><Orders /></DashboardLayout>} />
+        <Route path="/planning" element={<DashboardLayout><ProductPlanning /></DashboardLayout>} />
+        <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
+        <Route path="/chat" element={<DashboardLayout><Chat /></DashboardLayout>} />
         <Route path="/landing" element={<Landing />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

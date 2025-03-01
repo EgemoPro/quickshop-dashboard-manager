@@ -1,6 +1,5 @@
 
 import React from "react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { HelpCircle, Settings, Moon, Sun, Bell, UserCircle } from "lucide-react";
 
@@ -18,7 +17,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   setMobileMenuOpen 
 }) => {
   return (
-    <header className={`sticky top-0 z-30 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm px-4 sm:px-6 py-3 transition-colors duration-300`}>
+    <header className={`sticky top-0 z-30 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} shadow-sm px-4 sm:px-6 py-3 transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center md:hidden">
           <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
