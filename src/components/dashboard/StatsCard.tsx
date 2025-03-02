@@ -2,6 +2,7 @@
 import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { ArrowUpRight } from "lucide-react";
+import { useCurrency } from "@/hooks/use-currency";
 
 interface StatsCardProps {
   title: string;
@@ -9,9 +10,22 @@ interface StatsCardProps {
   growth: string;
   icon: React.ReactNode;
   darkMode: boolean;
+  isCurrency?: boolean;
 }
 
-const StatsCard: React.FC<StatsCardProps> = ({ title, value, growth, icon, darkMode }) => {
+const StatsCard: React.FC<StatsCardProps> = ({ 
+  title, 
+  value, 
+  growth, 
+  icon, 
+  darkMode,
+  isCurrency = false
+}) => {
+  const { formatCurrency } = useCurrency();
+  
+  // Formater la valeur si elle est une devise
+  const displayValue = isCurrency ? formatCurrency(value) : value;
+  
   return (
     <Card className={`border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'} transition-colors duration-300 h-full`}>
       <CardHeader className="pb-2">
@@ -22,7 +36,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, growth, icon, darkM
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-baseline">
-          <div className="text-2xl font-bold">{value}</div>
+          <div className="text-2xl font-bold">{displayValue}</div>
           <div className="flex items-center text-green-500">
             <ArrowUpRight className="h-4 w-4 mr-1" />
             <span className="text-sm font-medium">{growth}</span>
