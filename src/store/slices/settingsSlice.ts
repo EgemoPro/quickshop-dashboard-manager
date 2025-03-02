@@ -21,6 +21,7 @@ const currencySymbols: Record<string, string> = {
   USD: "$",
   GBP: "£",
   CAD: "C$",
+  CAF: "XOF" 
 };
 
 export const settingsSlice = createSlice({
