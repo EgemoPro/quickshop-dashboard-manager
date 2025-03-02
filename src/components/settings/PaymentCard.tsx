@@ -161,7 +161,7 @@ const PaymentCard = () => {
               {currentTemplate === "shipping" && "Modèle d'email d'expédition"}
             </DialogTitle>
             <DialogDescription>
-              Personnalisez le modèle d'email pour vos clients. Utilisez les variables comme {{storeName}}, {{orderNumber}}, {{totalAmount}}, {{currency}} pour personnaliser le contenu.
+              Personnalisez le modèle d'email pour vos clients. Utilisez les variables comme {'{{storeName}}'}, {'{{orderNumber}}'}, {'{{totalAmount}}'}, {'{{currency}}'} pour personnaliser le contenu.
             </DialogDescription>
           </DialogHeader>
           
@@ -198,10 +198,10 @@ const PaymentCard = () => {
           <div className="mt-4">
             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm mb-4">
               <p className="font-semibold mb-2">Aperçu des variables:</p>
-              <p><code>{{storeName}}</code> - Nom de votre boutique</p>
-              <p><code>{{orderNumber}}</code> - Numéro de commande</p>
-              <p><code>{{totalAmount}}</code> - Montant total</p>
-              <p><code>{{currency}}</code> - Devise ({currency})</p>
+              <p><code>{"{{storeName}}"}</code> - Nom de votre boutique</p>
+              <p><code>{"{{orderNumber}}"}</code> - Numéro de commande</p>
+              <p><code>{"{{totalAmount}}"}</code> - Montant total</p>
+              <p><code>{"{{currency}}"}</code> - Devise ({currency})</p>
             </div>
           </div>
           
