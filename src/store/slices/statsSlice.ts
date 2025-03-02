@@ -15,13 +15,13 @@ interface StatsState {
 }
 
 const initialState: StatsState = {
-  totalSales: "12 478€",
+  totalSales: "12478",
   salesGrowth: "+12.5%",
   newCustomers: "76",
   customerGrowth: "+5.2%",
   pendingOrders: "23",
   orderGrowth: "+8.9%",
-  avgOrderValue: "124€",
+  avgOrderValue: "124",
   valueGrowth: "+3.7%",
   isLoading: false,
   error: null,

@@ -33,7 +33,7 @@ const initialState: SettingsState = {
     cashOnDelivery: false,
   },
   emailTemplates: {
-    invoice: "<p>Facture par défaut</p><p>Merci pour votre achat chez {{storeName}}.</p><p>Numéro de commande: {{orderNumber}}</p><p>Montant total: {{totalAmount}} {{currency}}</p>",
+    invoice: "<p>Facture par défaut</p><p>Merci pour votre achat chez {'{{storeName}}'}.</p><p>Numéro de commande: {'{{orderNumber}}'}</p><p>Montant total: {'{{totalAmount}}'} {'{{currency}}'}</p>",
     orderConfirmation: "<p>Confirmation de commande par défaut</p><p>Votre commande a été confirmée.</p>",
     shipping: "<p>Notification d'expédition par défaut</p><p>Votre commande a été expédiée.</p>",
   },

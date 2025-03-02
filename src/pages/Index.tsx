@@ -13,6 +13,7 @@ import ProductPerformance from "@/components/dashboard/ProductPerformance";
 import LowStockProducts from "@/components/dashboard/LowStockProducts";
 import RecentMessages from "@/components/dashboard/RecentMessages";
 import ModuleSystem from "@/components/dashboard/ModuleSystem";
+import UserProfile from "@/components/dashboard/UserProfile";
 
 const DashboardContent = () => {
   const stats = useAppSelector(state => state.stats);
@@ -112,13 +113,16 @@ const DashboardContent = () => {
 
         {/* Right Column - Sidebar Modules */}
         <div className="space-y-6">
+          {/* User Profile - NEW */}
+          <UserProfile darkMode={false} />
+          
           {/* Product Performance */}
           <ProductPerformance darkMode={false} />
 
           {/* Low Stock Alert */}
           <LowStockProducts darkMode={false} />
 
-          {/* Module System - NEW */}
+          {/* Module System */}
           <ModuleSystem darkMode={false} />
 
           {/* Recent Messages */}
