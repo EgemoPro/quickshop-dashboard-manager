@@ -7,27 +7,29 @@ import { BarChart3 } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { setPeriod } from "@/store/slices/salesSlice";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
+import { useCurrency } from "@/hooks/use-currency";
 
 interface SalesChartProps {
   darkMode: boolean;
 }
 
-const CustomTooltip = ({ active, payload, label, darkMode }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className={`p-3 rounded-md shadow-md ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'}`}>
-        <p className="font-medium text-sm">{`${label}`}</p>
-        <p className="text-sm text-blue-500">{`Ventes: ${payload[0].value}`}</p>
-        <p className="text-sm text-purple-500">{`Revenus: ${payload[1].value}€`}</p>
-      </div>
-    );
-  }
-  return null;
-};
-
 const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
   const dispatch = useAppDispatch();
   const { salesData, period } = useAppSelector(state => state.sales);
+  const { currencySymbol } = useCurrency();
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className={`p-3 rounded-md shadow-md ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'}`}>
+          <p className="font-medium text-sm">{`${label}`}</p>
+          <p className="text-sm text-blue-500">{`Ventes: ${payload[0].value}`}</p>
+          <p className="text-sm text-purple-500">{`Revenus: ${payload[1].value} ${currencySymbol}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <motion.div
@@ -84,7 +86,7 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
                     tick={{ fill: darkMode ? '#bbb' : '#666' }}
                     axisLine={{ stroke: darkMode ? '#555' : '#ddd' }}
                   />
-                  <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+                  <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ bottom: 0 }} />
                   <Bar 
                     dataKey="ventes" 
@@ -94,7 +96,7 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
                   />
                   <Bar 
                     dataKey="revenus" 
-                    name="Revenus (€)" 
+                    name={`Revenus (${currencySymbol})`} 
                     fill={darkMode ? "#c084fc" : "#8b5cf6"} 
                     radius={[4, 4, 0, 0]} 
                   />
@@ -123,7 +125,7 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
                     tick={{ fill: darkMode ? '#bbb' : '#666' }}
                     axisLine={{ stroke: darkMode ? '#555' : '#ddd' }}
                   />
-                  <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+                  <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ bottom: 0 }} />
                   <Area 
                     type="monotone" 
@@ -136,7 +138,7 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
                   <Area 
                     type="monotone" 
                     dataKey="revenus" 
-                    name="Revenus (€)" 
+                    name={`Revenus (${currencySymbol})`} 
                     stroke={darkMode ? "#c084fc" : "#8b5cf6"} 
                     fillOpacity={1} 
                     fill="url(#colorRevenus)" 

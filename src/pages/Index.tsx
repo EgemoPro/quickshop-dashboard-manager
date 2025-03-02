@@ -48,6 +48,7 @@ const DashboardContent = () => {
             growth={stats.salesGrowth} 
             icon={<DollarSign className="h-5 w-5 text-blue-500" />}
             darkMode={false}
+            isCurrency={true}
           />
         </motion.div>
 
@@ -93,6 +94,7 @@ const DashboardContent = () => {
             growth={stats.valueGrowth} 
             icon={<TrendingUp className="h-5 w-5 text-green-500" />}
             darkMode={false}
+            isCurrency={true}
           />
         </motion.div>
       </section>

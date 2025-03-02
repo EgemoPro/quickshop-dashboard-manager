@@ -7,6 +7,7 @@ import productsReducer from "./slices/productsSlice";
 import messagesReducer from "./slices/messagesSlice";
 import planningReducer from "./slices/planningSlice";
 import settingsReducer from "./slices/settingsSlice";
+import authReducer from "./slices/authSlice";
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     messages: messagesReducer,
     planning: planningReducer,
     settings: settingsReducer,
+    auth: authReducer,
   },
 });
 

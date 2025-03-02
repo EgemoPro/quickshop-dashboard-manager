@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAppSelector } from "@/store/hooks";
+import { useCurrency } from "@/hooks/use-currency";
 
 interface RecentOrdersProps {
   darkMode: boolean;
@@ -13,6 +14,7 @@ interface RecentOrdersProps {
 
 const RecentOrders: React.FC<RecentOrdersProps> = ({ darkMode }) => {
   const { recentOrders } = useAppSelector(state => state.orders);
+  const { formatCurrency } = useCurrency();
 
   return (
     <motion.div
@@ -68,7 +70,7 @@ const RecentOrders: React.FC<RecentOrdersProps> = ({ darkMode }) => {
                       >
                         {order.status}
                       </Badge>
-                      <span className="font-medium text-right sm:text-left">{order.amount}</span>
+                      <span className="font-medium text-right sm:text-left">{formatCurrency(order.amount)}</span>
                     </div>
                   </div>
                 </div>
