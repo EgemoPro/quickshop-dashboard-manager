@@ -6,13 +6,19 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setCurrency, setLanguage, setTheme } from "@/store/slices/settingsSlice";
+import { useToast } from "@/components/ui/use-toast";
 
 const RegionalSettingsCard = () => {
   const dispatch = useAppDispatch();
+  const { toast } = useToast();
   const { language, currency, theme } = useAppSelector((state) => state.settings);
 
   const handleCurrencyChange = (value: string) => {
     dispatch(setCurrency(value));
+    toast({
+      title: "Devise mise à jour",
+      description: `La devise a été changée en ${value}.`,
+    });
   };
 
   const handleLanguageChange = (value: string) => {
@@ -68,6 +74,7 @@ const RegionalSettingsCard = () => {
               <SelectItem value="USD">Dollar US ($)</SelectItem>
               <SelectItem value="GBP">Livre Sterling (£)</SelectItem>
               <SelectItem value="CAD">Dollar Canadien (C$)</SelectItem>
+              <SelectItem value="XOF">Franc CFA (CFA)</SelectItem>
             </SelectContent>
           </Select>
         </div>
