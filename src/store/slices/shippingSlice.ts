@@ -1,78 +1,78 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Carrier {
+interface ShippingCarrier {
   id: string;
   name: string;
   logo: string;
-  trackingUrlTemplate: string;
-  enabled: boolean;
-  defaultShippingCost: number;
-  estimatedDeliveryDays: {
+  isActive: boolean;
+  deliveryTimeRange: {
     min: number;
     max: number;
   };
-  supportedRegions: string[];
+  trackingUrl: string;
+  pricing: {
+    base: number;
+    perKg: number;
+  };
 }
 
-interface ShippingRate {
+interface ShipmentZone {
   id: string;
-  carrierId: string;
   name: string;
+  countries: string[];
+  priceMultiplier: number;
+}
+
+interface ShipmentPackage {
+  id: string;
+  name: string;
+  dimensions: {
+    width: number;
+    height: number;
+    length: number;
+  };
+  maxWeight: number;
   price: number;
-  freeShippingThreshold: number | null;
-  deliveryTimeMin: number;
-  deliveryTimeMax: number;
-  weightLimitMin: number | null;
-  weightLimitMax: number | null;
-  regions: string[];
-  active: boolean;
 }
 
 interface Shipment {
   id: string;
   orderId: string;
-  carrierId: string;
+  status: "pending" | "processing" | "shipped" | "delivered" | "failed";
+  carrier: string;
   trackingNumber: string;
-  status: "pending" | "processing" | "shipped" | "delivered" | "returned";
-  createdAt: string;
-  updatedAt: string;
-  estimatedDeliveryDate: string;
+  shipDate: string;
+  estimatedDelivery: string;
+  actualDelivery: string | null;
+  recipientAddress: {
+    name: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+    phone: string;
+  };
+  packageDetails: {
+    weight: number;
+    dimensions: {
+      width: number;
+      height: number;
+      length: number;
+    };
+    packageType: string;
+  };
   shippingCost: number;
-  weight: number;
-  packageDimensions: {
-    length: number;
-    width: number;
-    height: number;
-  };
-  fromAddress: {
-    name: string;
-    street: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-  };
-  toAddress: {
-    name: string;
-    street: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-  };
-  events: Array<{
-    timestamp: string;
-    status: string;
-    location: string;
-    description: string;
-  }>;
 }
 
 interface ShippingState {
-  carriers: Carrier[];
-  shippingRates: ShippingRate[];
+  carriers: ShippingCarrier[];
+  zones: ShipmentZone[];
+  packages: ShipmentPackage[];
   shipments: Shipment[];
+  activeCarriers: number;
+  pendingShipments: number;
+  averageDeliveryTime: number;
   isLoading: boolean;
   error: string | null;
 }
@@ -81,108 +81,106 @@ const initialState: ShippingState = {
   carriers: [
     {
       id: "carrier-001",
-      name: "Colissimo",
-      logo: "https://placehold.co/200x100/e2e8f0/1e293b?text=Colissimo",
-      trackingUrlTemplate: "https://www.laposte.fr/outils/suivre-vos-envois?code={trackingNumber}",
-      enabled: true,
-      defaultShippingCost: 6.95,
-      estimatedDeliveryDays: {
-        min: 2,
-        max: 4,
+      name: "QuickExpress",
+      logo: "/placeholder.svg",
+      isActive: true,
+      deliveryTimeRange: {
+        min: 1,
+        max: 3,
       },
-      supportedRegions: ["France", "Europe"],
+      trackingUrl: "https://tracking.quickexpress.com/{{trackingNumber}}",
+      pricing: {
+        base: 5.99,
+        perKg: 1.5,
+      },
     },
     {
       id: "carrier-002",
-      name: "Chronopost",
-      logo: "https://placehold.co/200x100/e2e8f0/1e293b?text=Chronopost",
-      trackingUrlTemplate: "https://www.chronopost.fr/tracking-no-cms/suivi-page?listeNumerosLT={trackingNumber}",
-      enabled: true,
-      defaultShippingCost: 12.95,
-      estimatedDeliveryDays: {
-        min: 1,
-        max: 2,
+      name: "GlobalShip",
+      logo: "/placeholder.svg",
+      isActive: true,
+      deliveryTimeRange: {
+        min: 3,
+        max: 7,
       },
-      supportedRegions: ["France", "Europe", "International"],
+      trackingUrl: "https://globalship.com/track/{{trackingNumber}}",
+      pricing: {
+        base: 8.99,
+        perKg: 2.0,
+      },
     },
   ],
-  shippingRates: [
+  zones: [
     {
-      id: "rate-001",
-      carrierId: "carrier-001",
-      name: "Standard",
-      price: 6.95,
-      freeShippingThreshold: 50,
-      deliveryTimeMin: 2,
-      deliveryTimeMax: 4,
-      weightLimitMin: 0,
-      weightLimitMax: 5,
-      regions: ["France"],
-      active: true,
+      id: "zone-001",
+      name: "France Métropolitaine",
+      countries: ["France"],
+      priceMultiplier: 1.0,
     },
     {
-      id: "rate-002",
-      carrierId: "carrier-002",
-      name: "Express",
-      price: 12.95,
-      freeShippingThreshold: 100,
-      deliveryTimeMin: 1,
-      deliveryTimeMax: 2,
-      weightLimitMin: 0,
-      weightLimitMax: 5,
-      regions: ["France"],
-      active: true,
+      id: "zone-002",
+      name: "Europe",
+      countries: ["Germany", "Spain", "Italy", "Belgium", "Netherlands", "Luxembourg"],
+      priceMultiplier: 1.5,
+    },
+  ],
+  packages: [
+    {
+      id: "package-001",
+      name: "Enveloppe Standard",
+      dimensions: {
+        width: 25,
+        height: 35,
+        length: 1,
+      },
+      maxWeight: 0.5,
+      price: 2.99,
+    },
+    {
+      id: "package-002",
+      name: "Boîte Petite",
+      dimensions: {
+        width: 20,
+        height: 15,
+        length: 10,
+      },
+      maxWeight: 2,
+      price: 4.99,
     },
   ],
   shipments: [
     {
       id: "ship-001",
-      orderId: "ORD-123456",
-      carrierId: "carrier-001",
-      trackingNumber: "LP00123456789FR",
+      orderId: "order-125",
       status: "shipped",
-      createdAt: "2023-11-25T10:30:00Z",
-      updatedAt: "2023-11-25T15:45:00Z",
-      estimatedDeliveryDate: "2023-11-28",
-      shippingCost: 6.95,
-      weight: 1.2,
-      packageDimensions: {
-        length: 30,
-        width: 20,
-        height: 10,
-      },
-      fromAddress: {
-        name: "QuickShop Entrepôt",
-        street: "123 Rue du Commerce",
-        city: "Paris",
-        state: "Île-de-France",
-        postalCode: "75001",
-        country: "France",
-      },
-      toAddress: {
-        name: "Jean Dupont",
-        street: "45 Avenue de la République",
+      carrier: "carrier-001",
+      trackingNumber: "QE7823456789",
+      shipDate: "2023-11-20",
+      estimatedDelivery: "2023-11-23",
+      actualDelivery: null,
+      recipientAddress: {
+        name: "Sophie Martin",
+        address: "15 Rue de Paris",
         city: "Lyon",
-        state: "Auvergne-Rhône-Alpes",
-        postalCode: "69001",
+        postalCode: "69002",
         country: "France",
+        phone: "+33 6 12 34 56 78",
       },
-      events: [
-        {
-          timestamp: "2023-11-25T10:30:00Z",
-          status: "created",
-          location: "Paris, France",
-          description: "Colis préparé",
+      packageDetails: {
+        weight: 1.2,
+        dimensions: {
+          width: 20,
+          height: 15,
+          length: 10,
         },
-        {
-          timestamp: "2023-11-25T15:45:00Z",
-          status: "shipped",
-          location: "Paris, France",
-          description: "Colis expédié",
-        },
-      ],
+        packageType: "package-002",
+      },
+      shippingCost: 7.79,
     },
   ],
+  activeCarriers: 2,
+  pendingShipments: 3,
+  averageDeliveryTime: 2.5,
   isLoading: false,
   error: null,
 };
@@ -198,15 +196,16 @@ export const shippingSlice = createSlice({
       state.error = action.payload;
     },
     
-    // Carrier management
-    addCarrier: (state, action: PayloadAction<Omit<Carrier, "id">>) => {
-      const newId = `carrier-${state.carriers.length + 1}`.padStart(7, '0');
+    // Carrier actions
+    addCarrier: (state, action: PayloadAction<Omit<ShippingCarrier, "id">>) => {
+      const newId = `carrier-${state.carriers.length + 1}`.padStart(10, '0');
       state.carriers.push({
         ...action.payload,
         id: newId,
       });
+      state.activeCarriers = state.carriers.filter(c => c.isActive).length;
     },
-    updateCarrier: (state, action: PayloadAction<Partial<Carrier> & { id: string }>) => {
+    updateCarrier: (state, action: PayloadAction<Partial<ShippingCarrier> & { id: string }>) => {
       const index = state.carriers.findIndex(carrier => carrier.id === action.payload.id);
       if (index !== -1) {
         state.carriers[index] = {
@@ -214,57 +213,63 @@ export const shippingSlice = createSlice({
           ...action.payload,
         };
       }
+      state.activeCarriers = state.carriers.filter(c => c.isActive).length;
     },
     deleteCarrier: (state, action: PayloadAction<string>) => {
       state.carriers = state.carriers.filter(carrier => carrier.id !== action.payload);
-    },
-    toggleCarrierStatus: (state, action: PayloadAction<string>) => {
-      const index = state.carriers.findIndex(carrier => carrier.id === action.payload);
-      if (index !== -1) {
-        state.carriers[index].enabled = !state.carriers[index].enabled;
-      }
+      state.activeCarriers = state.carriers.filter(c => c.isActive).length;
     },
     
-    // Shipping rates management
-    addShippingRate: (state, action: PayloadAction<Omit<ShippingRate, "id">>) => {
-      const newId = `rate-${state.shippingRates.length + 1}`.padStart(7, '0');
-      state.shippingRates.push({
+    // Zone actions
+    addZone: (state, action: PayloadAction<Omit<ShipmentZone, "id">>) => {
+      const newId = `zone-${state.zones.length + 1}`.padStart(7, '0');
+      state.zones.push({
         ...action.payload,
         id: newId,
       });
     },
-    updateShippingRate: (state, action: PayloadAction<Partial<ShippingRate> & { id: string }>) => {
-      const index = state.shippingRates.findIndex(rate => rate.id === action.payload.id);
+    updateZone: (state, action: PayloadAction<Partial<ShipmentZone> & { id: string }>) => {
+      const index = state.zones.findIndex(zone => zone.id === action.payload.id);
       if (index !== -1) {
-        state.shippingRates[index] = {
-          ...state.shippingRates[index],
+        state.zones[index] = {
+          ...state.zones[index],
           ...action.payload,
         };
       }
     },
-    deleteShippingRate: (state, action: PayloadAction<string>) => {
-      state.shippingRates = state.shippingRates.filter(rate => rate.id !== action.payload);
-    },
-    toggleShippingRateStatus: (state, action: PayloadAction<string>) => {
-      const index = state.shippingRates.findIndex(rate => rate.id === action.payload);
-      if (index !== -1) {
-        state.shippingRates[index].active = !state.shippingRates[index].active;
-      }
+    deleteZone: (state, action: PayloadAction<string>) => {
+      state.zones = state.zones.filter(zone => zone.id !== action.payload);
     },
     
-    // Shipment management
-    addShipment: (state, action: PayloadAction<Omit<Shipment, "id" | "events">>) => {
+    // Package actions
+    addPackage: (state, action: PayloadAction<Omit<ShipmentPackage, "id">>) => {
+      const newId = `package-${state.packages.length + 1}`.padStart(9, '0');
+      state.packages.push({
+        ...action.payload,
+        id: newId,
+      });
+    },
+    updatePackage: (state, action: PayloadAction<Partial<ShipmentPackage> & { id: string }>) => {
+      const index = state.packages.findIndex(pkg => pkg.id === action.payload.id);
+      if (index !== -1) {
+        state.packages[index] = {
+          ...state.packages[index],
+          ...action.payload,
+        };
+      }
+    },
+    deletePackage: (state, action: PayloadAction<string>) => {
+      state.packages = state.packages.filter(pkg => pkg.id !== action.payload);
+    },
+    
+    // Shipment actions
+    addShipment: (state, action: PayloadAction<Omit<Shipment, "id">>) => {
       const newId = `ship-${state.shipments.length + 1}`.padStart(7, '0');
       state.shipments.push({
         ...action.payload,
         id: newId,
-        events: [{
-          timestamp: new Date().toISOString(),
-          status: "created",
-          location: action.payload.fromAddress.city + ", " + action.payload.fromAddress.country,
-          description: "Colis préparé",
-        }],
       });
+      state.pendingShipments = state.shipments.filter(s => s.status === "pending").length;
     },
     updateShipment: (state, action: PayloadAction<Partial<Shipment> & { id: string }>) => {
       const index = state.shipments.findIndex(shipment => shipment.id === action.payload.id);
@@ -272,30 +277,46 @@ export const shippingSlice = createSlice({
         state.shipments[index] = {
           ...state.shipments[index],
           ...action.payload,
-          updatedAt: new Date().toISOString(),
         };
       }
-    },
-    updateShipmentStatus: (state, action: PayloadAction<{ 
-      id: string; 
-      status: Shipment["status"];
-      location: string;
-      description: string;
-    }>) => {
-      const index = state.shipments.findIndex(shipment => shipment.id === action.payload.id);
-      if (index !== -1) {
-        state.shipments[index].status = action.payload.status;
-        state.shipments[index].updatedAt = new Date().toISOString();
-        state.shipments[index].events.push({
-          timestamp: new Date().toISOString(),
-          status: action.payload.status,
-          location: action.payload.location,
-          description: action.payload.description,
-        });
+      state.pendingShipments = state.shipments.filter(s => s.status === "pending").length;
+      
+      // Calculate average delivery time if we have delivered shipments
+      const deliveredShipments = state.shipments.filter(s => s.status === "delivered" && s.actualDelivery);
+      if (deliveredShipments.length > 0) {
+        const totalDays = deliveredShipments.reduce((total, s) => {
+          const shipDate = new Date(s.shipDate);
+          const deliveryDate = new Date(s.actualDelivery as string);
+          const days = Math.floor((deliveryDate.getTime() - shipDate.getTime()) / (1000 * 60 * 60 * 24));
+          return total + days;
+        }, 0);
+        state.averageDeliveryTime = totalDays / deliveredShipments.length;
       }
     },
     deleteShipment: (state, action: PayloadAction<string>) => {
       state.shipments = state.shipments.filter(shipment => shipment.id !== action.payload);
+      state.pendingShipments = state.shipments.filter(s => s.status === "pending").length;
+    },
+    updateShipmentStatus: (state, action: PayloadAction<{ id: string, status: Shipment["status"], actualDelivery?: string }>) => {
+      const index = state.shipments.findIndex(shipment => shipment.id === action.payload.id);
+      if (index !== -1) {
+        state.shipments[index].status = action.payload.status;
+        if (action.payload.status === "delivered" && action.payload.actualDelivery) {
+          state.shipments[index].actualDelivery = action.payload.actualDelivery;
+        }
+      }
+      state.pendingShipments = state.shipments.filter(s => s.status === "pending").length;
+    },
+    
+    // Stats actions
+    setActiveCarriers: (state, action: PayloadAction<number>) => {
+      state.activeCarriers = action.payload;
+    },
+    setPendingShipments: (state, action: PayloadAction<number>) => {
+      state.pendingShipments = action.payload;
+    },
+    setAverageDeliveryTime: (state, action: PayloadAction<number>) => {
+      state.averageDeliveryTime = action.payload;
     },
   },
 });
@@ -306,15 +327,19 @@ export const {
   addCarrier,
   updateCarrier,
   deleteCarrier,
-  toggleCarrierStatus,
-  addShippingRate,
-  updateShippingRate,
-  deleteShippingRate,
-  toggleShippingRateStatus,
+  addZone,
+  updateZone,
+  deleteZone,
+  addPackage,
+  updatePackage,
+  deletePackage,
   addShipment,
   updateShipment,
-  updateShipmentStatus,
   deleteShipment,
+  updateShipmentStatus,
+  setActiveCarriers,
+  setPendingShipments,
+  setAverageDeliveryTime,
 } = shippingSlice.actions;
 
 export default shippingSlice.reducer;

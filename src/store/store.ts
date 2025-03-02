@@ -1,30 +1,30 @@
 
 import { configureStore } from "@reduxjs/toolkit";
+import productsReducer from "./slices/productsSlice";
 import statsReducer from "./slices/statsSlice";
 import salesReducer from "./slices/salesSlice";
-import ordersReducer from "./slices/ordersSlice";
-import productsReducer from "./slices/productsSlice";
-import messagesReducer from "./slices/messagesSlice";
-import planningReducer from "./slices/planningSlice";
 import settingsReducer from "./slices/settingsSlice";
+import ordersReducer from "./slices/ordersSlice";
+import messagesReducer from "./slices/messagesSlice";
 import authReducer from "./slices/authSlice";
+import planningReducer from "./slices/planningSlice";
 import marketingReducer from "./slices/marketingSlice";
-import shippingReducer from "./slices/shippingSlice";
 import paymentReducer from "./slices/paymentSlice";
+import shippingReducer from "./slices/shippingSlice";
 
 export const store = configureStore({
   reducer: {
+    products: productsReducer,
     stats: statsReducer,
     sales: salesReducer,
-    orders: ordersReducer,
-    products: productsReducer,
-    messages: messagesReducer,
-    planning: planningReducer,
     settings: settingsReducer,
+    orders: ordersReducer,
+    messages: messagesReducer,
     auth: authReducer,
+    planning: planningReducer,
     marketing: marketingReducer,
-    shipping: shippingReducer,
     payment: paymentReducer,
+    shipping: shippingReducer,
   },
 });
 

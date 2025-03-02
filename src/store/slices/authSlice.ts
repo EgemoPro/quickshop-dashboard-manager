@@ -1,119 +1,131 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface UserData {
+interface UserPreferences {
+  darkMode: boolean;
+  notifications: boolean;
+  language: string;
+}
+
+interface StoreInfo {
   id: string;
-  username: string;
-  email: string;
+  name: string;
+  description?: string;
+  logo: string;
+  banner?: string;
+  verified: boolean;
+  createdAt: string;
+}
+
+interface User {
+  id: string;
   fullName: string;
-  avatar?: string;
+  email: string;
+  phone?: string;
+  avatar: string;
   role: "admin" | "vendor" | "customer";
-  storeInfo?: {
-    name: string;
-    logo?: string;
-    createdAt: string;
-    verified: boolean;
-  };
-  preferences?: {
-    darkMode: boolean;
-    notifications: boolean;
-    language: string;
-  };
+  preferences?: UserPreferences;
+  storeInfo?: StoreInfo;
 }
 
 interface AuthState {
-  isAuthenticated: boolean;
-  user: UserData | null;
+  user: User | null;
   token: string | null;
+  isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: AuthState = {
-  isAuthenticated: true, // Pour faciliter le développement, en production ce serait false
   user: {
-    id: "v-12345",
-    username: "quickshop_vendor",
-    email: "vendor@quickshop.com",
+    id: "user-001",
     fullName: "Jean Dupont",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=quickshop",
+    email: "jean.dupont@example.com",
+    phone: "+33123456789",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
     role: "vendor",
-    storeInfo: {
-      name: "Boutique QuickShop",
-      logo: "https://api.dicebear.com/7.x/initials/svg?seed=QS",
-      createdAt: "2023-04-15",
-      verified: true,
-    },
     preferences: {
       darkMode: false,
       notifications: true,
       language: "fr",
     },
+    storeInfo: {
+      id: "store-001",
+      name: "Boutique de Jean",
+      description: "Une boutique spécialisée dans les produits artisanaux de qualité.",
+      logo: "https://api.dicebear.com/7.x/initials/svg?seed=BD",
+      banner: "https://placehold.co/1200x300/e2e8f0/1e293b?text=Bannière+Boutique+de+Jean",
+      verified: true,
+      createdAt: "2022-03-15T10:30:00Z",
+    },
   },
-  token: "sample-jwt-token",
+  token: "fake-jwt-token",
+  isAuthenticated: true,
   isLoading: false,
   error: null,
 };
 
-const authSlice = createSlice({
+export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    loginStart: (state) => {
+    loginRequest: (state) => {
       state.isLoading = true;
       state.error = null;
     },
-    loginSuccess: (state, action: PayloadAction<{ user: UserData; token: string }>) => {
-      state.isAuthenticated = true;
+    loginSuccess: (state, action: PayloadAction<{ user: User; token: string }>) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
+      state.isAuthenticated = true;
       state.isLoading = false;
       state.error = null;
     },
     loginFailure: (state, action: PayloadAction<string>) => {
-      state.isAuthenticated = false;
       state.user = null;
       state.token = null;
+      state.isAuthenticated = false;
       state.isLoading = false;
       state.error = action.payload;
     },
     logout: (state) => {
-      state.isAuthenticated = false;
       state.user = null;
       state.token = null;
+      state.isAuthenticated = false;
+      state.error = null;
     },
-    updateUserInfo: (state, action: PayloadAction<Partial<UserData>>) => {
+    updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
       }
     },
-    updateStoreInfo: (state, action: PayloadAction<Partial<UserData["storeInfo"]>>) => {
+    updateStoreInfo: (state, action: PayloadAction<Partial<StoreInfo>>) => {
       if (state.user && state.user.storeInfo) {
         state.user.storeInfo = { ...state.user.storeInfo, ...action.payload };
       }
     },
-    updatePreferences: (state, action: PayloadAction<Partial<UserData["preferences"]>>) => {
-      if (state.user && state.user.preferences) {
-        state.user.preferences = { ...state.user.preferences, ...action.payload };
+    updatePreferences: (state, action: PayloadAction<Partial<UserPreferences>>) => {
+      if (state.user) {
+        state.user.preferences = { 
+          ...state.user.preferences as UserPreferences,
+          ...action.payload 
+        };
       }
     },
-    setDarkMode: (state, action: PayloadAction<boolean>) => {
-      if (state.user && state.user.preferences) {
-        state.user.preferences.darkMode = action.payload;
-      }
+    clearError: (state) => {
+      state.error = null;
     },
   },
 });
 
-export const {
-  loginStart,
-  loginSuccess,
-  loginFailure,
-  logout,
-  updateUserInfo,
+export const { 
+  loginRequest, 
+  loginSuccess, 
+  loginFailure, 
+  logout, 
+  updateUser,
   updateStoreInfo,
   updatePreferences,
-  setDarkMode,
+  clearError 
 } = authSlice.actions;
 
 export default authSlice.reducer;

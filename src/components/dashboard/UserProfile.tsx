@@ -1,12 +1,14 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Store, Settings, Mail, PhoneCall, Calendar, Shield, CheckCircle } from "lucide-react";
-import { useAppSelector } from "@/store/hooks";
+import { Store, Settings, Mail, PhoneCall, Calendar, Shield, CheckCircle, Edit, Upload } from "lucide-react";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import StoreProfileDialog from "./StoreProfileDialog";
+import { useToast } from "@/components/ui/use-toast";
 
 interface UserProfileProps {
   darkMode: boolean;
@@ -14,6 +16,8 @@ interface UserProfileProps {
 
 const UserProfile: React.FC<UserProfileProps> = ({ darkMode }) => {
   const { user } = useAppSelector(state => state.auth);
+  const { toast } = useToast();
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
   
   if (!user) return null;
   
@@ -23,6 +27,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ darkMode }) => {
       .map(part => part[0])
       .join('')
       .toUpperCase();
+  };
+  
+  const handleEditProfile = () => {
+    setShowProfileDialog(true);
   };
   
   return (
@@ -87,6 +95,15 @@ const UserProfile: React.FC<UserProfileProps> = ({ darkMode }) => {
                     </p>
                   </div>
                 </div>
+                {user.storeInfo.banner && (
+                  <div className="mt-3">
+                    <img 
+                      src={user.storeInfo.banner} 
+                      alt="Bannière boutique" 
+                      className="w-full h-20 object-cover rounded-md"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -100,8 +117,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ darkMode }) => {
               <PhoneCall className="h-4 w-4 mr-2" />
               Appeler
             </Button>
-            <Button variant="outline" className="w-full col-span-2">
-              <Settings className="h-4 w-4 mr-2" />
+            <Button variant="outline" className="w-full col-span-2" onClick={handleEditProfile}>
+              <Edit className="h-4 w-4 mr-2" />
               Modifier le profil
             </Button>
           </div>
@@ -125,6 +142,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ darkMode }) => {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Modal d'édition du profil */}
+      <StoreProfileDialog 
+        open={showProfileDialog} 
+        onOpenChange={setShowProfileDialog} 
+      />
     </motion.div>
   );
 };
