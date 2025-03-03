@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -65,11 +66,17 @@ const Navigation = () => {
     return null;
   }
 
+  // Main navigation items for the sidebar
   const navigationItems = [
     { to: "/dashboard", icon: Home, label: "Accueil" },
     { to: "/products", icon: Package2, label: "Produits" },
     { to: "/orders", icon: ShoppingCart, label: "Commandes" },
     { to: "/planning", icon: Calendar, label: "Planning" },
+    { to: "/marketing", icon: MousePointerClick, label: "Marketing" },
+    { to: "/analytics", icon: BarChart3, label: "Analytique" },
+    { to: "/payments", icon: DollarSign, label: "Paiements" },
+    { to: "/shipping", icon: Truck, label: "Expéditions" },
+    { to: "/marketplace", icon: Store, label: "Marketplace" },
     { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
   ];
 
@@ -98,7 +105,7 @@ const Navigation = () => {
     <motion.div
       initial={{ x: -100 }}
       animate={{ x: 0 }}
-      className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 py-4 shadow-lg z-10"
+      className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 py-4 shadow-lg z-10 overflow-y-auto"
     >
       <nav className="flex flex-col items-center gap-4">
         {navigationItems.map((item) => (
