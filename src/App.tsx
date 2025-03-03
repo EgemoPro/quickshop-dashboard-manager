@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,7 +5,19 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useIsMobile } from "./hooks/use-mobile";
-import { Home, Package2, ShoppingCart, Settings as SettingsIcon, MessageCircle, Calendar } from "lucide-react";
+import { 
+  Home, 
+  Package2, 
+  ShoppingCart, 
+  Settings as SettingsIcon, 
+  MessageCircle, 
+  Calendar, 
+  BarChart3, 
+  MousePointerClick, 
+  DollarSign,
+  Truck,
+  Store
+} from "lucide-react";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { useState } from "react";
@@ -19,6 +30,11 @@ import Chat from "./pages/Chat";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import ProductPlanning from "./pages/ProductPlanning";
+import Marketing from "./pages/Marketing";
+import Marketplace from "./pages/Marketplace";
+import Analytics from "./pages/Analytics";
+import Payments from "./pages/Payments";
+import Shipping from "./pages/Shipping";
 
 const queryClient = new QueryClient();
 
@@ -98,7 +114,6 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   
-  // Don't show header on landing page
   if (location.pathname === "/landing") {
     return <>{children}</>;
   }
@@ -141,6 +156,11 @@ const AppContent = () => {
         <Route path="/planning" element={<DashboardLayout><ProductPlanning /></DashboardLayout>} />
         <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
         <Route path="/chat" element={<DashboardLayout><Chat /></DashboardLayout>} />
+        <Route path="/marketing" element={<DashboardLayout><Marketing /></DashboardLayout>} />
+        <Route path="/marketplace" element={<DashboardLayout><Marketplace /></DashboardLayout>} />
+        <Route path="/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
+        <Route path="/payments" element={<DashboardLayout><Payments /></DashboardLayout>} />
+        <Route path="/shipping" element={<DashboardLayout><Shipping /></DashboardLayout>} />
         <Route path="/landing" element={<Landing />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
