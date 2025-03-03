@@ -1,4 +1,3 @@
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface PromoCode {
@@ -52,6 +51,9 @@ interface MarketingState {
   promoCodes: PromoCode[];
   campaigns: Campaign[];
   emailTemplates: EmailTemplate[];
+  activeCampaigns: number;
+  promoCodesCount: number;
+  emailSubscribers: number;
   isLoading: boolean;
   error: string | null;
 }
@@ -129,6 +131,9 @@ const initialState: MarketingState = {
       lastEdited: "2023-10-22",
     }
   ],
+  activeCampaigns: 1,
+  promoCodesCount: 2,
+  emailSubscribers: 1248,
   isLoading: false,
   error: null,
 };
@@ -144,7 +149,6 @@ export const marketingSlice = createSlice({
       state.error = action.payload;
     },
     
-    // Promo code management
     addPromoCode: (state, action: PayloadAction<Omit<PromoCode, "id" | "usedCount">>) => {
       const newId = `promo-${state.promoCodes.length + 1}`.padStart(7, '0');
       state.promoCodes.push({
@@ -172,7 +176,6 @@ export const marketingSlice = createSlice({
       }
     },
     
-    // Campaign management
     addCampaign: (state, action: PayloadAction<Omit<Campaign, "id" | "performance">>) => {
       const newId = `camp-${state.campaigns.length + 1}`.padStart(7, '0');
       state.campaigns.push({
@@ -216,7 +219,6 @@ export const marketingSlice = createSlice({
       }
     },
     
-    // Email template management
     addEmailTemplate: (state, action: PayloadAction<Omit<EmailTemplate, "id" | "lastEdited">>) => {
       const newId = `email-${state.emailTemplates.length + 1}`.padStart(7, '0');
       state.emailTemplates.push({
@@ -238,6 +240,16 @@ export const marketingSlice = createSlice({
     deleteEmailTemplate: (state, action: PayloadAction<string>) => {
       state.emailTemplates = state.emailTemplates.filter(template => template.id !== action.payload);
     },
+    
+    setActiveCampaigns: (state, action: PayloadAction<number>) => {
+      state.activeCampaigns = action.payload;
+    },
+    setPromoCodesCount: (state, action: PayloadAction<number>) => {
+      state.promoCodesCount = action.payload;
+    },
+    setEmailSubscribers: (state, action: PayloadAction<number>) => {
+      state.emailSubscribers = action.payload;
+    },
   },
 });
 
@@ -256,6 +268,9 @@ export const {
   addEmailTemplate,
   updateEmailTemplate,
   deleteEmailTemplate,
+  setActiveCampaigns,
+  setPromoCodesCount,
+  setEmailSubscribers,
 } = marketingSlice.actions;
 
 export default marketingSlice.reducer;

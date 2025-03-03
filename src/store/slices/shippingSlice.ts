@@ -1,4 +1,3 @@
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Carrier {
@@ -73,6 +72,9 @@ interface ShippingState {
   carriers: Carrier[];
   shippingRates: ShippingRate[];
   shipments: Shipment[];
+  activeCarriers: Carrier[];
+  pendingShipments: number;
+  averageDeliveryTime: string;
   isLoading: boolean;
   error: string | null;
 }
@@ -183,6 +185,36 @@ const initialState: ShippingState = {
       ],
     },
   ],
+  activeCarriers: [
+    {
+      id: "carrier-001",
+      name: "Colissimo",
+      logo: "https://placehold.co/200x100/e2e8f0/1e293b?text=Colissimo",
+      trackingUrlTemplate: "https://www.laposte.fr/outils/suivre-vos-envois?code={trackingNumber}",
+      enabled: true,
+      defaultShippingCost: 6.95,
+      estimatedDeliveryDays: {
+        min: 2,
+        max: 4,
+      },
+      supportedRegions: ["France", "Europe"],
+    },
+    {
+      id: "carrier-002",
+      name: "Chronopost",
+      logo: "https://placehold.co/200x100/e2e8f0/1e293b?text=Chronopost",
+      trackingUrlTemplate: "https://www.chronopost.fr/tracking-no-cms/suivi-page?listeNumerosLT={trackingNumber}",
+      enabled: true,
+      defaultShippingCost: 12.95,
+      estimatedDeliveryDays: {
+        min: 1,
+        max: 2,
+      },
+      supportedRegions: ["France", "Europe", "International"],
+    },
+  ],
+  pendingShipments: 3,
+  averageDeliveryTime: "2-3 jours",
   isLoading: false,
   error: null,
 };
@@ -198,7 +230,6 @@ export const shippingSlice = createSlice({
       state.error = action.payload;
     },
     
-    // Carrier management
     addCarrier: (state, action: PayloadAction<Omit<Carrier, "id">>) => {
       const newId = `carrier-${state.carriers.length + 1}`.padStart(7, '0');
       state.carriers.push({
@@ -225,7 +256,6 @@ export const shippingSlice = createSlice({
       }
     },
     
-    // Shipping rates management
     addShippingRate: (state, action: PayloadAction<Omit<ShippingRate, "id">>) => {
       const newId = `rate-${state.shippingRates.length + 1}`.padStart(7, '0');
       state.shippingRates.push({
@@ -252,7 +282,6 @@ export const shippingSlice = createSlice({
       }
     },
     
-    // Shipment management
     addShipment: (state, action: PayloadAction<Omit<Shipment, "id" | "events">>) => {
       const newId = `ship-${state.shipments.length + 1}`.padStart(7, '0');
       state.shipments.push({
@@ -297,6 +326,16 @@ export const shippingSlice = createSlice({
     deleteShipment: (state, action: PayloadAction<string>) => {
       state.shipments = state.shipments.filter(shipment => shipment.id !== action.payload);
     },
+    
+    setActiveCarriers: (state, action: PayloadAction<Carrier[]>) => {
+      state.activeCarriers = action.payload;
+    },
+    setPendingShipments: (state, action: PayloadAction<number>) => {
+      state.pendingShipments = action.payload;
+    },
+    setAverageDeliveryTime: (state, action: PayloadAction<string>) => {
+      state.averageDeliveryTime = action.payload;
+    },
   },
 });
 
@@ -315,6 +354,9 @@ export const {
   updateShipment,
   updateShipmentStatus,
   deleteShipment,
+  setActiveCarriers,
+  setPendingShipments,
+  setAverageDeliveryTime,
 } = shippingSlice.actions;
 
 export default shippingSlice.reducer;
