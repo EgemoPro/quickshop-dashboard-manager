@@ -51,8 +51,8 @@ const NavigationItem = ({ to, icon: Icon, label }: { to: string; icon: any; labe
           : "text-gray-500 hover:text-primary hover:bg-primary/5"
       }`}
     >
-      <Icon className="h-5 w-5" />
-      <span className="text-xs font-medium">{label}</span>
+      <Icon className="h-8 w-5 p-.5" />
+      {/* <span className="text-xs font-medium">{label}</span> */}
     </Link>
   );
 };
@@ -71,18 +71,16 @@ const Navigation = () => {
     { to: "/products", icon: Package2, label: "Produits" },
     { to: "/orders", icon: ShoppingCart, label: "Commandes" },
     { to: "/planning", icon: Calendar, label: "Planning" },
-    { to: "/marketing", icon: MousePointerClick, label: "Marketing" },
     { to: "/analytics", icon: BarChart3, label: "Analytique" },
+    { to: "/marketing", icon: MousePointerClick, label: "Marketing" },
     { to: "/payments", icon: DollarSign, label: "Paiements" },
+    { to: "/chat", icon: MessageCircle, label: "Chat" },
     { to: "/shipping", icon: Truck, label: "Expéditions" },
     { to: "/marketplace", icon: Store, label: "Marketplace" },
     { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
   ];
 
-  const mobileNavigationItems = [
-    ...navigationItems.slice(0, 4),
-    { to: "/chat", icon: MessageCircle, label: "Chat" },
-  ];
+
 
   if (isMobile) {
     return (
@@ -92,7 +90,7 @@ const Navigation = () => {
         className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-10"
       >
         <nav className="grid grid-cols-5 w-full">
-          {mobileNavigationItems.map((item) => (
+          {navigationItems.slice(0,5).map((item) => (
             <NavigationItem key={item.to} {...item} />
           ))}
         </nav>
@@ -106,7 +104,7 @@ const Navigation = () => {
       animate={{ x: 0 }}
       className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 py-4 shadow-lg z-10 overflow-y-auto"
     >
-      <nav className="flex flex-col items-center gap-4">
+      <nav className="flex flex-col items-center gap-2 p-1">
         {navigationItems.map((item) => (
           <NavigationItem key={item.to} {...item} />
         ))}

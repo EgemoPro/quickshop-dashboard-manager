@@ -52,8 +52,8 @@ const Marketplace = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
             <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full sm:w-auto">
+          <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
               <TabsList>
                 <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
                 <TabsTrigger value="applications">Applications</TabsTrigger>
@@ -61,7 +61,7 @@ const Marketplace = () => {
                 <TabsTrigger value="payments">Paiements</TabsTrigger>
                 <TabsTrigger value="shipping">Livraison</TabsTrigger>
               </TabsList>
-            </Tabs>
+            
             
             <div className="flex w-full sm:w-auto">
               <Input
@@ -145,6 +145,7 @@ const Marketplace = () => {
             <ShippingOption name="Livraison Express" description="Livraison en 1-2 jours ouvrables." price="9.99€" isEnabled={false} />
             <ShippingOption name="Retrait en Magasin" description="Les clients peuvent retirer leurs commandes en magasin." price="Gratuit" isEnabled={true} />
           </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
       
