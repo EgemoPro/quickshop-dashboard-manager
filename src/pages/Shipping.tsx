@@ -40,19 +40,43 @@ const Shipping = () => {
     }
   ];
 
+  // Mock data for ShippingCard component
+  const shippingCardData = settings.map(setting => ({
+    carrier: {
+      name: setting.name,
+      status: "active" as const
+    },
+    recentShipments: [
+      {
+        id: `shipment-${setting.id}`,
+        destination: "Paris, France",
+        date: "2023-12-01",
+        status: "Livré"
+      }
+    ],
+    estimatedDeliveries: Math.floor(Math.random() * 10) + 1
+  }));
+
+  // Mock handlers for ShipmentCard
+  const handleViewDetails = (id: string) => {
+    console.log("View details for shipment:", id);
+  };
+
+  const handleTrackShipment = (trackingNumber: string) => {
+    console.log("Track shipment:", trackingNumber);
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold mb-6">Expéditions</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {settings.map((setting) => (
+          {shippingCardData.map((data, index) => (
             <ShippingCard
-              key={setting.id}
-              title={setting.name}
-              description={setting.description}
-              price={setting.price}
-              estimatedDelivery={setting.estimatedDelivery}
-              isDefault={setting.isDefault}
+              key={settings[index].id}
+              carrier={data.carrier}
+              recentShipments={data.recentShipments}
+              estimatedDeliveries={data.estimatedDeliveries}
             />
           ))}
         </div>
@@ -65,14 +89,26 @@ const Shipping = () => {
             // Extract the city and country from the recipientAddress
             const destination = `${shipment.recipientAddress.city}, ${shipment.recipientAddress.country}`;
             
+            // Map the shipment data to the expected props structure
+            const shipmentData = {
+              id: shipment.id,
+              orderId: shipment.orderId,
+              status: shipment.status,
+              carrier: shipment.carrier,
+              trackingNumber: shipment.trackingNumber,
+              shipDate: shipment.shipDate,
+              estimatedDelivery: shipment.estimatedDelivery,
+              recipientName: shipment.recipientAddress.name,
+              recipientLocation: destination,
+              lastUpdate: shipment.shipDate,
+            };
+            
             return (
               <ShipmentCard
                 key={shipment.id}
-                trackingNumber={shipment.trackingNumber}
-                status={shipment.status}
-                carrier={shipment.carrier}
-                destination={destination}
-                lastUpdate={shipment.shipDate}
+                shipment={shipmentData}
+                onViewDetails={handleViewDetails}
+                onTrackShipment={handleTrackShipment}
               />
             );
           })}
@@ -83,18 +119,36 @@ const Shipping = () => {
         <h2 className="text-2xl font-bold mb-4">Transporteurs</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {carriers.map((carrier) => {
-            // Add mock contact and rating properties
+            // Add mock contact and rating properties for display purposes
             const contact = "support@" + carrier.name.toLowerCase().replace(/\s/g, "") + ".com";
             const rating = 4.5;
+            
+            // Map the carrier data to the expected props structure
+            const carrierData = {
+              id: carrier.id,
+              name: carrier.name,
+              logo: carrier.logo,
+              isActive: carrier.isActive,
+              deliveryTimeRange: carrier.deliveryTimeRange,
+              averagePrice: carrier.pricing.base,
+              shipmentsCount: Math.floor(Math.random() * 100)
+            };
+            
+            // Mock handlers for the CarrierCard component
+            const handleToggleStatus = (id: string) => {
+              console.log("Toggle status for carrier:", id);
+            };
+            
+            const handleEdit = (id: string) => {
+              console.log("Edit carrier:", id);
+            };
             
             return (
               <CarrierCard
                 key={carrier.id}
-                name={carrier.name}
-                logo={carrier.logo}
-                trackingUrl={carrier.trackingUrl}
-                contact={contact}
-                rating={rating}
+                carrier={carrierData}
+                onToggleStatus={handleToggleStatus}
+                onEdit={handleEdit}
               />
             );
           })}
