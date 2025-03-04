@@ -11,6 +11,7 @@ import planningReducer from "./slices/planningSlice";
 import marketingReducer from "./slices/marketingSlice";
 import paymentReducer from "./slices/paymentSlice";
 import shippingReducer from "./slices/shippingSlice";
+import dashboardLayoutReducer from "./slices/dashboardLayoutSlice";
 
 export const store = configureStore({
   reducer: {
@@ -25,6 +26,7 @@ export const store = configureStore({
     marketing: marketingReducer,
     payment: paymentReducer,
     shipping: shippingReducer,
+    dashboardLayout: dashboardLayoutReducer,
   },
 });
 
