@@ -1,13 +1,13 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface UserPreferences {
+export interface UserPreferences {
   darkMode: boolean;
   notifications: boolean;
   language: string;
 }
 
-interface StoreInfo {
+export interface StoreInfo {
   id: string;
   name: string;
   description?: string;
@@ -17,7 +17,7 @@ interface StoreInfo {
   createdAt: string;
 }
 
-interface User {
+export interface User {
   id: string;
   fullName: string;
   email: string;
