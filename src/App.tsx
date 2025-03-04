@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,7 +17,9 @@ import {
   MousePointerClick, 
   DollarSign,
   Truck,
-  Store
+  Store,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
@@ -38,13 +41,75 @@ import Shipping from "./pages/Shipping";
 
 const queryClient = new QueryClient();
 
-const NavigationItem = ({ to, icon: Icon, label }: { to: string; icon: any; label: string }) => {
-  const location = useLocation();
-  const isActive = location.pathname === to;
+interface SubNavigationItem {
+  to: string;
+  label: string;
+}
 
+interface NavigationItemProps {
+  to?: string;
+  icon: any;
+  label: string;
+  subItems?: SubNavigationItem[];
+}
+
+const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps) => {
+  const location = useLocation();
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Check if this item or any of its subitems is active
+  const isActive = to 
+    ? location.pathname === to 
+    : subItems?.some(item => location.pathname === item.to);
+  
+  // If this is a dropdown (has subItems)
+  if (subItems && subItems.length > 0) {
+    return (
+      <div className="w-full">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className={`flex items-center justify-between gap-1 p-2 rounded-lg transition-colors w-full ${
+            isActive
+              ? "text-primary bg-primary/10"
+              : "text-gray-500 hover:text-primary hover:bg-primary/5"
+          }`}
+        >
+          <div className="flex items-center">
+            <Icon className="h-8 w-5 p-.5" />
+            {/* <span className="text-xs font-medium">{label}</span> */}
+          </div>
+          {isExpanded ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
+        </button>
+        
+        {isExpanded && (
+          <div className="pl-7 mt-1 space-y-1">
+            {subItems.map((subItem) => (
+              <Link
+                key={subItem.to}
+                to={subItem.to}
+                className={`block text-xs p-1.5 rounded-md ${
+                  location.pathname === subItem.to
+                    ? "text-primary bg-primary/10"
+                    : "text-gray-500 hover:text-primary hover:bg-primary/5"
+                }`}
+              >
+                {subItem.label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+  
+  // Regular navigation item (no subItems)
   return (
     <Link
-      to={to}
+      to={to || "#"}
       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors w-full ${
         isActive
           ? "text-primary bg-primary/10"
@@ -65,24 +130,44 @@ const Navigation = () => {
     return null;
   }
 
-  // Main navigation items for the sidebar
+  // Refactored navigation items with combined pages where appropriate
   const navigationItems = [
     { to: "/dashboard", icon: Home, label: "Accueil" },
     { to: "/products", icon: Package2, label: "Produits" },
     { to: "/orders", icon: ShoppingCart, label: "Commandes" },
-    { to: "/planning", icon: Calendar, label: "Planning" },
+    // Combined Planning and Marketing under "Campagnes"
+    { 
+      icon: MousePointerClick, 
+      label: "Campagnes",
+      subItems: [
+        { to: "/planning", label: "Planning" },
+        { to: "/marketing", label: "Marketing" },
+      ]
+    },
     { to: "/analytics", icon: BarChart3, label: "Analytique" },
-    { to: "/marketing", icon: MousePointerClick, label: "Marketing" },
-    { to: "/payments", icon: DollarSign, label: "Paiements" },
+    // Combined Payments and Shipping under "Opérations"
+    {
+      icon: Truck,
+      label: "Opérations",
+      subItems: [
+        { to: "/payments", label: "Paiements" },
+        { to: "/shipping", label: "Expéditions" }
+      ]
+    },
     { to: "/chat", icon: MessageCircle, label: "Chat" },
-    { to: "/shipping", icon: Truck, label: "Expéditions" },
     { to: "/marketplace", icon: Store, label: "Marketplace" },
     { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
   ];
 
-
-
   if (isMobile) {
+    // For mobile, we show only the main items (first 5) without submenus
+    // We'll use the first destination of subitems for combined items
+    const mobileItems = navigationItems.slice(0, 5).map(item => ({
+      to: item.to || (item.subItems && item.subItems.length > 0 ? item.subItems[0].to : "#"),
+      icon: item.icon,
+      label: item.label
+    }));
+
     return (
       <motion.div
         initial={{ y: 100 }}
@@ -90,8 +175,8 @@ const Navigation = () => {
         className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-10"
       >
         <nav className="grid grid-cols-5 w-full">
-          {navigationItems.slice(0,5).map((item) => (
-            <NavigationItem key={item.to} {...item} />
+          {mobileItems.map((item, index) => (
+            <NavigationItem key={index} to={item.to} icon={item.icon} label={item.label} />
           ))}
         </nav>
       </motion.div>
@@ -105,8 +190,14 @@ const Navigation = () => {
       className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 py-4 shadow-lg z-10 overflow-y-auto"
     >
       <nav className="flex flex-col items-center gap-2 p-1">
-        {navigationItems.map((item) => (
-          <NavigationItem key={item.to} {...item} />
+        {navigationItems.map((item, index) => (
+          <NavigationItem 
+            key={index} 
+            to={item.to} 
+            icon={item.icon} 
+            label={item.label} 
+            subItems={item.subItems}
+          />
         ))}
       </nav>
     </motion.div>
