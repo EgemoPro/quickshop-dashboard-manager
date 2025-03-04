@@ -239,7 +239,7 @@ const AppContent = () => {
   const isLandingPage = location.pathname === "/landing";
   const contentClass = isLandingPage 
     ? "min-h-screen bg-white" 
-    : `min-h-screen bg-gray-50 ${isMobile ? "pb-20" : "pl-16"} transition-all duration-300`;
+    : `min-h-screen bg-gray-50 ${isMobile ? "pb-20" : "pl-16 md:pl-52"} transition-all duration-300`;
   
   return (
     <div className={contentClass}>

@@ -24,9 +24,10 @@ interface DragItem {
 
 const DraggableCard: React.FC<DraggableCardProps> = ({ id, index, column, children }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const dragHandleRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
 
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, dragPreview] = useDrag({
     type: ItemTypes.CARD,
     item: { id, index, column, type: ItemTypes.CARD },
     collect: (monitor) => ({
@@ -97,12 +98,26 @@ const DraggableCard: React.FC<DraggableCardProps> = ({ id, index, column, childr
     },
   });
   
+  // Initialize the drag preview with the entire card
+  dragPreview(drop(ref));
+  
+  // Just use drag on the handle element
+  drag(dragHandleRef);
+  
   const opacity = isDragging ? 0.5 : 1;
-  drag(drop(ref));
   
   return (
-    <div ref={ref} style={{ opacity }} className="mb-6 cursor-move" data-handler-id={handlerId}>
-      {children}
+    <div ref={ref} style={{ opacity }} className="mb-6 relative" data-handler-id={handlerId}>
+      {/* Drag handle: border-top that indicates draggable area */}
+      <div 
+        ref={dragHandleRef} 
+        className="absolute top-0 left-0 right-0 h-4 bg-transparent cursor-move hover:bg-primary/10 rounded-t-lg flex items-center justify-center"
+      >
+        <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
+      </div>
+      <div className="pt-4">
+        {children}
+      </div>
     </div>
   );
 };
