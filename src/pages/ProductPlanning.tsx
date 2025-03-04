@@ -1,17 +1,8 @@
 
 import React, { useEffect, useState } from "react";
-import { Calendar, dateFnsLocalizer } from "react-big-calendar";
-import { format, parse, startOfWeek, getDay, addDays } from "date-fns";
-import { fr } from "date-fns/locale";
+import { format, addDays } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar as CalendarIcon, Plus, MessageCircle, Package2, Filter, Loader2, Trash2, Edit, AlertTriangle } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { 
   setActiveTab, 
@@ -25,15 +16,16 @@ import {
 } from "@/store/slices/planningSlice";
 import { useToast } from "@/components/ui/use-toast";
 
-const locales = { fr };
-// Create a proper localizer for react-big-calendar
-const localizer = dateFnsLocalizer({
-  format: (date, formatStr) => format(date, formatStr, { locale: fr }),
-  parse: (str, formatStr) => parse(str, formatStr, new Date()),
-  startOfWeek: (date) => startOfWeek(date, { locale: fr }),
-  getDay,
-  locales
-});
+// Import des composants refactorisés
+import PlanningHeader from "@/components/planning/PlanningHeader";
+import PlanningFilters from "@/components/planning/PlanningFilters";
+import CalendarComponent from "@/components/planning/CalendarComponent";
+import CalendarLegend from "@/components/planning/CalendarLegend";
+import ScheduledEventsList from "@/components/planning/ScheduledEventsList";
+import PlanningStats from "@/components/planning/PlanningStats";
+import AddEventDialog from "@/components/planning/AddEventDialog";
+import EditEventDialog from "@/components/planning/EditEventDialog";
+import DeleteEventDialog from "@/components/planning/DeleteEventDialog";
 
 const ProductPlanning = () => {
   const dispatch = useAppDispatch();
@@ -106,6 +98,14 @@ const ProductPlanning = () => {
     });
     
     setShowAddDialog(true);
+  };
+
+  // Handle form field changes
+  const handleEventFormChange = (field: string, value: string) => {
+    setEventForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   // Open edit dialog with event data
@@ -199,150 +199,57 @@ const ProductPlanning = () => {
     });
   };
 
-  // Custom event component
-  const EventComponent = ({ event }: { event: ScheduledEvent }) => (
-    <div 
-      className={`rounded px-2 py-1 ${event.type === "product" ? "bg-blue-100" : "bg-green-100"} flex items-center justify-between group`}
-      onClick={(e) => {
-        e.stopPropagation();
-        openEditDialog(event);
-      }}
-    >
-      <div className="flex items-center gap-1">
-        {event.type === "product" ? (
-          <Package2 className="h-3 w-3" />
-        ) : (
-          <MessageCircle className="h-3 w-3" />
-        )}
-        <span className="text-xs font-medium truncate">
-          {event.title}
-        </span>
-      </div>
-      <div className="hidden group-hover:flex">
-        <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            openDeleteDialog(event);
-          }}
-          className="text-red-500 hover:text-red-700"
-        >
-          <Trash2 className="h-3 w-3" />
-        </button>
-      </div>
-    </div>
-  );
+  // Handle slot selection in calendar
+  const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
+    setEventForm({
+      ...eventForm,
+      startDate: format(start, "yyyy-MM-dd"),
+      startTime: format(start, "HH:mm"),
+      endDate: format(end, "yyyy-MM-dd"),
+      endTime: format(end, "HH:mm"),
+    });
+    setShowAddDialog(true);
+  };
+
+  // Focus calendar
+  const handleFocusCalendar = () => {
+    const calendarApi = document.querySelector('.rbc-calendar');
+    if (calendarApi) {
+      (calendarApi as any).focus();
+    }
+  };
+
+  // Reset filters
+  const handleResetFilters = () => {
+    dispatch(setActiveTab("all"));
+    dispatch(setSearchTerm(""));
+  };
 
   return (
     <div className="container p-4 md:p-6 mx-auto animate-fade-in">
       <h1 className="text-2xl font-bold mb-6">Planning de Publication</h1>
       
       <Card className="mb-6 relative">
-        <CardHeader className="pb-3">
-          <div className="flex justify-between items-center flex-wrap gap-4">
-            <CardTitle>Calendrier des Publications</CardTitle>
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  const calendarApi = document.querySelector('.rbc-calendar');
-                  if (calendarApi) {
-                    (calendarApi as any).focus();
-                  }
-                }}
-              >
-                <CalendarIcon className="h-4 w-4 mr-2" />
-                Aujourd'hui
-              </Button>
-              <Button variant="default" size="sm" onClick={openAddDialog}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nouvelle Publication
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
+        <PlanningHeader 
+          onFocusCalendar={handleFocusCalendar} 
+          onAddPublication={openAddDialog} 
+        />
         <CardContent>
-          <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
-            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full sm:w-auto">
-              <TabsList>
-                <TabsTrigger value="all">Tous</TabsTrigger>
-                <TabsTrigger value="products">Produits</TabsTrigger>
-                <TabsTrigger value="messages">Messages</TabsTrigger>
-              </TabsList>
-            </Tabs>
-            
-            <div className="flex w-full sm:w-auto">
-              <Input
-                placeholder="Rechercher..."
-                className="max-w-sm"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-              <Button variant="ghost" size="icon" className="ml-2">
-                <Filter className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+          <PlanningFilters 
+            activeTab={activeTab} 
+            searchTerm={searchTerm} 
+            onTabChange={handleTabChange} 
+            onSearchChange={handleSearch} 
+          />
           
-          <div className="h-[600px] relative">
-            {isLoading ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-10">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <span className="ml-2 text-sm font-medium">Chargement du calendrier...</span>
-              </div>
-            ) : null}
-            
-            <Calendar
-              localizer={localizer}
-              events={filteredEvents}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ height: "100%" }}
-              components={{
-                event: EventComponent as any,
-              }}
-              onSelectEvent={openEditDialog}
-              onSelectSlot={({ start, end }) => {
-                setEventForm({
-                  ...eventForm,
-                  startDate: format(start, "yyyy-MM-dd"),
-                  startTime: format(start, "HH:mm"),
-                  endDate: format(end, "yyyy-MM-dd"),
-                  endTime: format(end, "HH:mm"),
-                });
-                setShowAddDialog(true);
-              }}
-              selectable
-              messages={{
-                next: "Suivant",
-                previous: "Précédent",
-                today: "Aujourd'hui",
-                month: "Mois",
-                week: "Semaine",
-                day: "Jour",
-                agenda: "Agenda",
-                date: "Date",
-                time: "Heure",
-                event: "Événement",
-                noEventsInRange: "Aucun événement dans cette période",
-              }}
-            />
-          </div>
+          <CalendarComponent 
+            events={filteredEvents}
+            isLoading={isLoading}
+            onSelectEvent={openEditDialog}
+            onSelectSlot={handleSelectSlot}
+          />
           
-          <div className="flex gap-4 mt-4 justify-end">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-blue-100">
-                <Package2 className="h-3 w-3 mr-1" />
-                Produit
-              </Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-green-100">
-                <MessageCircle className="h-3 w-3 mr-1" />
-                Message
-              </Badge>
-            </div>
-          </div>
+          <CalendarLegend />
         </CardContent>
       </Card>
       
@@ -352,64 +259,12 @@ const ProductPlanning = () => {
             <CardTitle>Publications Programmées</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <div className="flex justify-center items-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
-                <span>Chargement des publications...</span>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredEvents.length > 0 ? (
-                  filteredEvents.map(event => (
-                    <div key={event.id} className="flex justify-between items-center p-3 border rounded-lg hover:bg-slate-50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className={`rounded-md p-2 ${event.type === "product" ? "bg-blue-100" : "bg-green-100"}`}>
-                          {event.type === "product" ? (
-                            <Package2 className="h-5 w-5" />
-                          ) : (
-                            <MessageCircle className="h-5 w-5" />
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="font-medium">{event.title}</h3>
-                          <p className="text-sm text-gray-500">
-                            {format(event.start, "EEEE d MMMM yyyy, HH:mm", { locale: fr })}
-                          </p>
-                          {event.description && (
-                            <p className="text-sm text-gray-500 truncate max-w-xs">
-                              {event.description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => openEditDialog(event)}
-                        >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Modifier
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="text-red-500 hover:text-red-700"
-                          onClick={() => openDeleteDialog(event)}
-                        >
-                          <Trash2 className="h-4 w-4 mr-1" />
-                          Supprimer
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center p-6 text-gray-500">
-                    Aucune publication programmée correspondant à vos critères.
-                  </div>
-                )}
-              </div>
-            )}
+            <ScheduledEventsList 
+              events={filteredEvents}
+              isLoading={isLoading}
+              onEditEvent={openEditDialog}
+              onDeleteEvent={openDeleteDialog}
+            />
           </CardContent>
         </Card>
         
@@ -418,363 +273,45 @@ const ProductPlanning = () => {
             <CardTitle>Statistiques</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <div className="flex justify-center items-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
-                <span>Chargement...</span>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span>Publications totales</span>
-                  <span className="font-bold">{events.length}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Produits</span>
-                  <span className="font-bold">{events.filter(e => e.type === "product").length}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Messages</span>
-                  <span className="font-bold">{events.filter(e => e.type === "message").length}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Ce mois-ci</span>
-                  <span className="font-bold">
-                    {events.filter(e => e.start.getMonth() === new Date().getMonth()).length}
-                  </span>
-                </div>
-                
-                <div className="border-t pt-4 mt-6">
-                  <h4 className="font-medium mb-3">Actions rapides</h4>
-                  <div className="space-y-2">
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start"
-                      onClick={openAddDialog}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Ajouter un événement
-                    </Button>
-                    
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start"
-                      onClick={() => {
-                        dispatch(setActiveTab("all"));
-                        dispatch(setSearchTerm(""));
-                      }}
-                    >
-                      <Filter className="h-4 w-4 mr-2" />
-                      Réinitialiser les filtres
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
+            <PlanningStats 
+              events={events}
+              isLoading={isLoading}
+              onAddEvent={openAddDialog}
+              onResetFilters={handleResetFilters}
+            />
           </CardContent>
         </Card>
       </div>
       
-      {/* Add Event Dialog */}
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Ajouter une publication</DialogTitle>
-            <DialogDescription>
-              Créez une nouvelle publication pour votre planning.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="event-title" className="text-right font-medium">
-                Titre
-              </label>
-              <Input
-                id="event-title"
-                value={eventForm.title}
-                onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
-                className="col-span-3"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="event-type" className="text-right font-medium">
-                Type
-              </label>
-              <Select
-                value={eventForm.type}
-                onValueChange={(value: EventType) => setEventForm({ ...eventForm, type: value })}
-              >
-                <SelectTrigger className="col-span-3" id="event-type">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="product">Produit</SelectItem>
-                  <SelectItem value="message">Message</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {eventForm.type === "product" && (
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="product-id" className="text-right font-medium">
-                  ID Produit
-                </label>
-                <Input
-                  id="product-id"
-                  value={eventForm.productId}
-                  onChange={(e) => setEventForm({ ...eventForm, productId: e.target.value })}
-                  className="col-span-3"
-                  placeholder="PRD-12345"
-                />
-              </div>
-            )}
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="start-date" className="text-right font-medium">
-                Date de début
-              </label>
-              <div className="col-span-3 grid grid-cols-2 gap-2">
-                <Input
-                  id="start-date"
-                  type="date"
-                  value={eventForm.startDate}
-                  onChange={(e) => setEventForm({ ...eventForm, startDate: e.target.value })}
-                />
-                <Input
-                  type="time"
-                  value={eventForm.startTime}
-                  onChange={(e) => setEventForm({ ...eventForm, startTime: e.target.value })}
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="end-date" className="text-right font-medium">
-                Date de fin
-              </label>
-              <div className="col-span-3 grid grid-cols-2 gap-2">
-                <Input
-                  id="end-date"
-                  type="date"
-                  value={eventForm.endDate}
-                  onChange={(e) => setEventForm({ ...eventForm, endDate: e.target.value })}
-                />
-                <Input
-                  type="time"
-                  value={eventForm.endTime}
-                  onChange={(e) => setEventForm({ ...eventForm, endTime: e.target.value })}
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-4 items-start gap-4">
-              <label htmlFor="event-description" className="text-right font-medium">
-                Description
-              </label>
-              <textarea
-                id="event-description"
-                rows={3}
-                value={eventForm.description}
-                onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
-                className="col-span-3 min-h-[80px] border rounded-md p-2"
-              />
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddDialog(false)}>
-              Annuler
-            </Button>
-            <Button 
-              onClick={handleAddEvent}
-              disabled={!eventForm.title || !eventForm.startDate || !eventForm.endDate}
-            >
-              Ajouter
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Dialogs */}
+      <AddEventDialog 
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        eventForm={eventForm}
+        onEventFormChange={handleEventFormChange}
+        onAddEvent={handleAddEvent}
+      />
       
-      {/* Edit Event Dialog */}
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Modifier la publication</DialogTitle>
-            <DialogDescription>
-              Modifiez les détails de la publication.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="edit-title" className="text-right font-medium">
-                Titre
-              </label>
-              <Input
-                id="edit-title"
-                value={eventForm.title}
-                onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
-                className="col-span-3"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="edit-type" className="text-right font-medium">
-                Type
-              </label>
-              <Select
-                value={eventForm.type}
-                onValueChange={(value: EventType) => setEventForm({ ...eventForm, type: value })}
-              >
-                <SelectTrigger className="col-span-3" id="edit-type">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="product">Produit</SelectItem>
-                  <SelectItem value="message">Message</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {eventForm.type === "product" && (
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="edit-product-id" className="text-right font-medium">
-                  ID Produit
-                </label>
-                <Input
-                  id="edit-product-id"
-                  value={eventForm.productId}
-                  onChange={(e) => setEventForm({ ...eventForm, productId: e.target.value })}
-                  className="col-span-3"
-                  placeholder="PRD-12345"
-                />
-              </div>
-            )}
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="edit-start-date" className="text-right font-medium">
-                Date de début
-              </label>
-              <div className="col-span-3 grid grid-cols-2 gap-2">
-                <Input
-                  id="edit-start-date"
-                  type="date"
-                  value={eventForm.startDate}
-                  onChange={(e) => setEventForm({ ...eventForm, startDate: e.target.value })}
-                />
-                <Input
-                  type="time"
-                  value={eventForm.startTime}
-                  onChange={(e) => setEventForm({ ...eventForm, startTime: e.target.value })}
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="edit-end-date" className="text-right font-medium">
-                Date de fin
-              </label>
-              <div className="col-span-3 grid grid-cols-2 gap-2">
-                <Input
-                  id="edit-end-date"
-                  type="date"
-                  value={eventForm.endDate}
-                  onChange={(e) => setEventForm({ ...eventForm, endDate: e.target.value })}
-                />
-                <Input
-                  type="time"
-                  value={eventForm.endTime}
-                  onChange={(e) => setEventForm({ ...eventForm, endTime: e.target.value })}
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-4 items-start gap-4">
-              <label htmlFor="edit-description" className="text-right font-medium">
-                Description
-              </label>
-              <textarea
-                id="edit-description"
-                rows={3}
-                value={eventForm.description}
-                onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
-                className="col-span-3 min-h-[80px] border rounded-md p-2"
-              />
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button 
-              variant="destructive" 
-              onClick={() => {
-                setShowEditDialog(false);
-                if (currentEvent) {
-                  openDeleteDialog(currentEvent);
-                }
-              }}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Supprimer
-            </Button>
-            <div className="flex-1"></div>
-            <Button variant="outline" onClick={() => setShowEditDialog(false)}>
-              Annuler
-            </Button>
-            <Button 
-              onClick={handleEditEvent}
-              disabled={!eventForm.title || !eventForm.startDate || !eventForm.endDate}
-            >
-              Mettre à jour
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EditEventDialog 
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        eventForm={eventForm}
+        onEventFormChange={handleEventFormChange}
+        onEditEvent={handleEditEvent}
+        onDeletePrompt={() => {
+          setShowEditDialog(false);
+          if (currentEvent) {
+            openDeleteDialog(currentEvent);
+          }
+        }}
+      />
       
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-destructive">
-              <AlertTriangle className="h-5 w-5" />
-              Confirmer la suppression
-            </DialogTitle>
-            <DialogDescription>
-              Êtes-vous sûr de vouloir supprimer cette publication ? Cette action est irréversible.
-            </DialogDescription>
-          </DialogHeader>
-          
-          {currentEvent && (
-            <div className="py-4">
-              <div className="flex items-center gap-3 p-3 border rounded-lg mb-4">
-                <div className={`rounded-md p-2 ${currentEvent.type === "product" ? "bg-blue-100" : "bg-green-100"}`}>
-                  {currentEvent.type === "product" ? (
-                    <Package2 className="h-5 w-5" />
-                  ) : (
-                    <MessageCircle className="h-5 w-5" />
-                  )}
-                </div>
-                <div>
-                  <h3 className="font-medium">{currentEvent.title}</h3>
-                  <p className="text-sm text-gray-500">
-                    {format(currentEvent.start, "EEEE d MMMM yyyy, HH:mm", { locale: fr })}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
-              Annuler
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteEvent}>
-              Supprimer
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteEventDialog 
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        event={currentEvent}
+        onDeleteEvent={handleDeleteEvent}
+      />
     </div>
   );
 };
