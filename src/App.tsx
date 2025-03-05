@@ -56,6 +56,7 @@ interface NavigationItemProps {
 const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps) => {
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   
   // Check if this item or any of its subitems is active
   const isActive = to 
@@ -68,15 +69,25 @@ const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps
       <div className="w-full">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className={`flex items-center justify-between gap-1 p-2 rounded-lg transition-colors w-full ${
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className={`flex items-center justify-between gap-2 p-2 rounded-lg transition-colors w-full ${
             isActive
               ? "text-primary bg-primary/10"
               : "text-gray-500 hover:text-primary hover:bg-primary/5"
           }`}
         >
-          <div className="flex items-center">
-            <Icon className="h-8 w-5 p-.5" />
-            {/* <span className="text-xs font-medium">{label}</span> */}
+          <div className="flex items-center gap-2">
+            <Icon className="h-5 w-5" />
+            {isHovered && (
+              <motion.span 
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-sm font-medium whitespace-nowrap"
+              >
+                {label}
+              </motion.span>
+            )}
           </div>
           {isExpanded ? (
             <ChevronUp className="h-4 w-4" />
@@ -110,14 +121,24 @@ const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps
   return (
     <Link
       to={to || "#"}
-      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors w-full ${
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`flex items-center gap-2 p-2 rounded-lg transition-colors w-full relative ${
         isActive
           ? "text-primary bg-primary/10"
           : "text-gray-500 hover:text-primary hover:bg-primary/5"
       }`}
     >
-      <Icon className="h-8 w-5 p-.5" />
-      {/* <span className="text-xs font-medium">{label}</span> */}
+      <Icon className="h-5 w-5" />
+      {isHovered && (
+        <motion.span 
+          initial={{ opacity: 0, x: -5 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-sm font-medium whitespace-nowrap"
+        >
+          {label}
+        </motion.span>
+      )}
     </Link>
   );
 };
@@ -125,6 +146,7 @@ const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps
 const Navigation = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
+  const [isExpanded, setIsExpanded] = useState(false);
   
   if (location.pathname === "/landing") {
     return null;
@@ -187,9 +209,11 @@ const Navigation = () => {
     <motion.div
       initial={{ x: -100 }}
       animate={{ x: 0 }}
-      className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 py-4 shadow-lg z-10 overflow-y-auto"
+      className="fixed left-0 top-0 bottom-0 w-16 hover:w-48 bg-white border-r border-gray-200 py-4 shadow-lg z-10 overflow-hidden transition-all duration-300"
+      onMouseEnter={() => setIsExpanded(true)}
+      onMouseLeave={() => setIsExpanded(false)}
     >
-      <nav className="flex flex-col items-center gap-2 p-1">
+      <nav className="flex flex-col items-start gap-2 p-1">
         {navigationItems.map((item, index) => (
           <NavigationItem 
             key={index} 
