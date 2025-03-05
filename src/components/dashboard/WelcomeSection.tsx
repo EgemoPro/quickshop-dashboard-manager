@@ -1,43 +1,53 @@
 
 import React from "react";
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
+import { User } from "lucide-react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { HelpCircle, Settings } from "lucide-react";
 
 interface WelcomeSectionProps {
   darkMode: boolean;
 }
 
 const WelcomeSection: React.FC<WelcomeSectionProps> = ({ darkMode }) => {
+  const currentDate = new Date();
+  const formattedDate = new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(currentDate);
+  
+  const getTimeOfDay = () => {
+    const hour = currentDate.getHours();
+    if (hour < 12) return "Bonjour";
+    if (hour < 18) return "Bon après-midi";
+    return "Bonsoir";
+  };
+
   return (
-    <section className="mb-8">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4"
-      >
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Bonjour, Alex Dupont 👋</h1>
-          <p className={`mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Voici les performances de votre boutique</p>
-        </div>
-        
-        <div className="flex mt-4 sm:mt-0 space-x-2 w-full sm:w-auto">
-          <div className="flex-1 sm:flex-none">
-            <Button variant="outline" className="w-full sm:w-auto">
-              <HelpCircle className="h-4 w-4 mr-2" />
-              Aide
-            </Button>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card className={`border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'} transition-colors duration-300`}>
+        <CardHeader className="flex flex-row items-center space-x-4 space-y-0">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <User className={`w-7 h-7 ${darkMode ? 'text-white' : 'text-primary'}`} />
           </div>
-          <div className="flex-1 sm:flex-none">
-            <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white">
-              <Settings className="h-4 w-4 mr-2" />
-              Paramètres
-            </Button>
+          <div>
+            <CardTitle>{getTimeOfDay()}, Alex Dupont</CardTitle>
+            <CardDescription className={darkMode ? 'text-gray-400' : 'text-gray-500'}>
+              {formattedDate}
+            </CardDescription>
           </div>
-        </div>
-      </motion.div>
-    </section>
+        </CardHeader>
+        <CardContent>
+          <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            Bienvenue dans votre tableau de bord. Vous avez <span className="font-bold text-primary">3 tâches</span> à accomplir aujourd'hui et <span className="font-bold text-primary">5 commandes</span> en attente.
+          </p>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

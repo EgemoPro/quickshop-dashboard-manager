@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { store } from "@/store/store";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { resetLayout, DASHBOARD_CARDS } from "@/store/slices/dashboardLayoutSlice";
-// import WelcomeSection from "@/components/dashboard/WelcomeSection";
+import WelcomeSection from "@/components/dashboard/WelcomeSection";
 import StatsCard from "@/components/dashboard/StatsCard";
 import SalesChart from "@/components/dashboard/SalesChart";
 import RecentOrders from "@/components/dashboard/RecentOrders";
@@ -59,12 +59,12 @@ const DashboardContent = () => {
   // Render a specific card by ID
   const renderCard = (cardId: string, index: number, column: number) => {
     switch (cardId) {
-      // case DASHBOARD_CARDS.WELCOME:
-      //   return (
-      //     <DraggableCard key={cardId} id={cardId} index={index} column={column}>
-      //       <WelcomeSection darkMode={false} />
-      //     </DraggableCard>
-      //   );
+      case DASHBOARD_CARDS.WELCOME:
+        return (
+          <DraggableCard key={cardId} id={cardId} index={index} column={column}>
+            <WelcomeSection darkMode={false} />
+          </DraggableCard>
+        );
       case DASHBOARD_CARDS.SALES_CHART:
         return (
           <DraggableCard key={cardId} id={cardId} index={index} column={column}>

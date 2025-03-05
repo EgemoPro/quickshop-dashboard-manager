@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, Settings, Moon, Sun, Bell, UserCircle } from "lucide-react";
+import { HelpCircle, Settings, Moon, Sun, Bell, UserCircle, Menu } from "lucide-react";
 
 interface DashboardHeaderProps {
   darkMode: boolean;
@@ -17,31 +17,16 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   setMobileMenuOpen 
 }) => {
   return (
-    <header className={`fixed z-10 w-full top-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} shadow-sm px-4 sm:px-6 py-3 transition-colors duration-300`}>
-      <div className="max-w-7xl  mx-auto flex items-center justify-between">
+    <header className={`fixed z-20 w-full top-0 left-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} shadow-sm px-4 sm:px-6 py-3 transition-colors duration-300`}>
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center md:hidden">
           <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             <span className="sr-only">Ouvrir le menu</span>
-            <svg 
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5"
-            >
-              <line x1="4" x2="20" y1="12" y2="12" />
-              <line x1="4" x2="20" y1="6" y2="6" />
-              <line x1="4" x2="20" y1="18" y2="18" />
-            </svg>
+            <Menu className="h-5 w-5" />
           </Button>
         </div>
 
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden md:flex items-center ml-16 space-x-4">
           <h1 className="text-xl font-bold">QuickShop Dashboard</h1>
         </div>
 

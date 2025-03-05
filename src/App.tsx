@@ -25,8 +25,8 @@ import {
 } from "lucide-react";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
-import { useState } from "react";
-import DashboardHeader from "./components/dashboard/DashboardHeader";
+import { useState, useEffect, useRef } from "react";
+import DashboardLayout from "./components/DashboardLayout";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
@@ -46,35 +46,45 @@ const queryClient = new QueryClient();
 interface SubNavigationItem {
   to: string;
   label: string;
+  icon: React.ElementType;
 }
 
 interface NavigationItemProps {
   to?: string;
-  icon: any;
+  icon: React.ElementType;
   label: string;
   subItems?: SubNavigationItem[];
   showLabels: boolean;
+  closeAllExpanded: () => void;
 }
 
-const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels }: NavigationItemProps) => {
+const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels, closeAllExpanded }: NavigationItemProps) => {
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const navItemRef = useRef<HTMLDivElement>(null);
   
   // Check if this item or any of its subitems is active
   const isActive = to 
     ? location.pathname === to 
     : subItems?.some(item => location.pathname === item.to);
   
+  useEffect(() => {
+    // Reset when closeAllExpanded is called
+    if (!showLabels) {
+      setIsExpanded(false);
+    }
+  }, [showLabels]);
+
   // If this is a dropdown (has subItems)
   if (subItems && subItems.length > 0) {
     return (
-      <div className="w-full ">
+      <div className="w-full" ref={navItemRef}>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className={`flex b-2 b-transparent items-center justify-between gap-2 p-2 rounded-sm transition-colors w-full ${
+          className={`flex items-center justify-between gap-2 p-2 rounded-sm transition-colors w-full ${
             isActive
-              ? "text-primary b-l-black "
-              : " hover:bg-primary/5"
+              ? "text-primary border-l-4 border-l-black"
+              : "border-l-4 border-transparent hover:bg-primary/5"
           }`}
         >
           <div className="flex items-center gap-2">
@@ -89,15 +99,17 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels }: Navigat
               </motion.span>
             )}
           </div>
-          {(isExpanded) ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
+          {showLabels && (
+            isExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )
           )}
         </button>
         
-        {isExpanded && (
-          <div className="pl-7 mt-1 space-y-1 ">
+        {isExpanded && showLabels && (
+          <div className="pl-7 mt-1 space-y-1">
             {subItems.map((subItem) => (
               <Link
                 key={subItem.to}
@@ -108,7 +120,7 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels }: Navigat
                     : "text-gray-500 hover:text-primary hover:bg-primary/5"
                 }`}
               >
-                {<subItem.icon className={`h-auto`} />}
+                <subItem.icon className="h-4 w-4" />
                 {subItem.label}
               </Link>
             ))}
@@ -122,10 +134,10 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels }: Navigat
   return (
     <Link
       to={to || "#"}
-      className={`flex items-center gap-2 rounded border-l-4 border-transparent p-2 transition-colors w-full relative ${
+      className={`flex items-center gap-2 rounded p-2 transition-colors w-full relative ${
         isActive
-          ? "border-l-black"
-          : "text-gray-500 hover:text-primary hover:bg-primary/5"
+          ? "text-primary border-l-4 border-l-black"
+          : "border-l-4 border-transparent text-gray-500 hover:text-primary hover:bg-primary/5"
       }`}
     >
       <Icon className="h-5 w-5" />
@@ -146,10 +158,20 @@ const Navigation = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
+  
+  const closeAllExpanded = () => {
+    setIsExpanded(false);
+  };
   
   if (location.pathname === "/landing") {
     return null;
   }
+
+  // Handle mouse leave event to close submenus
+  const handleMouseLeave = () => {
+    setIsExpanded(false);
+  };
 
   // Refactored navigation items with combined pages where appropriate
   const navigationItems = [
@@ -162,7 +184,7 @@ const Navigation = () => {
       label: "Campagnes",
       subItems: [
         { to: "/planning", label: "Planning", icon: Calendar },
-        { to: "/marketing", label: "Marketing", icon : ChartCandlestick },
+        { to: "/marketing", label: "Marketing", icon: ChartCandlestick },
       ]
     },
     { to: "/analytics", icon: BarChart3, label: "Analytique" },
@@ -202,7 +224,8 @@ const Navigation = () => {
               to={item.to} 
               icon={item.icon} 
               label={item.label}
-              showLabels={false} 
+              showLabels={false}
+              closeAllExpanded={closeAllExpanded}
             />
           ))}
         </nav>
@@ -214,11 +237,12 @@ const Navigation = () => {
     <motion.div
       initial={{ x: -100 }}
       animate={{ x: 0 }}
-      className="fixed left-0 top-0 bottom-0 w-16 hover:w-48 bg-white border-r border-gray-200 py-4 shadow-lg z-10 overflow-hidden transition-all duration-300"
+      className="fixed left-0 top-0 bottom-0 w-16 hover:w-64 bg-white border-r border-gray-200 pt-16 shadow-lg z-10 overflow-hidden transition-all duration-300"
       onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
+      onMouseLeave={handleMouseLeave}
+      ref={navRef}
     >
-      <nav className="fixed flex flex-col z-50 items-start gap-2 p-1">
+      <nav className="flex flex-col p-1 gap-1 mt-4">
         {navigationItems.map((item, index) => (
           <NavigationItem 
             key={index} 
@@ -227,38 +251,11 @@ const Navigation = () => {
             label={item.label} 
             subItems={item.subItems}
             showLabels={isExpanded}
+            closeAllExpanded={closeAllExpanded}
           />
         ))}
       </nav>
     </motion.div>
-  );
-};
-
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const location = useLocation();
-  
-  if (location.pathname === "/landing") {
-    return <>{children}</>;
-  }
-  
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-  
-  return (
-    <div className={`min-h-screen space-y-16 transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-800'}`}>
-      <DashboardHeader 
-        darkMode={darkMode} 
-        toggleDarkMode={toggleDarkMode} 
-        mobileMenuOpen={mobileMenuOpen} 
-        setMobileMenuOpen={setMobileMenuOpen} 
-      />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {children}
-      </main>
-    </div>
   );
 };
 
@@ -267,12 +264,9 @@ const AppContent = () => {
   const location = useLocation();
   
   const isLandingPage = location.pathname === "/landing";
-  const contentClass = isLandingPage 
-    ? "min-h-screen bg-white" 
-    : `min-h-screen bg-gray-50 ${isMobile && "pb-20"} pl-16transition-all duration-300`;
   
   return (
-    <div className={contentClass}>
+    <div className="min-h-screen bg-white">
       <Routes>
         <Route path="/" element={<Navigate to="/landing" replace />} />
         <Route path="/dashboard" element={<DashboardLayout><Index /></DashboardLayout>} />
@@ -289,7 +283,7 @@ const AppContent = () => {
         <Route path="/landing" element={<Landing />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Navigation />
+      {!isLandingPage && <Navigation />}
     </div>
   );
 };
