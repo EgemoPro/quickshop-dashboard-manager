@@ -12,14 +12,16 @@ import {
   ShoppingCart, 
   Settings as SettingsIcon, 
   MessageCircle, 
-  Calendar, 
+  Send, 
   BarChart3, 
   MousePointerClick, 
-  DollarSign,
+  Wallet,
   Truck,
   Store,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Calendar,
+  ChartCandlestick
 } from "lucide-react";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
@@ -66,7 +68,7 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels }: Navigat
   // If this is a dropdown (has subItems)
   if (subItems && subItems.length > 0) {
     return (
-      <div className="w-full">
+      <div className="w-full ">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className={`flex b-2 b-transparent items-center justify-between gap-2 p-2 rounded-sm transition-colors w-full ${
@@ -76,7 +78,7 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels }: Navigat
           }`}
         >
           <div className="flex items-center gap-2">
-            <Icon className="h-5 w-5" />
+            <Icon className="h-5 w-5 block" />
             {showLabels && (
               <motion.span 
                 initial={{ opacity: 0, x: -5 }}
@@ -87,7 +89,7 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels }: Navigat
               </motion.span>
             )}
           </div>
-          {isExpanded ? (
+          {(isExpanded) ? (
             <ChevronUp className="h-4 w-4" />
           ) : (
             <ChevronDown className="h-4 w-4" />
@@ -95,17 +97,18 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels }: Navigat
         </button>
         
         {isExpanded && (
-          <div className="pl-7 mt-1 space-y-1">
+          <div className="pl-7 mt-1 space-y-1 ">
             {subItems.map((subItem) => (
               <Link
                 key={subItem.to}
                 to={subItem.to}
-                className={`block text-xs p-1.5 rounded-md ${
+                className={`flex items-center gap-2 text-xs p-1.5 rounded-md ${
                   location.pathname === subItem.to
                     ? "text-primary bg-primary/10"
                     : "text-gray-500 hover:text-primary hover:bg-primary/5"
                 }`}
               >
+                {<subItem.icon className={`h-auto`} />}
                 {subItem.label}
               </Link>
             ))}
@@ -119,9 +122,9 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels }: Navigat
   return (
     <Link
       to={to || "#"}
-      className={`flex items-center gap-2 p-2 rounded-lg transition-colors w-full relative ${
+      className={`flex items-center gap-2 rounded border-l-4 border-transparent p-2 transition-colors w-full relative ${
         isActive
-          ? "text-primary bg-primary/10"
+          ? "border-l-black"
           : "text-gray-500 hover:text-primary hover:bg-primary/5"
       }`}
     >
@@ -158,8 +161,8 @@ const Navigation = () => {
       icon: MousePointerClick, 
       label: "Campagnes",
       subItems: [
-        { to: "/planning", label: "Planning" },
-        { to: "/marketing", label: "Marketing" },
+        { to: "/planning", label: "Planning", icon: Calendar },
+        { to: "/marketing", label: "Marketing", icon : ChartCandlestick },
       ]
     },
     { to: "/analytics", icon: BarChart3, label: "Analytique" },
@@ -168,8 +171,8 @@ const Navigation = () => {
       icon: Truck,
       label: "Opérations",
       subItems: [
-        { to: "/payments", label: "Paiements" },
-        { to: "/shipping", label: "Expéditions" }
+        { to: "/payments", label: "Paiements", icon: Wallet },
+        { to: "/shipping", label: "Expéditions", icon: Send }
       ]
     },
     { to: "/chat", icon: MessageCircle, label: "Chat" },
@@ -215,7 +218,7 @@ const Navigation = () => {
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      <nav className="flex flex-col items-start gap-2 p-1">
+      <nav className="fixed flex flex-col z-50 items-start gap-2 p-1">
         {navigationItems.map((item, index) => (
           <NavigationItem 
             key={index} 
@@ -245,7 +248,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   };
   
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-800'}`}>
+    <div className={`min-h-screen space-y-16 transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-800'}`}>
       <DashboardHeader 
         darkMode={darkMode} 
         toggleDarkMode={toggleDarkMode} 
