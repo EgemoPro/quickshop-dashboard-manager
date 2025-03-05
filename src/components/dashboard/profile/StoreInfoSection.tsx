@@ -16,28 +16,42 @@ const StoreInfoSection: React.FC<StoreInfoSectionProps> = ({ storeInfo, darkMode
         <Store className="h-4 w-4 text-primary" />
         Informations de la boutique
       </h4>
-      <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-md">
-        <div className="flex items-center mb-2">
-          <Avatar className="h-10 w-10 mr-3">
-            <AvatarImage src={storeInfo.logo} alt={storeInfo.name} />
-            <AvatarFallback>{storeInfo.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-medium">{storeInfo.name}</p>
-            <p className="text-xs text-gray-500 flex items-center">
-              <Calendar className="h-3 w-3 mr-1" />
-              Créée le {new Date(storeInfo.createdAt).toLocaleDateString()}
-            </p>
-          </div>
-        </div>
+      <div className={`${darkMode ? 'bg-gray-900' : 'bg-gray-50'} p-3 rounded-md`}>
         {storeInfo.banner && (
-          <div className="mt-3">
+          <div className="mb-3">
             <img 
               src={storeInfo.banner} 
               alt="Bannière boutique" 
-              className="w-full h-20 object-cover rounded-md"
+              className="w-full h-24 object-cover rounded-md"
             />
           </div>
+        )}
+        <div className="flex items-center mb-2">
+          <Avatar className="h-12 w-12 mr-3 ring-2 ring-white">
+            <AvatarImage src={storeInfo.logo} alt={storeInfo.name} />
+            <AvatarFallback className="bg-primary text-white">
+              {storeInfo.name.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+              {storeInfo.name}
+            </p>
+            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} flex items-center`}>
+              <Calendar className="h-3 w-3 mr-1" />
+              Créée le {new Date(storeInfo.createdAt).toLocaleDateString()}
+            </p>
+            {storeInfo.verified && (
+              <p className="text-xs text-green-500 font-medium mt-1">
+                ✓ Boutique vérifiée
+              </p>
+            )}
+          </div>
+        </div>
+        {storeInfo.description && (
+          <p className={`text-sm mt-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            {storeInfo.description}
+          </p>
         )}
       </div>
     </div>

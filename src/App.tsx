@@ -51,12 +51,12 @@ interface NavigationItemProps {
   icon: any;
   label: string;
   subItems?: SubNavigationItem[];
+  showLabels: boolean;
 }
 
-const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps) => {
+const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels }: NavigationItemProps) => {
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   
   // Check if this item or any of its subitems is active
   const isActive = to 
@@ -69,8 +69,6 @@ const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps
       <div className="w-full">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
           className={`flex b-2 b-transparent items-center justify-between gap-2 p-2 rounded-sm transition-colors w-full ${
             isActive
               ? "text-primary b-l-black "
@@ -79,7 +77,7 @@ const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps
         >
           <div className="flex items-center gap-2">
             <Icon className="h-5 w-5" />
-            {isHovered && (
+            {showLabels && (
               <motion.span 
                 initial={{ opacity: 0, x: -5 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -121,8 +119,6 @@ const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps
   return (
     <Link
       to={to || "#"}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       className={`flex items-center gap-2 p-2 rounded-lg transition-colors w-full relative ${
         isActive
           ? "text-primary bg-primary/10"
@@ -130,7 +126,7 @@ const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps
       }`}
     >
       <Icon className="h-5 w-5" />
-      {isHovered && (
+      {showLabels && (
         <motion.span 
           initial={{ opacity: 0, x: -5 }}
           animate={{ opacity: 1, x: 0 }}
@@ -198,7 +194,13 @@ const Navigation = () => {
       >
         <nav className="grid grid-cols-5 w-full">
           {mobileItems.map((item, index) => (
-            <NavigationItem key={index} to={item.to} icon={item.icon} label={item.label} />
+            <NavigationItem 
+              key={index} 
+              to={item.to} 
+              icon={item.icon} 
+              label={item.label}
+              showLabels={false} 
+            />
           ))}
         </nav>
       </motion.div>
@@ -221,6 +223,7 @@ const Navigation = () => {
             icon={item.icon} 
             label={item.label} 
             subItems={item.subItems}
+            showLabels={isExpanded}
           />
         ))}
       </nav>

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -12,6 +12,15 @@ import { useToast } from "@/components/ui/use-toast";
 import { Store, User, Upload, Image as ImageIcon, Save } from "lucide-react";
 import ImageUploader from "@/components/products/ImageUploader";
 import { updateSettings, updateStoreConfig } from "@/store/slices/settingsSlice";
+import { updateStoreInfo } from "@/store/slices/authSlice";
+
+// Define paths for static images
+const STATIC_IMAGES = {
+  defaultLogo: "/images/default-logo.png",
+  defaultBanner: "/images/default-banner.jpg",
+  logoPath: "/images/store-logos/",
+  bannerPath: "/images/store-banners/"
+};
 
 interface StoreProfileDialogProps {
   open: boolean;
@@ -45,7 +54,26 @@ const StoreProfileDialog: React.FC<StoreProfileDialogProps> = ({
     banner: user?.storeInfo?.banner || storeConfig.banner,
   });
   
-  // Images prévisualisées
+  // Update form data when user or storeConfig changes
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        fullName: user.fullName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        avatar: user.avatar || "",
+      });
+      
+      setStoreData({
+        name: user.storeInfo?.name || storeConfig.name,
+        description: user.storeInfo?.description || storeConfig.description,
+        logo: user.storeInfo?.logo || storeConfig.logo,
+        banner: user.storeInfo?.banner || storeConfig.banner,
+      });
+    }
+  }, [user, storeConfig]);
+  
+  // Initialize images for preview
   const [logoImages, setLogoImages] = useState<Array<{ id: string; url: string; name: string }>>([
     ...(storeData.logo ? [{ id: "current-logo", url: storeData.logo, name: "Logo actuel" }] : [])
   ]);
@@ -63,9 +91,24 @@ const StoreProfileDialog: React.FC<StoreProfileDialogProps> = ({
     setStoreData(prev => ({ ...prev, [field]: value }));
   };
   
+  // Simulate storing images to static folder
+  const saveImageToStatic = (imageUrl: string, type: 'logo' | 'banner') => {
+    // In a real app, this would upload the file to the server
+    // For this demo, we'll simulate by using a predefined path
+    const fileName = `${Date.now()}-${type}${type === 'logo' ? '.png' : '.jpg'}`;
+    const path = type === 'logo' 
+      ? `${STATIC_IMAGES.logoPath}${fileName}`
+      : `${STATIC_IMAGES.bannerPath}${fileName}`;
+    
+    console.log(`Saving ${type} to ${path}`);
+    return path;
+  };
+  
   const handleLogoChange = (images: Array<{ id: string; url: string; name: string }>) => {
     setLogoImages(images);
     if (images.length > 0) {
+      // In a real application, we would save the image to the server here
+      // For now, we'll just use the URL directly
       setStoreData(prev => ({ ...prev, logo: images[0].url }));
     } else {
       setStoreData(prev => ({ ...prev, logo: "" }));
@@ -84,13 +127,36 @@ const StoreProfileDialog: React.FC<StoreProfileDialogProps> = ({
   const handleSave = () => {
     setIsLoading(true);
     
-    // Update store settings
+    // Simulate saving images to static folder
+    let finalLogoPath = storeData.logo;
+    let finalBannerPath = storeData.banner;
+    
+    // Only process new images (not the ones that start with our static paths)
+    if (storeData.logo && !storeData.logo.startsWith(STATIC_IMAGES.logoPath)) {
+      finalLogoPath = saveImageToStatic(storeData.logo, 'logo');
+    }
+    
+    if (storeData.banner && !storeData.banner.startsWith(STATIC_IMAGES.bannerPath)) {
+      finalBannerPath = saveImageToStatic(storeData.banner, 'banner');
+    }
+    
+    // Update store settings in Redux
     dispatch(updateStoreConfig({
       name: storeData.name,
       description: storeData.description,
-      logo: storeData.logo,
-      banner: storeData.banner,
+      logo: finalLogoPath,
+      banner: finalBannerPath,
     }));
+    
+    // Update store info in auth slice
+    if (user?.storeInfo) {
+      dispatch(updateStoreInfo({
+        name: storeData.name,
+        description: storeData.description,
+        logo: finalLogoPath,
+        banner: finalBannerPath,
+      }));
+    }
     
     // Simulate API delay
     setTimeout(() => {
