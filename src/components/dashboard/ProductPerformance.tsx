@@ -33,7 +33,7 @@ const ProductPerformance: React.FC<ProductPerformanceProps> = ({ darkMode }) => 
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[200px] w-full">
+          <div className="h-[300px] w-full">
             <ProductPerformanceChart darkMode={darkMode} data={chartData} />
           </div>
         </CardContent>
