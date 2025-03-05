@@ -71,10 +71,10 @@ const NavigationItem = ({ to, icon: Icon, label, subItems }: NavigationItemProps
           onClick={() => setIsExpanded(!isExpanded)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className={`flex b-2 b-transparent items-center justify-between gap-2 p-2 rounded-lg transition-colors w-full ${
+          className={`flex b-2 b-transparent items-center justify-between gap-2 p-2 rounded-sm transition-colors w-full ${
             isActive
               ? "text-primary bg-primary/10"
-              : "text-gray-500 hover:text-primary hover:bg-primary/5"
+              : "b-black hover:bg-primary/5"
           }`}
         >
           <div className="flex items-center gap-2">
