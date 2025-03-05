@@ -137,7 +137,7 @@ const EmailSection = () => {
                         required
                       />
                       <p className="text-xs text-gray-500 mt-1">
-                        Utilisez {{prenom}}, {{nom}}, etc. pour les variables personnalisées.
+                        Utilisez {'{{prenom}}'}, {'{{nom}}'}, etc. pour les variables personnalisées.
                         Le HTML simple est supporté.
                       </p>
                     </div>

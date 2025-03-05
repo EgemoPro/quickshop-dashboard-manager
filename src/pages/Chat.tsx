@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
@@ -42,7 +42,7 @@ export default function Chat() {
   
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Chat avec les clients</h1>
+      <h1 className="text-2xl font-bold mb-4">Messagerie</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Left sidebar - Contacts */}
@@ -87,11 +87,11 @@ export default function Chat() {
                     {recentMessages.map((message) => (
                       <div 
                         key={message.id}
-                        className={`p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 border-b last:border-b-0 transition-colors duration-200 ${
+                        className={`p-3 mx-0 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 border-b last:border-b-0 transition-colors duration-200 ${
                           message.isNew ? 'bg-blue-50 dark:bg-blue-900/10' : ''
                         }`}
                       >
-                        <div className="flex gap-3">
+                        <div className="flex gap-3 w-full">
                           <img 
                             src={message.avatar} 
                             alt={message.customer} 
@@ -104,7 +104,7 @@ export default function Chat() {
                                 {message.time}
                               </span>
                             </div>
-                            <p className="text-sm mt-1 truncate text-gray-600 dark:text-gray-300">
+                            <p className="text-sm max-w-72 mt-1 truncate line-clamp px-1 text-gray-600 dark:text-gray-300">
                               {message.message}
                             </p>
                             <div className="mt-1 flex justify-between items-center">
@@ -117,6 +117,7 @@ export default function Chat() {
                         </div>
                       </div>
                     ))}
+                    <ScrollBar orientation="vertical"  />
                   </ScrollArea>
                 </TabsContent>
                 
@@ -149,7 +150,7 @@ export default function Chat() {
                   />
                   <div>
                     <CardTitle className="text-lg">Jean Dupont</CardTitle>
-                    <p className="text-sm text-gray-500">En ligne maintenant</p>
+                    <p className="h-3 w-3 bg-green-300 rounded-full transform -translate-x-5"></p>
                   </div>
                 </div>
                 <div className="flex gap-2">

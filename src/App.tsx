@@ -40,6 +40,7 @@ import Marketplace from "./pages/Marketplace";
 import Analytics from "./pages/Analytics";
 import Payments from "./pages/Payments";
 import Shipping from "./pages/Shipping";
+import { cn } from "./lib/utils";
 
 const queryClient = new QueryClient();
 
@@ -56,9 +57,10 @@ interface NavigationItemProps {
   subItems?: SubNavigationItem[];
   showLabels: boolean;
   closeAllExpanded: () => void;
+  isMobile?: boolean;
 }
 
-const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels, closeAllExpanded }: NavigationItemProps) => {
+const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels, closeAllExpanded, isMobile }: NavigationItemProps) => {
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
   const navItemRef = useRef<HTMLDivElement>(null);
@@ -81,7 +83,7 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels, closeAllE
       <div className="w-full" ref={navItemRef}>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className={`flex items-center justify-between gap-2 p-2 rounded-sm transition-colors w-full ${
+          className={`flex items-center justify-between gap-2 p-2 rounded transition-colors w-full ${
             isActive
               ? "text-primary border-l-4 border-l-black"
               : "border-l-4 border-transparent hover:bg-primary/5"
@@ -134,13 +136,13 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels, closeAllE
   return (
     <Link
       to={to || "#"}
-      className={`flex items-center gap-2 rounded p-2 transition-colors w-full relative ${
+      className={cn(isMobile ? "justify-center" : "",`flex items-center gap-2 rounded p-2 transition-colors w-full relative ${
         isActive
-          ? "text-primary border-l-4 border-l-black"
+          ? `text-primary border-l-4 ${!isMobile ? "border-l-black" : "border-l-0  border-b-4 rounded-none  border-b-black"}`
           : "border-l-4 border-transparent text-gray-500 hover:text-primary hover:bg-primary/5"
-      }`}
+      }`)}
     >
-      <Icon className="h-5 w-5" />
+      <Icon size={isMobile ? 25 : 19} />
       {showLabels && (
         <motion.span 
           initial={{ opacity: 0, x: -5 }}
@@ -217,7 +219,7 @@ const Navigation = () => {
         animate={{ y: 0 }}
         className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-10"
       >
-        <nav className="grid grid-cols-5 w-full">
+        <nav className={cn("grid grid-cols-5 w-full", isMobile ? "px-2" : "")}>
           {mobileItems.map((item, index) => (
             <NavigationItem 
               key={index} 
@@ -226,6 +228,7 @@ const Navigation = () => {
               label={item.label}
               showLabels={false}
               closeAllExpanded={closeAllExpanded}
+              isMobile = {isMobile}
             />
           ))}
         </nav>

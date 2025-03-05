@@ -39,7 +39,7 @@ interface Campaign {
   };
 }
 
-interface EmailTemplate {
+export interface EmailTemplate {
   id: string;
   name: string;
   subject: string;
@@ -47,7 +47,7 @@ interface EmailTemplate {
   lastEdited: string;
 }
 
-interface MarketingState {
+export interface MarketingState {
   promoCodes: PromoCode[];
   campaigns: Campaign[];
   emailTemplates: EmailTemplate[];

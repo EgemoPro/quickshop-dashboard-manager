@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
@@ -10,9 +9,12 @@ import { ResponsiveContainer, BarChart, Bar, LineChart, Line, AreaChart, Area, P
 import { BarChart3, LineChart as LineChartIcon, PieChart as PieChartIcon, Download, Users, Calendar, Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { setPeriod } from "@/store/slices/salesSlice";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const Analytics = () => {
   const dispatch = useAppDispatch();
+  const isMobile = useIsMobile();
   const { salesData, period } = useAppSelector((state) => state.sales);
   const { topSellingProducts, channelPerformance } = useAppSelector((state) => state.stats);
   
@@ -22,7 +24,7 @@ const Analytics = () => {
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
   
   return (
-    <div className="container max-w-6xl mx-auto p-4">
+    <div className={cn(isMobile ? " " : "container max-w-6xl mx-auto p-4" , "")}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -78,7 +80,7 @@ const Analytics = () => {
         
         <div className="mb-6">
           <Tabs defaultValue={reportType} onValueChange={setReportType}>
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex max-md:flex-col-reverse  max-md:gap-2 justify-between items-center mb-4">
               <TabsList>
                 <TabsTrigger value="sales" className="flex items-center">
                   <BarChart3 className="mr-2 h-4 w-4" />
@@ -132,7 +134,7 @@ const Analytics = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="h-[400px] p-6">
+                <div className="h-[450px] p-6">
                   {reportType === "sales" && (
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={salesData}>

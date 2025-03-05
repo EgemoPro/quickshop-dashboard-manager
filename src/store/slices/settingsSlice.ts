@@ -66,7 +66,7 @@ const initialState: SettingsState = {
   language: "fr",
   theme: "light",
   paymentMethods: {
-    stripe: true,
+    stripe: false,
     paypal: true,
     creditCard: true,
     bankTransfer: false,

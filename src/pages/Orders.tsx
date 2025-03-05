@@ -22,6 +22,8 @@ import {
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateOrderStatus, type Order } from "@/store/slices/ordersSlice";
 import { useToast } from "@/components/ui/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const statusIcons = {
   "Livrée": <Check className="h-4 w-4 text-green-500" />,
@@ -32,6 +34,7 @@ const statusIcons = {
 
 const Orders = () => {
   const dispatch = useAppDispatch();
+  const isMobile = useIsMobile();
   const { toast } = useToast();
   const { recentOrders, isLoading } = useAppSelector(state => state.orders);
   
@@ -121,7 +124,7 @@ const Orders = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="container mx-auto px-4 py-8"
+        className={cn(isMobile ? "px-0 w-full" : "container px-4" ,"mx-auto py-8")}
       >
         <header className="mb-8">
           <div className="flex justify-between items-center flex-wrap gap-4">
@@ -184,7 +187,7 @@ const Orders = () => {
           </div>
         </header>
 
-        <Card className="p-6">
+        <Card className={cn(isMobile ? "" : "" , "p-6")}>
           {isLoading ? (
             <div className="flex justify-center py-20">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
