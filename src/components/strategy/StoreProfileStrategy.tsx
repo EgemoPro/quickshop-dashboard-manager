@@ -8,13 +8,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { StoreInfo } from '@/store/slices/authSlice';
-import { StoreStrategy } from '@/store/slices/strategySlice';
+import { StoreStrategy, addKeyword, removeKeyword } from '@/store/slices/strategySlice';
 import { useAppDispatch } from '@/store/hooks';
 import { updateStoreInfo } from '@/store/slices/authSlice';
-import { updateStoreStrategy, addKeyword, removeKeyword } from '@/store/slices/strategySlice';
+import { updateStoreStrategy, updateSocialProfiles } from '@/store/slices/strategySlice';
 import { Check, Plus, X, Upload, ImageIcon } from 'lucide-react';
 import { ProfileSection } from './ProfileSection';
 import SEOSettings from './SEOSettings';
+import SocialMediaConnections from './SocialMediaConnections';
+import ImageUploader from '@/components/products/ImageUploader';
 
 interface StoreProfileStrategyProps {
   storeInfo?: StoreInfo;
@@ -45,6 +47,15 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
   });
   
   const [newKeyword, setNewKeyword] = useState('');
+  
+  // Initialize images for preview
+  const [logoImages, setLogoImages] = useState<Array<{ id: string; url: string; name: string }>>([
+    ...(storeData.logo ? [{ id: "current-logo", url: storeData.logo, name: "Logo actuel" }] : [])
+  ]);
+  
+  const [bannerImages, setBannerImages] = useState<Array<{ id: string; url: string; name: string }>>([
+    ...(storeData.banner ? [{ id: "current-banner", url: storeData.banner, name: "Bannière actuelle" }] : [])
+  ]);
   
   // Handle store data change
   const handleStoreChange = (field: string, value: string) => {
@@ -77,6 +88,31 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
       title: "Mot clé supprimé",
       description: `Le mot clé "${keyword}" a été supprimé.`,
     });
+  };
+
+  // Handle logo change
+  const handleLogoChange = (images: Array<{ id: string; url: string; name: string }>) => {
+    setLogoImages(images);
+    if (images.length > 0) {
+      handleStoreChange('logo', images[0].url);
+    } else {
+      handleStoreChange('logo', '');
+    }
+  };
+  
+  // Handle banner change
+  const handleBannerChange = (images: Array<{ id: string; url: string; name: string }>) => {
+    setBannerImages(images);
+    if (images.length > 0) {
+      handleStoreChange('banner', images[0].url);
+    } else {
+      handleStoreChange('banner', '');
+    }
+  };
+
+  // Handle social profiles change
+  const handleSocialProfilesChange = (profiles: any[]) => {
+    dispatch(updateSocialProfiles(profiles));
   };
   
   // Save all changes
@@ -150,40 +186,37 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
           <div className="space-y-4">
             <div className="grid gap-2">
               <Label>Logo</Label>
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={storeData.logo} alt={storeData.name} />
-                  <AvatarFallback className="bg-primary/10">
-                    {storeData.name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Changer le logo
-                </Button>
-              </div>
+              {storeData.logo && (
+                <div className="flex justify-center mb-2">
+                  <Avatar className="h-24 w-24">
+                    <AvatarImage src={storeData.logo} alt={storeData.name} />
+                    <AvatarFallback className="bg-primary/10">
+                      {storeData.name.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              )}
+              <ImageUploader 
+                images={logoImages}
+                onImagesChange={handleLogoChange}
+              />
             </div>
             
             <div className="grid gap-2">
               <Label>Bannière</Label>
-              <div className="relative h-32 w-full overflow-hidden rounded-md border border-gray-200 bg-gray-50 flex items-center justify-center">
-                {storeData.banner ? (
+              {storeData.banner && (
+                <div className="relative h-32 w-full overflow-hidden rounded-md mb-2">
                   <img
                     src={storeData.banner}
                     alt="Bannière boutique"
                     className="h-full w-full object-cover"
                   />
-                ) : (
-                  <div className="text-gray-400 flex flex-col items-center">
-                    <ImageIcon className="h-8 w-8 mb-2" />
-                    <span>Aucune bannière</span>
-                  </div>
-                )}
-              </div>
-              <Button variant="outline" size="sm" className="w-full md:w-auto">
-                <Upload className="h-4 w-4 mr-2" />
-                {storeData.banner ? "Modifier la bannière" : "Ajouter une bannière"}
-              </Button>
+                </div>
+              )}
+              <ImageUploader 
+                images={bannerImages}
+                onImagesChange={handleBannerChange}
+              />
             </div>
           </div>
         </div>
@@ -231,6 +264,13 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
             </div>
           </div>
         </div>
+      </ProfileSection>
+
+      <ProfileSection title="Réseaux sociaux" description="Connectez vos réseaux sociaux à votre boutique">
+        <SocialMediaConnections 
+          socialProfiles={storeStrategy.socialProfiles} 
+          onSocialProfilesChange={handleSocialProfilesChange} 
+        />
       </ProfileSection>
       
       <ProfileSection title="Optimisation SEO" description="Améliorer le référencement de votre boutique">
