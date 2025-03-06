@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -30,8 +29,8 @@ const PromotionSection = () => {
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [limitedUses, setLimitedUses] = useState(false);
   const [maxUses, setMaxUses] = useState(0);
-  const [applicableProducts, setApplicableProducts] = useState<string>('all');
-  const [applicableCategories, setApplicableCategories] = useState<string>('all');
+  const [applicableProducts, setApplicableProducts] = useState<string | string[]>('all');
+  const [applicableCategories, setApplicableCategories] = useState<string | string[]>('all');
   
   const resetForm = () => {
     setCode('');
@@ -75,6 +74,13 @@ const PromotionSection = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    const processApplicableField = (field: string | string[]): string | string[] => {
+      if (typeof field === 'string' && field !== 'all') {
+        return field.includes(',') ? field.split(',').map(item => item.trim()) : field;
+      }
+      return field;
+    };
+
     const promoCodeData = {
       code,
       discountType,
@@ -84,8 +90,8 @@ const PromotionSection = () => {
       endDate: endDate ? format(endDate, 'yyyy-MM-dd') : '',
       limitedUses,
       maxUses,
-      applicableProducts,
-      applicableCategories,
+      applicableProducts: processApplicableField(applicableProducts),
+      applicableCategories: processApplicableField(applicableCategories),
       active: true
     };
 
@@ -95,7 +101,7 @@ const PromotionSection = () => {
         ...promoCodeData
       }));
     } else {
-      dispatch(addPromoCode(promoCodeData));
+      dispatch(addPromoCode(promoCodeData as Omit<PromoCode, "id" | "usedCount">));
     }
 
     setIsDialogOpen(false);

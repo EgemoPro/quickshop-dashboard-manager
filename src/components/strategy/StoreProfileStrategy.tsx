@@ -12,11 +12,12 @@ import { StoreStrategy, addKeyword, removeKeyword } from '@/store/slices/strateg
 import { useAppDispatch } from '@/store/hooks';
 import { updateStoreInfo } from '@/store/slices/authSlice';
 import { updateStoreStrategy, updateSocialProfiles } from '@/store/slices/strategySlice';
-import { Check, Plus, X, Upload, ImageIcon } from 'lucide-react';
+import { Check, Plus, X } from 'lucide-react';
 import { ProfileSection } from './ProfileSection';
 import SEOSettings from './SEOSettings';
 import SocialMediaConnections from './SocialMediaConnections';
 import ImageUploader from '@/components/products/ImageUploader';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface StoreProfileStrategyProps {
   storeInfo?: StoreInfo;
@@ -30,6 +31,7 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const isMobile = useIsMobile();
   
   // Form state
   const [storeData, setStoreData] = useState({
@@ -145,9 +147,9 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
   
   if (!storeInfo) {
     return (
-      <div className="text-center p-8">
-        <h3 className="text-lg font-medium">Aucune boutique associée</h3>
-        <p className="text-gray-500 mt-2">
+      <div className="text-center p-4 sm:p-8">
+        <h3 className="text-base sm:text-lg font-medium">Aucune boutique associée</h3>
+        <p className="text-xs sm:text-sm text-gray-500 mt-2">
           Vous n'avez pas encore de boutique en ligne. Créez une boutique pour accéder à ces fonctionnalités.
         </p>
         <Button className="mt-4">Créer une boutique</Button>
@@ -156,9 +158,9 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
   }
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <ProfileSection title="Informations de la boutique" description="Détails de votre boutique en ligne">
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div className="space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="storeName">Nom de la boutique</Label>
@@ -188,7 +190,7 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
               <Label>Logo</Label>
               {storeData.logo && (
                 <div className="flex justify-center mb-2">
-                  <Avatar className="h-24 w-24">
+                  <Avatar className="h-20 w-20 sm:h-24 sm:w-24">
                     <AvatarImage src={storeData.logo} alt={storeData.name} />
                     <AvatarFallback className="bg-primary/10">
                       {storeData.name.slice(0, 2).toUpperCase()}
@@ -205,7 +207,7 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
             <div className="grid gap-2">
               <Label>Bannière</Label>
               {storeData.banner && (
-                <div className="relative h-32 w-full overflow-hidden rounded-md mb-2">
+                <div className="relative h-24 sm:h-32 w-full overflow-hidden rounded-md mb-2">
                   <img
                     src={storeData.banner}
                     alt="Bannière boutique"
@@ -244,7 +246,7 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
             />
           </div>
           
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="marketPosition">Positionnement sur le marché</Label>
               <Input
@@ -274,8 +276,8 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
       </ProfileSection>
       
       <ProfileSection title="Optimisation SEO" description="Améliorer le référencement de votre boutique">
-        <div className="space-y-6">
-          <div className="space-y-4">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-3 sm:space-y-4">
             <Label>Mots clés</Label>
             <div className="flex flex-wrap gap-2 mb-2">
               {storeStrategy.seoSettings.keywords.map((keyword, index) => (
@@ -294,14 +296,15 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
               )}
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Input
                 placeholder="Ajouter un mot clé"
                 value={newKeyword}
                 onChange={(e) => setNewKeyword(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddKeyword()}
+                className="w-full sm:w-auto sm:flex-1"
               />
-              <Button onClick={handleAddKeyword} variant="outline">
+              <Button onClick={handleAddKeyword} variant="outline" className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 Ajouter
               </Button>

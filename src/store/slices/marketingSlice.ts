@@ -1,6 +1,7 @@
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface PromoCode {
+export interface PromoCode {
   id: string;
   code: string;
   discountType: "percentage" | "fixed" | "freeShipping";
@@ -16,7 +17,7 @@ interface PromoCode {
   active: boolean;
 }
 
-interface Campaign {
+export interface Campaign {
   id: string;
   name: string;
   platform: "facebook" | "instagram" | "tiktok" | "google" | "email" | "sms";
