@@ -9,13 +9,15 @@ import CampaignsSection from '@/components/marketing/CampaignsSection';
 import PromotionSection from '@/components/marketing/PromotionSection';
 import EmailSection from '@/components/marketing/EmailSection';
 import LoyaltySection from '@/components/marketing/LoyaltySection';
+import MarketingPerformanceMetrics from '@/components/marketing/MarketingPerformanceMetrics';
 import { Badge } from '@/components/ui/badge';
 import { 
   LineChart, 
   MessageSquare, 
   BarChart3, 
   Gift, 
-  Mail
+  Mail,
+  Activity
 } from 'lucide-react';
 
 const Marketing = () => {
@@ -41,6 +43,10 @@ const Marketing = () => {
               <LineChart className="h-4 w-4" />
               Aperçu
             </TabsTrigger>
+            <TabsTrigger value="performance" className="flex items-center gap-1">
+              <Activity className="h-4 w-4" />
+              Performance
+            </TabsTrigger>
             <TabsTrigger value="campaigns" className="flex items-center gap-1">
               <MessageSquare className="h-4 w-4" />
               Campagnes
@@ -65,6 +71,10 @@ const Marketing = () => {
         <TabsContent value="overview" className="space-y-6">
           <MarketingOverview />
           <MarketingStats />
+        </TabsContent>
+        
+        <TabsContent value="performance" className="space-y-6">
+          <MarketingPerformanceMetrics />
         </TabsContent>
 
         <TabsContent value="campaigns" className="space-y-6">
