@@ -1,22 +1,29 @@
 
 import React from "react";
-import { Badge } from "@/components/ui/badge";
-import { Package2, MessageCircle } from "lucide-react";
+import { Package2, MessageCircle, BarChart3, ShoppingBag } from "lucide-react";
 
 const CalendarLegend: React.FC = () => {
   return (
-    <div className="flex gap-4 mt-4 justify-end">
-      <div className="flex items-center gap-2">
-        <Badge variant="outline" className="bg-blue-100">
-          <Package2 className="h-3 w-3 mr-1" />
-          Produit
-        </Badge>
+    <div className="flex flex-wrap gap-4 mt-2 justify-center text-sm text-gray-600">
+      <div className="flex items-center">
+        <div className="w-3 h-3 bg-blue-100 rounded mr-1"></div>
+        <Package2 className="h-3 w-3 mr-1" />
+        <span>Produits</span>
       </div>
-      <div className="flex items-center gap-2">
-        <Badge variant="outline" className="bg-green-100">
-          <MessageCircle className="h-3 w-3 mr-1" />
-          Message
-        </Badge>
+      <div className="flex items-center">
+        <div className="w-3 h-3 bg-green-100 rounded mr-1"></div>
+        <MessageCircle className="h-3 w-3 mr-1" />
+        <span>Messages</span>
+      </div>
+      <div className="flex items-center">
+        <div className="w-3 h-3 bg-purple-100 rounded mr-1"></div>
+        <BarChart3 className="h-3 w-3 mr-1" />
+        <span>Marketing</span>
+      </div>
+      <div className="flex items-center">
+        <div className="w-3 h-3 bg-orange-100 rounded mr-1"></div>
+        <ShoppingBag className="h-3 w-3 mr-1" />
+        <span>Commandes</span>
       </div>
     </div>
   );

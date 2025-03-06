@@ -31,6 +31,30 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
   onSelectEvent, 
   onSelectSlot 
 }) => {
+  // Function to determine the event background color based on event type
+  const eventPropGetter = (event: ScheduledEvent) => {
+    let backgroundColor = "";
+    
+    switch (event.type) {
+      case "product":
+        backgroundColor = "bg-blue-100";
+        break;
+      case "message":
+        backgroundColor = "bg-green-100";
+        break;
+      case "marketing":
+        backgroundColor = "bg-purple-100";
+        break;
+      case "order":
+        backgroundColor = "bg-orange-100";
+        break;
+      default:
+        backgroundColor = "bg-gray-100";
+    }
+    
+    return { className: backgroundColor };
+  };
+
   return (
     <div className="h-[600px] relative">
       {isLoading ? (
@@ -52,6 +76,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
         onSelectEvent={onSelectEvent}
         onSelectSlot={onSelectSlot}
         selectable
+        eventPropGetter={eventPropGetter}
         messages={{
           next: "Suivant",
           previous: "Précédent",

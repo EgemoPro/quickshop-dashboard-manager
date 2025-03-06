@@ -21,10 +21,12 @@ const PlanningFilters: React.FC<PlanningFiltersProps> = ({
   return (
     <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
       <Tabs value={activeTab} onValueChange={onTabChange} className="w-full sm:w-auto">
-        <TabsList>
+        <TabsList className="grid grid-cols-3 sm:grid-cols-5 w-full sm:w-auto">
           <TabsTrigger value="all">Tous</TabsTrigger>
           <TabsTrigger value="products">Produits</TabsTrigger>
           <TabsTrigger value="messages">Messages</TabsTrigger>
+          <TabsTrigger value="marketing">Marketing</TabsTrigger>
+          <TabsTrigger value="orders">Commandes</TabsTrigger>
         </TabsList>
       </Tabs>
       

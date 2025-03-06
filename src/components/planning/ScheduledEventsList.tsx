@@ -3,7 +3,7 @@ import React from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
-import { Package2, MessageCircle, Edit, Trash2, Loader2 } from "lucide-react";
+import { Package2, MessageCircle, Edit, Trash2, Loader2, BarChart3, ShoppingBag } from "lucide-react";
 import { ScheduledEvent } from "@/store/slices/planningSlice";
 
 interface ScheduledEventsListProps {
@@ -36,17 +36,54 @@ const ScheduledEventsList: React.FC<ScheduledEventsListProps> = ({
     );
   }
 
+  const getEventIcon = (event: ScheduledEvent) => {
+    switch (event.type) {
+      case "product":
+        return <Package2 className="h-5 w-5" />;
+      case "message":
+        return <MessageCircle className="h-5 w-5" />;
+      case "marketing":
+        return <BarChart3 className="h-5 w-5" />;
+      case "order":
+        return <ShoppingBag className="h-5 w-5" />;
+      default:
+        return <MessageCircle className="h-5 w-5" />;
+    }
+  };
+
+  const getEventBgClass = (event: ScheduledEvent) => {
+    switch (event.type) {
+      case "product":
+        return "bg-blue-100";
+      case "message":
+        return "bg-green-100";
+      case "marketing":
+        return "bg-purple-100";
+      case "order":
+        return "bg-orange-100";
+      default:
+        return "bg-gray-100";
+    }
+  };
+
+  const getEventIdInfo = (event: ScheduledEvent) => {
+    if (event.productId) {
+      return `Produit: ${event.productId}`;
+    } else if (event.campaignId) {
+      return `Campagne: ${event.campaignId}`;
+    } else if (event.orderId) {
+      return `Commande: ${event.orderId}`;
+    }
+    return null;
+  };
+
   return (
     <div className="space-y-4">
       {events.map(event => (
         <div key={event.id} className="flex justify-between items-center p-3 border rounded-lg hover:bg-slate-50 transition-colors">
           <div className="flex items-center gap-3">
-            <div className={`rounded-md p-2 ${event.type === "product" ? "bg-blue-100" : "bg-green-100"}`}>
-              {event.type === "product" ? (
-                <Package2 className="h-5 w-5" />
-              ) : (
-                <MessageCircle className="h-5 w-5" />
-              )}
+            <div className={`rounded-md p-2 ${getEventBgClass(event)}`}>
+              {getEventIcon(event)}
             </div>
             <div>
               <h3 className="font-medium">{event.title}</h3>
@@ -56,6 +93,11 @@ const ScheduledEventsList: React.FC<ScheduledEventsListProps> = ({
               {event.description && (
                 <p className="text-sm text-gray-500 truncate max-w-xs">
                   {event.description}
+                </p>
+              )}
+              {getEventIdInfo(event) && (
+                <p className="text-xs text-gray-400 mt-1">
+                  {getEventIdInfo(event)}
                 </p>
               )}
             </div>

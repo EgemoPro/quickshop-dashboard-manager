@@ -2,7 +2,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Event types
-export type EventType = "product" | "message";
+export type EventType = "product" | "message" | "marketing" | "order";
 
 export interface ScheduledEvent {
   id: string;
@@ -12,6 +12,8 @@ export interface ScheduledEvent {
   type: EventType;
   description?: string;
   productId?: string;
+  campaignId?: string;
+  orderId?: string;
 }
 
 interface PlanningState {
@@ -50,6 +52,24 @@ const generateSampleEvents = (): ScheduledEvent[] => {
       end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5, 10, 0),
       type: "product",
       productId: "PRD-23456"
+    },
+    {
+      id: "4",
+      title: "Campagne Marketing Soldes d'Été",
+      start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2, 12, 0),
+      end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2, 13, 0),
+      type: "marketing",
+      campaignId: "camp-001",
+      description: "Lancement de la campagne promotionnelle pour les soldes d'été"
+    },
+    {
+      id: "5",
+      title: "Livraison Commande #ORD-582791",
+      start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 4, 8, 0),
+      end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 4, 9, 0),
+      type: "order",
+      orderId: "ORD-582791",
+      description: "Livraison prévue pour la commande de Jean Dupont"
     }
   ];
 };

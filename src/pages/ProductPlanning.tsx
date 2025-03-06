@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { format, addDays } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -45,7 +44,9 @@ const ProductPlanning = () => {
     startTime: "10:00",
     endDate: format(new Date(), "yyyy-MM-dd"),
     endTime: "11:00",
-    productId: ""
+    productId: "",
+    campaignId: "",
+    orderId: ""
   });
 
   useEffect(() => {
@@ -61,7 +62,9 @@ const ProductPlanning = () => {
     const matchesType = 
       activeTab === "all" || 
       (activeTab === "products" && event.type === "product") || 
-      (activeTab === "messages" && event.type === "message");
+      (activeTab === "messages" && event.type === "message") ||
+      (activeTab === "marketing" && event.type === "marketing") ||
+      (activeTab === "orders" && event.type === "order");
     
     const matchesSearch = 
       searchTerm === "" || 
@@ -94,7 +97,9 @@ const ProductPlanning = () => {
       startTime: "10:00",
       endDate: format(tomorrow, "yyyy-MM-dd"),
       endTime: "11:00",
-      productId: ""
+      productId: "",
+      campaignId: "",
+      orderId: ""
     });
     
     setShowAddDialog(true);
@@ -119,7 +124,9 @@ const ProductPlanning = () => {
       startTime: format(event.start, "HH:mm"),
       endDate: format(event.end, "yyyy-MM-dd"),
       endTime: format(event.end, "HH:mm"),
-      productId: event.productId || ""
+      productId: event.productId || "",
+      campaignId: event.campaignId || "",
+      orderId: event.orderId || ""
     });
     
     setShowEditDialog(true);
@@ -143,7 +150,9 @@ const ProductPlanning = () => {
       end: endDateTime,
       type: eventForm.type,
       description: eventForm.description,
-      ...(eventForm.type === "product" && { productId: eventForm.productId || undefined })
+      ...(eventForm.type === "product" && { productId: eventForm.productId || undefined }),
+      ...(eventForm.type === "marketing" && { campaignId: eventForm.campaignId || undefined }),
+      ...(eventForm.type === "order" && { orderId: eventForm.orderId || undefined })
     };
     
     dispatch(addEvent(newEvent));
@@ -169,9 +178,12 @@ const ProductPlanning = () => {
       end: endDateTime,
       type: eventForm.type,
       description: eventForm.description,
-      ...(eventForm.type === "product" 
-          ? { productId: eventForm.productId || undefined }
-          : { productId: undefined })
+      productId: undefined,
+      campaignId: undefined,
+      orderId: undefined,
+      ...(eventForm.type === "product" && { productId: eventForm.productId || undefined }),
+      ...(eventForm.type === "marketing" && { campaignId: eventForm.campaignId || undefined }),
+      ...(eventForm.type === "order" && { orderId: eventForm.orderId || undefined })
     };
     
     dispatch(updateEvent(updatedEvent));
