@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit } from "lucide-react";
+import { Edit, ExternalLink } from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
+import { Link } from "react-router-dom";
 import StoreProfileDialog from "./StoreProfileDialog";
 import ProfileHeader from "./profile/ProfileHeader";
 import ProfileAvatar from "./profile/ProfileAvatar";
@@ -35,6 +36,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ darkMode }) => {
       <Card className={`border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'} transition-colors duration-300`}>
         <CardHeader className="pb-2">
           <ProfileHeader user={user} darkMode={darkMode} />
+          <div className="flex justify-end">
+            <Link to="/strategy">
+              <Button variant="link" size="sm" className="text-primary flex items-center gap-1">
+                <ExternalLink className="h-3 w-3" />
+                Page de stratégie complète
+              </Button>
+            </Link>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center text-center mb-6">

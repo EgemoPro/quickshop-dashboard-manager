@@ -21,7 +21,9 @@ import {
   ChevronDown,
   ChevronUp,
   Calendar,
-  ChartCandlestick
+  ChartCandlestick,
+  LineChart,
+  Target
 } from "lucide-react";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
@@ -40,6 +42,7 @@ import Marketplace from "./pages/Marketplace";
 import Analytics from "./pages/Analytics";
 import Payments from "./pages/Payments";
 import Shipping from "./pages/Shipping";
+import Strategy from "./pages/Strategy";
 import { cn } from "./lib/utils";
 
 const queryClient = new QueryClient();
@@ -201,6 +204,7 @@ const Navigation = () => {
     },
     { to: "/chat", icon: MessageCircle, label: "Chat" },
     { to: "/marketplace", icon: Store, label: "Marketplace" },
+    { to: "/strategy", icon: Target, label: "Stratégie" },
     { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
   ];
 
@@ -283,6 +287,7 @@ const AppContent = () => {
         <Route path="/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
         <Route path="/payments" element={<DashboardLayout><Payments /></DashboardLayout>} />
         <Route path="/shipping" element={<DashboardLayout><Shipping /></DashboardLayout>} />
+        <Route path="/strategy" element={<DashboardLayout><Strategy /></DashboardLayout>} />
         <Route path="/landing" element={<Landing />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

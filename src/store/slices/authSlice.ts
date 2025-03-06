@@ -1,4 +1,3 @@
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface UserPreferences {
@@ -23,6 +22,7 @@ export interface User {
   email: string;
   phone?: string;
   avatar: string;
+  bio?: string;
   role: "admin" | "vendor" | "customer";
   preferences?: UserPreferences;
   storeInfo?: StoreInfo;
@@ -43,6 +43,7 @@ const initialState: AuthState = {
     email: "jean.dupont@example.com",
     phone: "+33123456789",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
+    bio: "Entrepreneur passionné par le commerce en ligne et les produits artisanaux de qualité.",
     role: "vendor",
     preferences: {
       darkMode: false,
