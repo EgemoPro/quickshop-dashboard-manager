@@ -111,7 +111,7 @@ const DraggableCard: React.FC<DraggableCardProps> = ({ id, index, column, childr
       {/* Drag handle: border-top that indicates draggable area */}
       <div 
         ref={dragHandleRef} 
-        className="absolute top-0 left-0 right-0 h-4 bg-transparent cursor-move hover:bg-primary/10 rounded-t-lg flex items-center justify-center"
+        className="absolute transform translate-y-4 top-0 left-0 right-0 h-4 bg-transparent cursor-move hover:bg-primary/10 rounded-t-lg flex items-center justify-center"
       >
         <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
       </div>
