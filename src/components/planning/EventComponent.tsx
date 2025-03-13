@@ -16,40 +16,40 @@ const EventComponent: React.FC<EventComponentProps> = ({ event }) => {
   const getEventIcon = () => {
     switch (event.type) {
       case "product":
-        return <Package2 className="h-3 w-3" />;
+        return <Package2 className="h-6 w-6" />;
       case "message":
-        return <MessageCircle className="h-3 w-3" />;
+        return <MessageCircle className="h-6 w-6" />;
       case "marketing":
-        return <BarChart3 className="h-3 w-3" />;
+        return <BarChart3 className="h-6 w-6" />;
       case "order":
-        return <ShoppingBag className="h-3 w-3" />;
+        return <ShoppingBag className="h-6 w-6" />;
       default:
-        return <MessageCircle className="h-3 w-3" />;
+        return <MessageCircle className="h-6 w-6" />;
     }
   };
 
   const getEventClass = () => {
     switch (event.type) {
       case "product":
-        return "bg-blue-100";
+        return "bg-blue-500";
       case "message":
-        return "bg-green-100";
+        return "bg-green-500";
       case "marketing":
-        return "bg-purple-100";
+        return "bg-purple-500";
       case "order":
-        return "bg-orange-100";
+        return "bg-orange-500";
       default:
-        return "bg-gray-100";
+        return "bg-gray-500";
     }
   };
 
   return (
     <div 
-      className={`rounded px-2 py-1 ${getEventClass()} flex items-center justify-between group`}
+      className={`rounded px-2 py-1 ${getEventClass()}  flex items-center justify-between group`}
     >
-      <div className="flex items-center gap-1">
+      <div className="flex items-center flex-row gap-2">
         {getEventIcon()}
-        <span className="text-xs font-medium truncate">
+        <span className="text-xs font-medium truncate text-wrap">
           {event.title}
         </span>
       </div>

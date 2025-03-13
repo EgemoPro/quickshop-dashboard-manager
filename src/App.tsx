@@ -273,7 +273,7 @@ const AppContent = () => {
   const isLandingPage = location.pathname === "/landing";
   
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Routes>
         <Route path="/" element={<Navigate to="/landing" replace />} />
         <Route path="/dashboard" element={<DashboardLayout><Index /></DashboardLayout>} />

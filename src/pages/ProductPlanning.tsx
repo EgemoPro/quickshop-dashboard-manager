@@ -3,9 +3,9 @@ import { format, addDays } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { 
-  setActiveTab, 
-  setSearchTerm, 
+import {
+  setActiveTab,
+  setSearchTerm,
   setLoading,
   addEvent,
   updateEvent,
@@ -59,18 +59,18 @@ const ProductPlanning = () => {
 
   // Filter events based on active tab and search term
   const filteredEvents = events.filter(event => {
-    const matchesType = 
-      activeTab === "all" || 
-      (activeTab === "products" && event.type === "product") || 
+    const matchesType =
+      activeTab === "all" ||
+      (activeTab === "products" && event.type === "product") ||
       (activeTab === "messages" && event.type === "message") ||
       (activeTab === "marketing" && event.type === "marketing") ||
       (activeTab === "orders" && event.type === "order");
-    
-    const matchesSearch = 
-      searchTerm === "" || 
+
+    const matchesSearch =
+      searchTerm === "" ||
       event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (event.description && event.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+
     return matchesType && matchesSearch;
   });
 
@@ -88,7 +88,7 @@ const ProductPlanning = () => {
   const openAddDialog = () => {
     const now = new Date();
     const tomorrow = addDays(now, 1);
-    
+
     setEventForm({
       title: "",
       description: "",
@@ -101,7 +101,7 @@ const ProductPlanning = () => {
       campaignId: "",
       orderId: ""
     });
-    
+
     setShowAddDialog(true);
   };
 
@@ -128,7 +128,7 @@ const ProductPlanning = () => {
       campaignId: event.campaignId || "",
       orderId: event.orderId || ""
     });
-    
+
     setShowEditDialog(true);
   };
 
@@ -142,7 +142,7 @@ const ProductPlanning = () => {
   const handleAddEvent = () => {
     const startDateTime = new Date(`${eventForm.startDate}T${eventForm.startTime}`);
     const endDateTime = new Date(`${eventForm.endDate}T${eventForm.endTime}`);
-    
+
     const newEvent: ScheduledEvent = {
       id: Math.random().toString(36).substring(2, 11),
       title: eventForm.title,
@@ -154,10 +154,10 @@ const ProductPlanning = () => {
       ...(eventForm.type === "marketing" && { campaignId: eventForm.campaignId || undefined }),
       ...(eventForm.type === "order" && { orderId: eventForm.orderId || undefined })
     };
-    
+
     dispatch(addEvent(newEvent));
     setShowAddDialog(false);
-    
+
     toast({
       title: "Événement ajouté",
       description: `L'événement "${newEvent.title}" a été ajouté au calendrier.`
@@ -167,10 +167,10 @@ const ProductPlanning = () => {
   // Handle edit event
   const handleEditEvent = () => {
     if (!currentEvent) return;
-    
+
     const startDateTime = new Date(`${eventForm.startDate}T${eventForm.startTime}`);
     const endDateTime = new Date(`${eventForm.endDate}T${eventForm.endTime}`);
-    
+
     const updatedEvent: ScheduledEvent = {
       ...currentEvent,
       title: eventForm.title,
@@ -185,11 +185,11 @@ const ProductPlanning = () => {
       ...(eventForm.type === "marketing" && { campaignId: eventForm.campaignId || undefined }),
       ...(eventForm.type === "order" && { orderId: eventForm.orderId || undefined })
     };
-    
+
     dispatch(updateEvent(updatedEvent));
     setShowEditDialog(false);
     setCurrentEvent(null);
-    
+
     toast({
       title: "Événement modifié",
       description: `L'événement "${updatedEvent.title}" a été mis à jour.`
@@ -199,11 +199,11 @@ const ProductPlanning = () => {
   // Handle delete event
   const handleDeleteEvent = () => {
     if (!currentEvent) return;
-    
+
     dispatch(deleteEvent(currentEvent.id));
     setShowDeleteDialog(false);
     setCurrentEvent(null);
-    
+
     toast({
       title: "Événement supprimé",
       description: `L'événement a été supprimé du calendrier.`,
@@ -240,38 +240,38 @@ const ProductPlanning = () => {
   return (
     <div className="container p-4 md:p-6 mx-auto animate-fade-in">
       <h1 className="text-2xl font-bold mb-6">Planning de Publication</h1>
-      
+
       <Card className="mb-6 relative">
-        <PlanningHeader 
-          onFocusCalendar={handleFocusCalendar} 
-          onAddPublication={openAddDialog} 
+        <PlanningHeader
+          onFocusCalendar={handleFocusCalendar}
+          onAddPublication={openAddDialog}
         />
         <CardContent>
-          <PlanningFilters 
-            activeTab={activeTab} 
-            searchTerm={searchTerm} 
-            onTabChange={handleTabChange} 
-            onSearchChange={handleSearch} 
+          <PlanningFilters
+            activeTab={activeTab}
+            searchTerm={searchTerm}
+            onTabChange={handleTabChange}
+            onSearchChange={handleSearch}
           />
-          
-          <CalendarComponent 
+
+          <CalendarComponent
             events={filteredEvents}
             isLoading={isLoading}
             onSelectEvent={openEditDialog}
             onSelectSlot={handleSelectSlot}
           />
-          
+
           <CalendarLegend />
         </CardContent>
       </Card>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-2 relative">
           <CardHeader>
             <CardTitle>Publications Programmées</CardTitle>
           </CardHeader>
           <CardContent>
-            <ScheduledEventsList 
+            <ScheduledEventsList
               events={filteredEvents}
               isLoading={isLoading}
               onEditEvent={openEditDialog}
@@ -279,13 +279,13 @@ const ProductPlanning = () => {
             />
           </CardContent>
         </Card>
-        
+
         <Card className="relative">
           <CardHeader>
             <CardTitle>Statistiques</CardTitle>
           </CardHeader>
           <CardContent>
-            <PlanningStats 
+            <PlanningStats
               events={events}
               isLoading={isLoading}
               onAddEvent={openAddDialog}
@@ -294,17 +294,17 @@ const ProductPlanning = () => {
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Dialogs */}
-      <AddEventDialog 
+      <AddEventDialog
         open={showAddDialog}
         onOpenChange={setShowAddDialog}
         eventForm={eventForm}
         onEventFormChange={handleEventFormChange}
         onAddEvent={handleAddEvent}
       />
-      
-      <EditEventDialog 
+
+      <EditEventDialog
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
         eventForm={eventForm}
@@ -317,8 +317,8 @@ const ProductPlanning = () => {
           }
         }}
       />
-      
-      <DeleteEventDialog 
+
+      <DeleteEventDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
         event={currentEvent}

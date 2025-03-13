@@ -186,15 +186,6 @@ const Settings = () => {
         </header>
 
         <div className="grid gap-8">
-          {/* Store Information */}
-          <StoreInfoCard
-            storeName={settings.storeName}
-            storeDescription={settings.storeDescription}
-            storeAddress={settings.storeAddress}
-            storeEmail={settings.storeEmail}
-            storePhone={settings.storePhone}
-            onInputChange={handleInputChange}
-          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Notifications */}

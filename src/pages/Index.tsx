@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Provider } from "react-redux";
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { DollarSign, Users, ShoppingCart, TrendingUp, Undo2 } from "lucide-react";
+import { DollarSign, Users, ShoppingCart, TrendingUp, Undo2, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { store } from "@/store/store";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
@@ -61,9 +61,9 @@ const DashboardContent = () => {
     switch (cardId) {
       case DASHBOARD_CARDS.WELCOME:
         return (
-          <DraggableCard key={cardId} id={cardId} index={index} column={column}>
+          // <DraggableCard key={cardId} id={cardId} index={index} column={column}>
             <WelcomeSection darkMode={false} />
-          </DraggableCard>
+          // </DraggableCard> 
         );
       case DASHBOARD_CARDS.SALES_CHART:
         return (
@@ -116,7 +116,7 @@ const DashboardContent = () => {
     <DndProvider backend={HTML5Backend}>
       <>
         {/* Stats Cards */}
-        <section className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <section className="mb-8 grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <motion.div 
             custom={0}
             variants={fadeInUp}
@@ -181,15 +181,24 @@ const DashboardContent = () => {
         </section>
 
         {/* Reset Layout Button */}
-        <div className="flex justify-end mb-4">
-          <Button 
+        <div className="flex justify-end mb-4 space-x-2">
+        <Button 
             variant="outline" 
             size="sm" 
             onClick={() => dispatch(resetLayout())}
             className="flex items-center gap-1"
           >
             <Undo2 className="h-4 w-4" />
-            Réinitialiser disposition
+            {/* Réinitialiser disposition avec une popover */}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => dispatch(resetLayout())}
+            className="flex items-center gap-1"
+          >
+            <MoreHorizontal className="h-4 w-4" />
+            {/* Réinitialiser disposition avec une popover */}
           </Button>
         </div>
 

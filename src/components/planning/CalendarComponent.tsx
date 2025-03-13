@@ -72,6 +72,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
         style={{ height: "100%" }}
         components={{
           event: EventComponent as any,
+          
         }}
         onSelectEvent={onSelectEvent}
         onSelectSlot={onSelectSlot}

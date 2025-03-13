@@ -21,8 +21,8 @@ interface StatsState {
 }
 
 const initialState: StatsState = {
-  totalSales: "12478",
-  salesGrowth: "+12.5%",
+  totalSales: "12472",
+  salesGrowth: "+12.6%",
   newCustomers: "76",
   customerGrowth: "+5.2%",
   pendingOrders: "23",

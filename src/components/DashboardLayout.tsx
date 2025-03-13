@@ -23,14 +23,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
   
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-gray-50 text-gray-800'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-gray-50/90 text-gray-800'}`}>
       <DashboardHeader 
         darkMode={darkMode} 
         toggleDarkMode={toggleDarkMode} 
         mobileMenuOpen={mobileMenuOpen} 
         setMobileMenuOpen={setMobileMenuOpen} 
       />
-      <main className={`pt-16 ${isMobile ? 'pl-0 pb-20' : 'pl-16'} transition-all duration-300`}>
+      <main className={`pt-16 ${isMobile ? 'pl-0 pb-20' : 'pl-16'} transition-all duration-300 backdrop-blur-sm`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           {children}
         </div>

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
+// import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -67,7 +67,9 @@ const UserProfileStrategy: React.FC<UserProfileStrategyProps> = ({ user }) => {
             <AvatarImage src={userData.avatar} alt={userData.fullName} />
             <AvatarFallback>{userData.fullName.slice(0, 2).toUpperCase()}</AvatarFallback>
           </Avatar>
-          <Button size="sm" variant="outline" className="flex items-center gap-2">
+          <Button size="sm"
+            onClick={(e) => null}
+            variant="outline" className="flex items-center gap-2">
             <Upload className="h-4 w-4" />
             Modifier la photo
           </Button>
