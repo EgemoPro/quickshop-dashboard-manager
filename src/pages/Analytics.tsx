@@ -11,12 +11,14 @@ import { Badge } from "@/components/ui/badge";
 import { setPeriod } from "@/store/slices/salesSlice";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/format-numbers";
 
 const Analytics = () => {
   const dispatch = useAppDispatch();
   const isMobile = useIsMobile();
   const { salesData, period } = useAppSelector((state) => state.sales);
   const { topSellingProducts, channelPerformance } = useAppSelector((state) => state.stats);
+  const {currencySymbol} = useAppSelector(state => state.settings);
   
   const [reportType, setReportType] = useState("sales");
   
@@ -44,7 +46,7 @@ const Analytics = () => {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Ventes Totales</CardTitle>
-              <CardDescription className="text-2xl font-bold">12,478 €</CardDescription>
+              <CardDescription className="text-2xl font-bold">{formatCurrency(12478,currencySymbol )} </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-xs text-green-500 flex items-center">
@@ -145,7 +147,7 @@ const Analytics = () => {
                         <Tooltip />
                         <Legend />
                         <Bar yAxisId="left" dataKey="ventes" name="Nombre de ventes" fill="#8884d8" />
-                        <Bar yAxisId="right" dataKey="revenus" name="Revenus (€)" fill="#82ca9d" />
+                        <Bar yAxisId="right" dataKey="revenus" name={`Revenus (${currencySymbol})`} fill="#82ca9d" />
                       </BarChart>
                     </ResponsiveContainer>
                   )}

@@ -47,7 +47,7 @@ const Marketplace = () => {
               
               <MarketplaceSearch 
                 searchTerm={searchTerm} 
-                onSearchChange={handleSearch} 
+                onSearchChange={handleSearch}
               />
             </div>
             

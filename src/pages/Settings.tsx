@@ -8,7 +8,7 @@ import { useAppDispatch } from "@/store/hooks";
 import { updateSettings } from "@/store/slices/settingsSlice";
 
 // Import the newly created components
-import StoreInfoCard from "@/components/settings/StoreInfoCard";
+// import StoreInfoCard from "@/components/settings/StoreInfoCard";
 import NotificationsCard from "@/components/settings/NotificationsCard";
 import RegionalSettingsCard from "@/components/settings/RegionalSettingsCard";
 import SecurityCard from "@/components/settings/SecurityCard";

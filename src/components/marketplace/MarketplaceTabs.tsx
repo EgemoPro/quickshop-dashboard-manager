@@ -5,8 +5,10 @@ import MarketplaceApp from "./MarketplaceApp";
 import SocialChannel from "./SocialChannel";
 import PaymentMethod from "./PaymentMethod";
 import ShippingOption from "./ShippingOption";
+import { useAppSelector } from "@/store/hooks";
 
 const MarketplaceTabs: React.FC = () => {
+    const {currencySymbol} = useAppSelector(state => state.settings)
   return (
     <>
       <TabsContent value="overview" className="space-y-4">
@@ -37,6 +39,7 @@ const MarketplaceTabs: React.FC = () => {
         <p>Gérez les applications installées sur votre marketplace. Vous pouvez installer de nouvelles applications pour étendre les fonctionnalités de votre boutique.</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* implementer les micro-services ici */}
           <MarketplaceApp 
             name="Avis Clients" 
             description="Collectez et affichez les avis de vos clients." 
@@ -47,7 +50,7 @@ const MarketplaceTabs: React.FC = () => {
             name="Optimisation SEO" 
             description="Améliorez le référencement de votre boutique." 
             category="Marketing" 
-            price="9.99€/mois" 
+            price={`9.99 ${currencySymbol}/mois`}
           />
           <MarketplaceApp 
             name="Chat en Direct" 
@@ -77,8 +80,8 @@ const MarketplaceTabs: React.FC = () => {
       <TabsContent value="shipping" className="space-y-4">
         <p>Gérez vos options de livraison pour offrir une expérience d'expédition optimale à vos clients.</p>
         
-        <ShippingOption name="Livraison Standard" description="Livraison en 3-5 jours ouvrables." price="4.99€" isEnabled={true} />
-        <ShippingOption name="Livraison Express" description="Livraison en 1-2 jours ouvrables." price="9.99€" isEnabled={false} />
+        <ShippingOption name="Livraison Standard" description="Livraison en 3-5 jours ouvrables." price={`4.99 ${currencySymbol}`} isEnabled={true} />
+        <ShippingOption name="Livraison Express" description="Livraison en 1-2 jours ouvrables." price={`9.99 ${currencySymbol}`} isEnabled={false} />
         <ShippingOption name="Retrait en Magasin" description="Les clients peuvent retirer leurs commandes en magasin." price="Gratuit" isEnabled={true} />
       </TabsContent>
     </>

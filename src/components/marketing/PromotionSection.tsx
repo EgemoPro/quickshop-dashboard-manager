@@ -18,6 +18,7 @@ import { PromoCode, addPromoCode, updatePromoCode, deletePromoCode, togglePromoC
 const PromotionSection = () => {
   const dispatch = useDispatch();
   const { promoCodes } = useSelector((state: RootState) => state.marketing);
+  const {  currencySymbol } = useSelector((state: RootState) => state.settings);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPromoCode, setEditingPromoCode] = useState<PromoCode | null>(null);
   
@@ -172,7 +173,7 @@ const PromotionSection = () => {
                           step={discountType === 'percentage' ? '1' : '0.01'}
                           required
                         />
-                        <span className="ml-2">{discountType === 'percentage' ? '%' : '€'}</span>
+                        <span className="ml-2">{discountType === 'percentage' ? '%' :  currencySymbol}</span>
                       </div>
                     </div>
                   )}
@@ -187,7 +188,7 @@ const PromotionSection = () => {
                         min="0"
                         step="0.01"
                       />
-                      <span className="ml-2">€</span>
+                      <span className="ml-2"> {currencySymbol}</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
@@ -308,7 +309,7 @@ const PromotionSection = () => {
                       {promoCode.discountType === 'fixed' && <Tag className="h-3.5 w-3.5" />}
                       {promoCode.discountType === 'freeShipping' && <Package className="h-3.5 w-3.5" />}
                       {promoCode.discountType === 'percentage' && `${promoCode.discountValue}% de réduction`}
-                      {promoCode.discountType === 'fixed' && `${promoCode.discountValue}€ de réduction`}
+                      {promoCode.discountType === 'fixed' && `${promoCode.discountValue} {currencySymbol} de réduction`}
                       {promoCode.discountType === 'freeShipping' && 'Livraison gratuite'}
                     </Badge>
                   </div>
@@ -316,7 +317,7 @@ const PromotionSection = () => {
                   <div className="text-sm text-gray-500">
                     {promoCode.minPurchase > 0 && (
                       <div className="mt-1">
-                        <span className="font-medium">Achat minimum:</span> {promoCode.minPurchase}€
+                        <span className="font-medium">Achat minimum:</span> {promoCode.minPurchase} {currencySymbol}
                       </div>
                     )}
                     <div className="mt-1">

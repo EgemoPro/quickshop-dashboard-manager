@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Label } from '@/components/ui/label';
+// import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Gift, Users, Star, CreditCard, BarChart3, Settings } from 'lucide-react';
+import { useAppSelector } from '@/store/hooks';
 
 interface ProgramSetting {
   id: string;
@@ -29,9 +30,9 @@ interface Affiliate {
 
 const programSettings: ProgramSetting[] = [
   {
-    id: 'points_per_euro',
-    name: 'Points par Euro',
-    description: 'Nombre de points attribués pour chaque euro dépensé',
+    id: 'points_per_sous',
+    name: 'Points par Montant',
+    description: 'Nombre de points attribués pour chaque sous dépensé',
     value: 10,
     type: 'number'
   },
@@ -52,7 +53,7 @@ const programSettings: ProgramSetting[] = [
   {
     id: 'redemption_ratio',
     name: 'Ratio d\'échange',
-    description: 'Valeur en euro de 100 points',
+    description: 'Valeur en sous de 100 points',
     value: 5,
     type: 'number'
   },
@@ -113,6 +114,7 @@ const LoyaltySection = () => {
   const [settings, setSettings] = useState<ProgramSetting[]>(programSettings);
   const [affiliatesList, setAffiliatesList] = useState<Affiliate[]>(affiliates);
   const [showSaveMessage, setShowSaveMessage] = useState(false);
+  const {currencySymbol} = useAppSelector(state => state.settings)
 
   const updateSetting = (id: string, value: string | number | boolean) => {
     setSettings(settings.map(setting => 
@@ -197,10 +199,10 @@ const LoyaltySection = () => {
                             className="max-w-[200px]"
                           />
                           {setting.id === 'redemption_ratio' && (
-                            <span className="ml-2">€ pour 100 points</span>
+                            <span className="ml-2"> {currencySymbol} pour 100 points</span>
                           )}
-                          {setting.id === 'points_per_euro' && (
-                            <span className="ml-2">points par €</span>
+                          {setting.id === 'points_per_sous' && (
+                            <span className="ml-2">points par  {currencySymbol}</span>
                           )}
                         </div>
                       </CardContent>
@@ -216,17 +218,17 @@ const LoyaltySection = () => {
                 <p className="mt-2 text-sm">
                   Avec les paramètres actuels, 100 points ont une valeur de 
                   <span className="font-bold mx-1">
-                    {settings.find(s => s.id === 'redemption_ratio')?.value as number}€
+                    {settings.find(s => s.id === 'redemption_ratio')?.value as number} {currencySymbol}
                   </span>
                 </p>
                 <p className="mt-1 text-sm">
                   Un client doit dépenser 
                   <span className="font-bold mx-1">
-                    {100 / (settings.find(s => s.id === 'points_per_euro')?.value as number)}€
+                    {100 / (settings.find(s => s.id === 'points_per_sous')?.value as number)} {currencySymbol}
                   </span>
                   pour obtenir 100 points (soit une réduction de 
                   <span className="font-bold mx-1">
-                    {((settings.find(s => s.id === 'redemption_ratio')?.value as number) / (100 / (settings.find(s => s.id === 'points_per_euro')?.value as number)) * 100).toFixed(1)}%
+                    {((settings.find(s => s.id === 'redemption_ratio')?.value as number) / (100 / (settings.find(s => s.id === 'points_per_sous')?.value as number)) * 100).toFixed(1)}%
                   </span>
                   )
                 </p>
@@ -264,7 +266,7 @@ const LoyaltySection = () => {
                         <div className="grid grid-cols-2 gap-2 mt-2">
                           <div className="border rounded p-2 bg-gray-50">
                             <p className="text-xs text-gray-500">Gains</p>
-                            <p className="font-medium">{affiliate.earnings.toFixed(2)}€</p>
+                            <p className="font-medium">{affiliate.earnings.toFixed(2)} {currencySymbol}</p>
                           </div>
                           <div className="border rounded p-2 bg-gray-50">
                             <p className="text-xs text-gray-500">Ventes</p>

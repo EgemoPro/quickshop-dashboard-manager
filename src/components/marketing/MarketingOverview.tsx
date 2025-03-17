@@ -21,6 +21,7 @@ const performanceData = [
 
 const MarketingOverview = () => {
   const { campaigns, promoCodes } = useSelector((state: RootState) => state.marketing);
+  const { currencySymbol } = useSelector((state: RootState) => state.settings);
   
   // Calculate active campaigns
   const activeCampaigns = campaigns.filter(c => c.status === 'active').length;
@@ -46,7 +47,7 @@ const MarketingOverview = () => {
                 Revenus (30j)
               </p>
               <div className="flex items-center">
-                <span className="text-2xl font-bold">29,482€</span>
+                <span className="text-2xl font-bold">29,482 {currencySymbol}</span>
                 <span className={`ml-2 flex items-center text-sm ${revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {revenueChange >= 0 ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                   {Math.abs(revenueChange)}%
@@ -95,7 +96,7 @@ const MarketingOverview = () => {
                 <YAxis yAxisId="right" orientation="right" />
                 <Tooltip />
                 <Legend />
-                <Line yAxisId="left" type="monotone" dataKey="revenue" stroke="#8884d8" activeDot={{ r: 8 }} name="Revenus (€)" />
+                <Line yAxisId="left" type="monotone" dataKey="revenue" stroke="#8884d8" activeDot={{ r: 8 }} name={`Revenus (${currencySymbol})`} />
                 <Line yAxisId="left" type="monotone" dataKey="orders" stroke="#82ca9d" name="Commandes" />
                 <Line yAxisId="right" type="monotone" dataKey="visitors" stroke="#ffc658" name="Visiteurs" />
               </LineChart>

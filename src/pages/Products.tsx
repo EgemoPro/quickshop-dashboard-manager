@@ -237,7 +237,7 @@ const Products = () => {
                           )}
                           <div>
                             <h3 className="font-medium">{product.name}</h3>
-                            <p className="text-sm text-gray-500">Prix: {product.price}</p>
+                            <p className="text-sm text-gray-500">Prix: {product.price} {currencySymbol} </p>
                             <p className="text-sm text-gray-500">Catégorie: {product.category}</p>
                             <div className="flex items-center mt-1">
                               {product.images && product.images.length > 0 && (

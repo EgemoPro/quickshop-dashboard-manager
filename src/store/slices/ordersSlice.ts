@@ -30,7 +30,7 @@ const generateRandomOrders = (): Order[] => {
       id,
       customer: names[Math.floor(Math.random() * names.length)],
       date: date.toLocaleDateString(),
-      amount: `${(Math.random() * 450 + 50).toFixed(2)}€`,
+      amount: `${(Math.random() * 450 + 50).toFixed(2)}`,
       status: statuses[Math.floor(Math.random() * statuses.length)],
       products: Math.floor(Math.random() * 5) + 1,
     };

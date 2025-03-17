@@ -15,6 +15,7 @@ interface PerformanceData {
 
 const MarketingPerformanceMetrics = () => {
   const { campaigns } = useSelector((state: RootState) => state.marketing);
+  const { currencySymbol, currency } = useSelector((state: RootState) => state.settings);
 
   // Calculate total metrics
   const totalImpressions = campaigns.reduce((sum, campaign) => sum + campaign.performance.impressions, 0);
@@ -31,7 +32,7 @@ const MarketingPerformanceMetrics = () => {
     { name: 'Impressions', value: totalImpressions, target: 100000 },
     { name: 'Clicks', value: totalClicks, target: 10000 },
     { name: 'Conversions', value: totalConversions, target: 500 },
-    { name: 'Revenue (€)', value: totalRevenue, target: 5000 },
+    { name: `Revenue (${currencySymbol})`, value: totalRevenue, target: 5000 },
   ];
 
   // Determine the status based on ROI
@@ -48,12 +49,12 @@ const MarketingPerformanceMetrics = () => {
   const roiStatus = getROIStatus(overallROI);
 
   // Helper function to format numbers with commas
-  const formatNumber = (num: number): string => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const formatNumber = (num: number, slice: string=","): string => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, slice);
   };
 
   const formatCurrency = (num: number): string => {
-    return num.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+    return `${formatNumber(num, " ")} ${currencySymbol}`;
   };
 
   return (

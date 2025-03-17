@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { 
+import {
   ShoppingCart,
   Filter,
   Download,
@@ -37,49 +37,50 @@ const Orders = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const { recentOrders, isLoading } = useAppSelector(state => state.orders);
-  
+  const {currencySymbol } = useAppSelector(state => state.settings);
+
   // Local state
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState("newest");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [viewOrderDetails, setViewOrderDetails] = useState(false);
-  
+
   // Filter and sort orders
   const filteredOrders = recentOrders
     .filter(order => {
-      const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                           order.customer.toLowerCase().includes(searchQuery.toLowerCase());
-      
+      const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.customer.toLowerCase().includes(searchQuery.toLowerCase());
+
       if (statusFilter === "all") return matchesSearch;
       return matchesSearch && order.status === statusFilter;
     })
     .sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
-      
+
       if (sortOrder === "newest") {
         return dateB.getTime() - dateA.getTime();
       } else {
         return dateA.getTime() - dateB.getTime();
       }
     });
-  
+
   // Handle changing order status
   const handleStatusChange = (orderId: string, status: "Livrée" | "En cours" | "En attente" | "Annulée") => {
     dispatch(updateOrderStatus({ id: orderId, status }));
-    
+
     toast({
       title: "Statut mis à jour",
       description: `La commande ${orderId} a été mise à jour en "${status}".`,
     });
   };
-  
+
   // Export orders as CSV
   const exportOrders = () => {
     const headers = ["ID", "Client", "Date", "Montant", "Statut", "Produits"];
     const csvRows = [headers.join(",")];
-    
+
     recentOrders.forEach(order => {
       const row = [
         order.id,
@@ -91,7 +92,7 @@ const Orders = () => {
       ];
       csvRows.push(row.join(","));
     });
-    
+
     const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -100,16 +101,16 @@ const Orders = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     toast({
       title: "Export réussi",
       description: "Les commandes ont été exportées avec succès au format CSV.",
     });
   };
-  
+
   // Status badge variant
   const getStatusVariant = (status: string) => {
-    switch(status) {
+    switch (status) {
       case "Livrée": return "default";
       case "En cours": return "secondary";
       case "En attente": return "outline";
@@ -124,7 +125,7 @@ const Orders = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className={cn(isMobile ? "px-0 w-full" : "container px-4" ,"mx-auto py-8")}
+        className={cn(isMobile ? "px-0 w-full" : "container px-4", "mx-auto py-8")}
       >
         <header className="mb-8">
           <div className="flex justify-between items-center flex-wrap gap-4">
@@ -143,7 +144,7 @@ const Orders = () => {
               </Button>
             </div>
           </div>
-          
+
           {/* Search and Filter */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
@@ -155,7 +156,7 @@ const Orders = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            
+
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger>
                 <div className="flex items-center">
@@ -171,7 +172,7 @@ const Orders = () => {
                 <SelectItem value="Annulée">Annulée</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Select value={sortOrder} onValueChange={setSortOrder}>
               <SelectTrigger>
                 <div className="flex items-center">
@@ -187,7 +188,7 @@ const Orders = () => {
           </div>
         </header>
 
-        <Card className={cn(isMobile ? "" : "" , "p-6")}>
+        <Card className={cn(isMobile ? "" : "", "p-6")}>
           {isLoading ? (
             <div className="flex justify-center py-20">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -217,7 +218,7 @@ const Orders = () => {
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="text-right">
-                            <p className="font-medium">{order.amount}</p>
+                            <p className="font-medium">{order.amount} {currencySymbol}</p>
                             <Badge
                               variant={getStatusVariant(order.status) as "default" | "secondary" | "outline" | "destructive"}
                               className="flex items-center gap-1"
@@ -226,9 +227,9 @@ const Orders = () => {
                               {order.status}
                             </Badge>
                           </div>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => {
                               setSelectedOrder(order);
                               setViewOrderDetails(true);
@@ -251,7 +252,7 @@ const Orders = () => {
             </ScrollArea>
           )}
         </Card>
-        
+
         {/* Order Details Dialog */}
         {selectedOrder && (
           <Dialog open={viewOrderDetails} onOpenChange={setViewOrderDetails}>
@@ -262,21 +263,21 @@ const Orders = () => {
                   Détails de la commande {selectedOrder.id}
                 </DialogTitle>
               </DialogHeader>
-              
+
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-2">
                   <div className="font-medium">Client</div>
                   <div>{selectedOrder.customer}</div>
-                  
+
                   <div className="font-medium">Date</div>
                   <div>{selectedOrder.date}</div>
-                  
+
                   <div className="font-medium">Montant</div>
                   <div>{selectedOrder.amount}</div>
-                  
+
                   <div className="font-medium">Produits</div>
                   <div>{selectedOrder.products}</div>
-                  
+
                   <div className="font-medium">Statut actuel</div>
                   <div>
                     <Badge
@@ -288,32 +289,32 @@ const Orders = () => {
                     </Badge>
                   </div>
                 </div>
-                
+
                 <div className="mt-4">
                   <h4 className="font-medium mb-2">Changer le statut</h4>
                   <div className="flex flex-wrap gap-2">
-                    <Button 
+                    <Button
                       variant={selectedOrder.status === "En attente" ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleStatusChange(selectedOrder.id, "En attente")}
                     >
                       En attente
                     </Button>
-                    <Button 
+                    <Button
                       variant={selectedOrder.status === "En cours" ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleStatusChange(selectedOrder.id, "En cours")}
                     >
                       En cours
                     </Button>
-                    <Button 
+                    <Button
                       variant={selectedOrder.status === "Livrée" ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleStatusChange(selectedOrder.id, "Livrée")}
                     >
                       Livrée
                     </Button>
-                    <Button 
+                    <Button
                       variant={selectedOrder.status === "Annulée" ? "destructive" : "outline"}
                       size="sm"
                       onClick={() => handleStatusChange(selectedOrder.id, "Annulée")}
@@ -323,7 +324,7 @@ const Orders = () => {
                   </div>
                 </div>
               </div>
-              
+
               <DialogFooter>
                 <Button onClick={() => setViewOrderDetails(false)}>
                   Fermer

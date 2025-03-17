@@ -58,8 +58,8 @@ const PaymentCard = () => {
         <div className="flex justify-between items-center">
           <p className="text-sm text-gray-500">Configurez les méthodes de paiement acceptées par votre boutique.</p>
           <Badge variant="outline" className="ml-2">
-            <Currency className="h-3 w-3 mr-1" />
-            {currency} ({currencySymbol})
+            <Currency className="h-3 w-auto mr-1" />
+            {currency} 
           </Badge>
         </div>
         

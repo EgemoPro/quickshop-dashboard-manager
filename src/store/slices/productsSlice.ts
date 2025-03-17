@@ -43,7 +43,7 @@ const generateLowStockProducts = (): Product[] => {
       name: products[Math.floor(Math.random() * products.length)],
       stock: Math.floor(Math.random() * 20),
       category: categories[Math.floor(Math.random() * categories.length)],
-      price: `${(Math.random() * 190 + 10).toFixed(2)}€`,
+      price: `${(Math.random() * 190 + 10).toFixed(2)}`,
       images: [],
     };
   });

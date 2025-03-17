@@ -71,11 +71,10 @@ const RegionalSettingsCard = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="EUR">Euro (€)</SelectItem>
-              <SelectItem value="CAF">FCFA (XOF)</SelectItem>
+              <SelectItem value="FCFA">FCFA (XOF)</SelectItem>
               <SelectItem value="USD">Dollar US ($)</SelectItem>
               <SelectItem value="GBP">Livre Sterling (£)</SelectItem>
               <SelectItem value="CAD">Dollar Canadien (C$)</SelectItem>
-              <SelectItem value="XOF">Franc CFA (CFA)</SelectItem>
             </SelectContent>
           </Select>
         </div>
