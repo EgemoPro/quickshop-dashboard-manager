@@ -67,10 +67,6 @@ export interface SEOSettings {
 }
 
 export interface StoreStrategy {
-  targetAudience: string;
-  competitiveAdvantage: string;
-  marketPosition: string;
-  growthPlans: string;
   socialProfiles: SocialMediaProfile[];
   seoSettings: SEOSettings;
   marketInsights?: {
@@ -118,14 +114,10 @@ interface StrategyState {
 
 const initialState: StrategyState = {
   storeStrategy: {
-    targetAudience: "Particuliers intéressés par des produits artisanaux de qualité",
-    competitiveAdvantage: "Produits faits main avec des matériaux durables",
-    marketPosition: "Boutique premium avec des prix moyens à élevés",
-    growthPlans: "Expansion vers le marché international dans les 2 prochaines années",
     socialProfiles: [
       {
         platform: "Facebook",
-        url: "https://facebook.com/boutiquedejean",
+        url: "https://facebook.com/neo-art",
         connected: false,
         engagement: 0,
         posts: 0,
@@ -133,7 +125,7 @@ const initialState: StrategyState = {
       },
       {
         platform: "Instagram",
-        url: "https://instagram.com/boutiquedejean",
+        url: "https://instagram.com/neo-art",
         connected: false,
         engagement: 0,
         posts: 0,
@@ -141,7 +133,7 @@ const initialState: StrategyState = {
       },
       {
         platform: "Twitter",
-        url: "https://twitter.com/boutiquedejean",
+        url: "https://twitter.com/neo-art",
         connected: false,
         engagement: 0,
         posts: 0,
@@ -149,7 +141,7 @@ const initialState: StrategyState = {
       },
       {
         platform: "LinkedIn",
-        url: "https://linkedin.com/company/boutiquedejean",
+        url: "https://linkedin.com/company/neo-art",
         connected: false,
         engagement: 0,
         posts: 0,
@@ -157,7 +149,7 @@ const initialState: StrategyState = {
       },
       {
         platform: "Site Web",
-        url: "https://boutiquedejean.fr",
+        url: "https://shadow.com/shop/@neo-art",
         connected: true,
         followers: 0,
         engagement: 0,

@@ -85,14 +85,16 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
                   <YAxis 
                     tick={{ fill: darkMode ? '#bbb' : '#666' }}
                     axisLine={{ stroke: darkMode ? '#555' : '#ddd' }}
+                    
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ bottom: 0 }} />
                   <Bar 
                     dataKey="ventes" 
                     name="Ventes" 
-                    fill={darkMode ? "#60a5fa" : "#3b82f6"} 
-                    radius={[4, 4, 0, 0]} 
+                    fill={darkMode ? "#60a5fa" : "#4f86f6"} 
+                    radius={[10, 10, 0, 0]} 
+                    
                   />
                   <Bar 
                     dataKey="revenus" 
@@ -111,7 +113,7 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
                       <stop offset="95%" stopColor={darkMode ? "#60a5fa" : "#3b82f6"} stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorRevenus" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={darkMode ? "#c084fc" : "#8b5cf6"} stopOpacity={0.8} />
+                      <stop offset="5%" stopColor={darkMode ? "#c083fc" : "#8b5cf6"} stopOpacity={0.8} />
                       <stop offset="95%" stopColor={darkMode ? "#c084fc" : "#8b5cf6"} stopOpacity={0} />
                     </linearGradient>
                   </defs>

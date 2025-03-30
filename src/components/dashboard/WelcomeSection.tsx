@@ -3,12 +3,15 @@ import React from "react";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { User } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAppSelector } from "@/store/hooks";
 
 interface WelcomeSectionProps {
   darkMode: boolean;
 }
 
 const WelcomeSection: React.FC<WelcomeSectionProps> = ({ darkMode }) => {
+  const {user} = useAppSelector(state => state.auth);
+  const orderLength = useAppSelector(state => state.orders.recentOrders.reduce((acc, order) => order.status === 'En attente' ? acc + 1 : acc, 0));
   const currentDate = new Date();
   const formattedDate = new Intl.DateTimeFormat('fr-FR', {
     day: 'numeric',
@@ -35,7 +38,7 @@ const WelcomeSection: React.FC<WelcomeSectionProps> = ({ darkMode }) => {
             <User className={`w-7 h-7 ${darkMode ? 'text-white' : 'text-primary'}`} />
           </div>
           <div>
-            <CardTitle>{getTimeOfDay()}, Alex Dupont</CardTitle>
+            <CardTitle>{getTimeOfDay()}, {user.fullName}</CardTitle>
             <CardDescription className={darkMode ? 'text-gray-400' : 'text-gray-500'}>
               {formattedDate}
             </CardDescription>
@@ -43,7 +46,7 @@ const WelcomeSection: React.FC<WelcomeSectionProps> = ({ darkMode }) => {
         </CardHeader>
         <CardContent>
           <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            Bienvenue dans votre tableau de bord. Vous avez <span className="font-bold text-primary">3 tâches</span> à accomplir aujourd'hui et <span className="font-bold text-primary">5 commandes</span> en attente.
+            Bienvenue dans votre tableau de bord. Vous avez <span className="font-bold text-primary">3 tâches</span> à accomplir aujourd'hui et <span className="font-bold text-primary">{orderLength} commandes</span> en attente.
           </p>
         </CardContent>
       </Card>

@@ -123,6 +123,12 @@ const initialState: ShippingState = {
       countries: ["Germany", "Spain", "Italy", "Belgium", "Netherlands", "Luxembourg"],
       priceMultiplier: 1.5,
     },
+    {
+      id: "zone-003",
+      name: "Niger",
+      countries: ["Niamey", "Dosso", "Tahoua", "Tillabery", "Zinder", "Agadez", "Maradi","Diffa"],
+      priceMultiplier: 1.8,
+    },
   ],
   packages: [
     {
@@ -146,6 +152,17 @@ const initialState: ShippingState = {
       },
       maxWeight: 2,
       price: 4.99,
+    },
+    {
+      id: "package-003",
+      name: "Boîte Grande",
+      dimensions: {
+        width: 40,
+        height: 30,
+        length: 20,
+      },
+      maxWeight: 4,
+      price: 9.95,
     },
   ],
   shipments: [
@@ -176,6 +193,34 @@ const initialState: ShippingState = {
         packageType: "package-002",
       },
       shippingCost: 7.79,
+    },
+    {
+      id: "ship-002",
+      orderId: "order-126",
+      status: "pending",
+      carrier: "carrier-002",
+      trackingNumber: "QE8823456789",
+      shipDate: "2024-11-20",
+      estimatedDelivery: "2024-11-23",
+      actualDelivery: null,
+      recipientAddress: {
+        name: "Paul Gao",
+        address: "15 Rue de Solidarité",
+        city: "Libreville",
+        postalCode: "69012",
+        country: "Gabon",
+        phone: "+33 6 12 34 56 78",
+      },
+      packageDetails: {
+        weight: 1.2,
+        dimensions: {
+          width: 20,
+          height: 15,
+          length: 10,
+        },
+        packageType: "package-002",
+      },
+      shippingCost: 30_000,
     },
   ],
   activeCarriers: 2,

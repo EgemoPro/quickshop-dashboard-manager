@@ -1,7 +1,8 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, Settings, Moon, Sun, Bell, UserCircle, Menu } from "lucide-react";
+import { Moon, Sun, Bell, UserCircle, Menu } from "lucide-react";
+import { useAppSelector } from "@/store/hooks";
 
 interface DashboardHeaderProps {
   darkMode: boolean;
@@ -10,12 +11,18 @@ interface DashboardHeaderProps {
   setMobileMenuOpen: (open: boolean) => void;
 }
 
+
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ 
   darkMode, 
   toggleDarkMode, 
   mobileMenuOpen, 
   setMobileMenuOpen 
 }) => {
+    const {
+      isLoading,
+      user
+    } = useAppSelector(state=> state.auth)
+
   return (
     <header className={`fixed z-20 w-full top-0 left-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} shadow-sm px-4 sm:px-6 py-3 transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -45,8 +52,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               <UserCircle className="h-7 w-7" />
             </div>
             <div className="hidden md:block">
-              <p className="text-sm font-medium">Alex Dupont</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Vendeur Pro</p>
+              <p className="text-sm font-medium">{user?.fullName}</p>
+              {user.storeInfo?.verified && <p className="text-xs text-gray-500 dark:text-gray-400">Vendeur Pro</p>}
             </div>
           </div>
         </div>

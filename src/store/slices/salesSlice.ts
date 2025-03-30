@@ -44,8 +44,8 @@ const generateSalesData = (period: "week" | "month" | "year") => {
 };
 
 const initialState: SalesState = {
-  salesData: generateSalesData("month"),
-  period: "month",
+  salesData: generateSalesData("week"),
+  period: "week",
   isLoading: false,
   error: null,
 };

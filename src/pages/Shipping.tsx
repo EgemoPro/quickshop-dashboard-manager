@@ -19,7 +19,7 @@ interface ShippingSettings {
 
 const Shipping = () => {
   const { shipments, carriers } = useSelector((state: RootState) => state.shipping);
-  
+  console.table(shipments)
   // Mock settings since they don't exist in the store
   const settings: ShippingSettings[] = [
     {

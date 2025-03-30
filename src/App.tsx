@@ -6,15 +6,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useIsMobile } from "./hooks/use-mobile";
-import { 
-  Home, 
-  Package2, 
-  ShoppingCart, 
-  Settings as SettingsIcon, 
-  MessageCircle, 
-  Send, 
-  BarChart3, 
-  MousePointerClick, 
+import {
+  Home,
+  Package2,
+  ShoppingCart,
+  Settings as SettingsIcon,
+  MessageCircle,
+  Send,
+  BarChart3,
+  MousePointerClick,
   Wallet,
   Truck,
   Store,
@@ -23,7 +23,8 @@ import {
   Calendar,
   ChartCandlestick,
   LineChart,
-  Target
+  // Target,
+  BlocksIcon
 } from "lucide-react";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
@@ -43,7 +44,12 @@ import Analytics from "./pages/Analytics";
 import Payments from "./pages/Payments";
 import Shipping from "./pages/Shipping";
 import Strategy from "./pages/Strategy";
+
 import { cn } from "./lib/utils";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AuthForm from "@/components/auth/auth-form";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
+import { checkAuth, login, registerUser } from "./store/slices/authSlice";
 
 const queryClient = new QueryClient();
 
@@ -67,12 +73,12 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels, closeAllE
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
   const navItemRef = useRef<HTMLDivElement>(null);
-  
+
   // Check if this item or any of its subitems is active
-  const isActive = to 
-    ? location.pathname === to 
+  const isActive = to
+    ? location.pathname === to
     : subItems?.some(item => location.pathname === item.to);
-  
+
   useEffect(() => {
     // Reset when closeAllExpanded is called
     if (!showLabels) {
@@ -86,16 +92,15 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels, closeAllE
       <div className="w-full" ref={navItemRef}>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className={`flex items-center justify-between gap-2 p-2 rounded transition-colors w-full ${
-            isActive
-              ? "text-primary border-l-4 border-l-black"
-              : "border-l-4 border-transparent hover:bg-primary/5"
-          }`}
+          className={`flex items-center justify-between gap-2 p-2 rounded transition-colors w-full ${isActive
+            ? "text-primary border-l-4 border-l-black"
+            : "border-l-4 border-transparent hover:bg-primary/5"
+            }`}
         >
           <div className="flex items-center gap-2">
             <Icon className="h-5 w-5 block" />
             {showLabels && (
-              <motion.span 
+              <motion.span
                 initial={{ opacity: 0, x: -5 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="text-sm font-medium whitespace-nowrap"
@@ -112,18 +117,17 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels, closeAllE
             )
           )}
         </button>
-        
+
         {isExpanded && showLabels && (
           <div className="pl-7 mt-1 space-y-1">
             {subItems.map((subItem) => (
               <Link
                 key={subItem.to}
                 to={subItem.to}
-                className={`flex items-center gap-2 text-xs p-1.5 rounded-md ${
-                  location.pathname === subItem.to
-                    ? "text-primary bg-primary/10"
-                    : "text-gray-500 hover:text-primary hover:bg-primary/5"
-                }`}
+                className={`flex items-center gap-2 text-xs p-1.5 rounded-md ${location.pathname === subItem.to
+                  ? "text-primary bg-primary/10"
+                  : "text-gray-500 hover:text-primary hover:bg-primary/5"
+                  }`}
               >
                 <subItem.icon className="h-4 w-4" />
                 {subItem.label}
@@ -134,20 +138,19 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels, closeAllE
       </div>
     );
   }
-  
+
   // Regular navigation item (no subItems)
   return (
     <Link
       to={to || "#"}
-      className={cn(isMobile ? "justify-center" : "",`flex items-center gap-2 rounded p-2 transition-colors w-full relative ${
-        isActive
-          ? `text-primary border-l-4 ${!isMobile ? "border-l-black" : "border-l-0  border-b-4 rounded-none  border-b-black"}`
-          : "border-l-4 border-transparent text-gray-500 hover:text-primary hover:bg-primary/5"
-      }`)}
+      className={cn(isMobile ? "justify-center" : "", `flex items-center gap-2 rounded p-2 transition-colors w-full relative ${isActive
+        ? `text-primary border-l-4 ${!isMobile ? "border-l-black" : "border-l-0  border-b-4 rounded-none  border-b-black"}`
+        : "border-l-4 border-transparent text-gray-500 hover:text-primary hover:bg-primary/5"
+        }`)}
     >
       <Icon size={isMobile ? 25 : 19} />
       {showLabels && (
-        <motion.span 
+        <motion.span
           initial={{ opacity: 0, x: -5 }}
           animate={{ opacity: 1, x: 0 }}
           className="text-sm font-medium whitespace-nowrap"
@@ -164,11 +167,11 @@ const Navigation = () => {
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
-  
+
   const closeAllExpanded = () => {
     setIsExpanded(false);
   };
-  
+
   if (location.pathname === "/landing") {
     return null;
   }
@@ -184,8 +187,8 @@ const Navigation = () => {
     { to: "/products", icon: Package2, label: "Produits" },
     { to: "/orders", icon: ShoppingCart, label: "Commandes" },
     // Combined Planning and Marketing under "Campagnes"
-    { 
-      icon: MousePointerClick, 
+    {
+      icon: MousePointerClick,
       label: "Campagnes",
       subItems: [
         { to: "/planning", label: "Planning", icon: Calendar },
@@ -203,8 +206,8 @@ const Navigation = () => {
       ]
     },
     { to: "/chat", icon: MessageCircle, label: "Chat" },
-    { to: "/marketplace", icon: Store, label: "Marketplace" },
-    { to: "/strategy", icon: Target, label: "Stratégie" },
+    { to: "/strategy", icon: Store, label: "Stratégie" },
+    { to: "/plugins", icon: BlocksIcon, label: "Plugins" },
     { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
   ];
 
@@ -225,14 +228,14 @@ const Navigation = () => {
       >
         <nav className={cn("grid grid-cols-5 w-full", isMobile ? "px-2" : "")}>
           {mobileItems.map((item, index) => (
-            <NavigationItem 
-              key={index} 
-              to={item.to} 
-              icon={item.icon} 
+            <NavigationItem
+              key={index}
+              to={item.to}
+              icon={item.icon}
               label={item.label}
               showLabels={false}
               closeAllExpanded={closeAllExpanded}
-              isMobile = {isMobile}
+              isMobile={isMobile}
             />
           ))}
         </nav>
@@ -251,11 +254,11 @@ const Navigation = () => {
     >
       <nav className="flex flex-col p-1 gap-1 mt-4">
         {navigationItems.map((item, index) => (
-          <NavigationItem 
-            key={index} 
-            to={item.to} 
-            icon={item.icon} 
-            label={item.label} 
+          <NavigationItem
+            key={index}
+            to={item.to}
+            icon={item.icon}
+            label={item.label}
             subItems={item.subItems}
             showLabels={isExpanded}
             closeAllExpanded={closeAllExpanded}
@@ -266,32 +269,145 @@ const Navigation = () => {
   );
 };
 
+interface UserData {
+  [key: string]: string; 
+}
+
 const AppContent = () => {
-  const isMobile = useIsMobile();
   const location = useLocation();
-  
+  const isMobile = useIsMobile();
+
+  // const {isLoading, user, token} = useAppSelector(state => state.auth)
+  // const dispatch = useAppDispatch()
+
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [userData, setUserData] = useState<UserData>()
   const isLandingPage = location.pathname === "/landing";
-  
+
+  const onSubmit = async (data:UserData, type:string) =>{
+    console.log(data, type)
+    setUserData(prev=>({...prev, ...data, type}))
+
+  }
+
+  // useEffect(()=>{
+  //   if(userData?.type === 'login'){
+
+  //     dispatch(login({email: userData.email, password: userData.password}))
+  //   }
+  //   if(userData?.type === 'register'){
+  //     dispatch(registerUser({fullname:userData.fullname, email: userData.email, password: userData.password}))
+  //   }
+  //   console.log(userData)
+  // },[userData])
+
+  // useEffect(() => {
+  //   if (!token) {
+  //     checkAuth();
+  //   }else if(token && user){
+  //     setIsAuthenticated(true)
+      
+  //   }
+  // },[user])
+
+  // if(user && isAuthenticated)
+  //   return <Navigate to="/dashboard" replace />
   return (
     <div className="min-h-screen">
       <Routes>
         <Route path="/" element={<Navigate to="/landing" replace />} />
-        <Route path="/dashboard" element={<DashboardLayout><Index /></DashboardLayout>} />
-        <Route path="/products" element={<DashboardLayout><Products /></DashboardLayout>} />
-        <Route path="/orders" element={<DashboardLayout><Orders /></DashboardLayout>} />
-        <Route path="/planning" element={<DashboardLayout><ProductPlanning /></DashboardLayout>} />
-        <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
-        <Route path="/chat" element={<DashboardLayout><Chat /></DashboardLayout>} />
-        <Route path="/marketing" element={<DashboardLayout><Marketing /></DashboardLayout>} />
-        <Route path="/marketplace" element={<DashboardLayout><Marketplace /></DashboardLayout>} />
-        <Route path="/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
-        <Route path="/payments" element={<DashboardLayout><Payments /></DashboardLayout>} />
-        <Route path="/shipping" element={<DashboardLayout><Shipping /></DashboardLayout>} />
-        <Route path="/strategy" element={<DashboardLayout><Strategy /></DashboardLayout>} />
+        <Route path="/login" element={<AuthForm onSubmit={onSubmit} />} />
         <Route path="/landing" element={<Landing />} />
         <Route path="*" element={<NotFound />} />
+
+        <Route path="/dashboard" element={
+          <ProtectedRoute
+            isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Index />
+            </DashboardLayout>
+          </ProtectedRoute>}
+        />
+        <Route path="/products" element={
+          <ProtectedRoute
+            isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Products />
+            </DashboardLayout>
+          </ProtectedRoute>}
+        />
+        <Route path="/orders" element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Orders />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/planning" element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <ProductPlanning />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Settings />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/chat" element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Chat />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/marketing" element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Marketing />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/plugins" element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Marketplace />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/analytics" element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Analytics />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/payments" element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Payments />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/shipping" element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Shipping />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/strategy" element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <Strategy />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
       </Routes>
-      {!isLandingPage && <Navigation />}
+      {!isLandingPage && isAuthenticated ? <Navigation /> : null}
     </div>
   );
 };

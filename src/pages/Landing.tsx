@@ -4,25 +4,25 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import {
   Package2,
   ShoppingCart,
   Shield,
-  UserCircle,
-  CreditCard,
-  Truck,
-  Headphones,
-  Bell,
+  // UserCircle,
+  // CreditCard,
+  // Truck,
+  // Headphones,
+  // Bell,
   BarChart3,
   ChevronRight,
-  Lock,
-  Users,
-  Search,
-  TrendingUp,
+  // Lock,
+  // Users,
+  // Search,
+  // TrendingUp,
   MessageCircle,
   Tag,
   Star,
@@ -32,11 +32,17 @@ import {
   CheckCircle2,
   ChevronDown,
   ArrowRight,
-  Eye,
-  EyeOff,
+  // Eye,
+  // EyeOff,
   Menu,
   X,
-  Mail
+  Blocks,
+  Package2Icon,
+  Globe2,
+  SearchCheckIcon,
+  AirplayIcon,
+  PlaneTakeoff,
+  // Mail
 } from "lucide-react";
 
 const LandingPage = () => {
@@ -78,7 +84,7 @@ const LandingPage = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Simuler un délai d'authentification
     setTimeout(() => {
       setIsLoading(false);
@@ -94,7 +100,7 @@ const LandingPage = () => {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation simple
     if (formData.password !== formData.confirmPassword) {
       toast({
@@ -104,9 +110,9 @@ const LandingPage = () => {
       });
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     // Simuler un délai d'inscription
     setTimeout(() => {
       setIsLoading(false);
@@ -130,29 +136,29 @@ const LandingPage = () => {
       },
     }),
   };
-  
+
   const fadeIn = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
       transition: { duration: 0.6 }
     }
   };
-  
+
   const slideInLeft = {
     hidden: { x: -60, opacity: 0 },
-    visible: { 
-      x: 0, 
-      opacity: 1, 
+    visible: {
+      x: 0,
+      opacity: 1,
       transition: { duration: 0.6 }
     }
   };
-  
+
   const slideInRight = {
     hidden: { x: 60, opacity: 0 },
-    visible: { 
-      x: 0, 
-      opacity: 1, 
+    visible: {
+      x: 0,
+      opacity: 1,
       transition: { duration: 0.6 }
     }
   };
@@ -249,26 +255,31 @@ const LandingPage = () => {
                 QuickShop
               </span>
             </div>
-            
+
             {/* Navigation Desktop */}
-            <nav className="hidden md:flex items-center space-x-8">
-              {navItems.map((item, index) => (
-                <button
-                  key={index}
-                  onClick={() => scrollToSection(item.ref)}
-                  className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
-                >
-                  {item.name}
-                </button>
-              ))}
-              <Button onClick={() => setActiveTab("login")} variant="outline" className="ml-2">
-                Connexion
-              </Button>
-              <Button onClick={() => setActiveTab("register")} className="bg-blue-600 hover:bg-blue-700">
-                Inscription
-              </Button>
+            <nav className="hidden lg:w-2/3 md:flex items-center justify-betwee space-x-8 lg:gap-16">
+              <div className="flex items-center space-x-8">
+                {navItems.map((item, index) => (
+                  <button
+                    key={index}
+                    onClick={() => scrollToSection(item.ref)}
+                    className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                  >
+                    {item.name}
+                  </button>
+                ))}
+              </div>
+
+              <div className="gap-3 flex flex-row">
+                <Link to={"/login"} className="text-gray-500">
+                  Connexion
+                </Link>
+                <Link to={"/login"} className="text-blue-600 hover:text-blue-700">
+                  Inscription
+                </Link>
+              </div>
             </nav>
-            
+
             {/* Mobile menu button */}
             <div className="md:hidden">
               <Button variant="ghost" size="sm" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -277,10 +288,10 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -321,7 +332,7 @@ const LandingPage = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-70"></div>
           <div className="max-w-7xl mx-auto relative">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
-              <motion.div 
+              <motion.div
                 className="w-full lg:w-1/2 px-4"
                 initial="hidden"
                 whileInView="visible"
@@ -332,14 +343,14 @@ const LandingPage = () => {
                   1 mois d'essai gratuit
                 </span>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 mt-4 mb-4 leading-tight">
-                  Vendez mieux, vendez plus, 
+                  Vendez mieux, vendez plus,
                   <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                     {" "}vendez intelligemment !
                   </span>
                 </h1>
                 <p className="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed">
-                  Rejoignez QuickShop et accédez à un outil puissant pour gérer vos ventes, 
-                  suivre vos commandes et booster votre chiffre d'affaires, sans effort. 
+                  Rejoignez QuickShop et accédez à un outil puissant pour gérer vos ventes,
+                  suivre vos commandes et booster votre chiffre d'affaires, sans effort.
                   Profitez d'un mois d'essai GRATUIT, sans engagement !
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -357,7 +368,7 @@ const LandingPage = () => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              {/* <motion.div 
                 className="w-full lg:w-1/2 px-4 mt-8 lg:mt-0"
                 initial="hidden"
                 whileInView="visible"
@@ -527,7 +538,7 @@ const LandingPage = () => {
                     </Tabs>
                   </Card>
                 </div>
-              </motion.div>
+              </motion.div> */}
             </div>
           </div>
         </section>
@@ -536,7 +547,7 @@ const LandingPage = () => {
         <section className="py-8 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 text-center">
-              <motion.div 
+              <motion.div
                 className="p-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -546,7 +557,7 @@ const LandingPage = () => {
                 <h3 className="text-3xl sm:text-4xl font-bold">+10 000</h3>
                 <p className="text-blue-100">vendeurs déjà inscrits</p>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="p-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -556,7 +567,7 @@ const LandingPage = () => {
                 <h3 className="text-3xl sm:text-4xl font-bold">+80%</h3>
                 <p className="text-blue-100">de croissance moyenne des ventes</p>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="p-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -573,7 +584,7 @@ const LandingPage = () => {
         {/* Avantages Section */}
         <section ref={advantagesRef} className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-white">
           <div className="max-w-7xl mx-auto">
-            <motion.div 
+            <motion.div
               className="text-center mb-12 sm:mb-16"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -607,12 +618,12 @@ const LandingPage = () => {
             </div>
           </div>
         </section>
-        
+
         {/* Dashboard Preview Section */}
         <section ref={dashboardRef} className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-gray-50 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-70"></div>
           <div className="max-w-7xl mx-auto relative">
-            <motion.div 
+            <motion.div
               className="text-center mb-12 sm:mb-16"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -627,16 +638,16 @@ const LandingPage = () => {
 
             <div className="relative mx-auto max-w-5xl">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl blur-lg opacity-20"></div>
-              <motion.div 
+              <motion.div
                 className="relative bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.7 }}
               >
-                <img 
-                  src="https://images.unsplash.com/photo-1531973486364-5fa64260d75b?auto=format&fit=crop&q=80&w=1000" 
-                  alt="QuickShop Dashboard Preview" 
+                <img
+                  src="https://images.unsplash.com/photo-1531973486364-5fa64260d75b?auto=format&fit=crop&q=80&w=1000"
+                  alt="QuickShop Dashboard Preview"
                   className="w-full h-auto rounded-t-xl"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end">
@@ -653,7 +664,7 @@ const LandingPage = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8 sm:mt-12">
-              <motion.div 
+              <motion.div
                 className="bg-white p-4 sm:p-6 rounded-xl shadow-lg"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -668,8 +679,8 @@ const LandingPage = () => {
                 </div>
                 <p className="text-gray-600 text-sm sm:text-base">Visualisez vos performances et identifiez les opportunités de croissance</p>
               </motion.div>
-              
-              <motion.div 
+
+              <motion.div
                 className="bg-white p-4 sm:p-6 rounded-xl shadow-lg"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -684,8 +695,8 @@ const LandingPage = () => {
                 </div>
                 <p className="text-gray-600 text-sm sm:text-base">Suivez et traitez vos commandes plus efficacement que jamais</p>
               </motion.div>
-              
-              <motion.div 
+
+              <motion.div
                 className="bg-white p-4 sm:p-6 rounded-xl shadow-lg"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -699,6 +710,60 @@ const LandingPage = () => {
                   <h3 className="text-base sm:text-lg font-semibold">Support client</h3>
                 </div>
                 <p className="text-gray-600 text-sm sm:text-base">Communiquez avec vos clients et résolvez leurs problèmes rapidement</p>
+              </motion.div>
+
+              <motion.div
+                className="bg-white p-4 sm:p-6 rounded-xl shadow-lg"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className="flex items-center mb-4">
+                  <div className="bg-orange-100 p-2 sm:p-3 rounded-lg mr-3 sm:mr-4">
+                    <Blocks className="h-5 sm:h-6 w-5 sm:w-6 text-orange-600" />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold">+200 Modules complémentaires</h3>
+                </div>
+                <p className="text-gray-600 text-sm sm:text-base">
+                  Intégrez facilement des modules complémentaires selon vos besoins, CRM et outils de workflow pour optimiser vos processus et améliorer la gestion de votre boutique.
+                </p>
+              </motion.div>
+
+              <motion.div
+                className="bg-white p-4 sm:p-6 rounded-xl shadow-lg"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className="flex items-center mb-4">
+                  <div className="bg-indigo-100 p-2 sm:p-3 rounded-lg mr-3 sm:mr-4">
+                    <SearchCheckIcon className="h-5 sm:h-6 w-5 sm:w-6 text-indigo-600" />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold">SEO et Reférencement</h3>
+                </div>
+                <p className="text-gray-600 text-sm sm:text-base">
+                  Reférencement de votre boutique sur notre moteur intelligent pour augmenter votre visibilité et vos ventes.
+                </p>
+              </motion.div>
+
+              <motion.div
+                className="bg-white p-4 sm:p-6 rounded-xl shadow-lg"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className="flex items-center mb-4">
+                  <div className="bg-cyan-100 p-2 sm:p-3 rounded-lg mr-3 sm:mr-4">
+                    <PlaneTakeoff className="h-5 sm:h-6 w-5 sm:w-6 text-cyan-600" />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold">Livraison</h3>
+                </div>
+                <p className="text-gray-600 text-sm sm:text-base">
+                  Intégrez simplement des services de Livraison de colis pour vos clients, et suivez les en temps réel en choisissant parmi nos partenaires.
+                </p>
               </motion.div>
             </div>
           </div>
@@ -718,7 +783,7 @@ const LandingPage = () => {
                   <PlusCircle className="h-12 sm:h-16 w-12 sm:w-16" />
                 </div>
               </motion.div>
-              <motion.h2 
+              <motion.h2
                 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 sm:mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -726,14 +791,14 @@ const LandingPage = () => {
               >
                 1 Mois d'Essai Gratuit !
               </motion.h2>
-              <motion.p 
+              <motion.p
                 className="text-lg sm:text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto mb-8 sm:mb-10"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
               >
-                Essayez QuickShop gratuitement pendant 30 jours et découvrez comment 
+                Essayez QuickShop gratuitement pendant 30 jours et découvrez comment
                 transformer votre boutique en véritable machine à vendre !
               </motion.p>
               <motion.div
@@ -743,7 +808,9 @@ const LandingPage = () => {
                 transition={{ delay: 0.2 }}
               >
                 <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-7 shadow-xl shadow-blue-800/20 transition-all">
+                  <Link to={"/dashboard"}>
                   Je profite de mon mois GRATUIT
+                  </Link>
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
                 <p className="mt-5 text-sm text-blue-100 flex items-center justify-center flex-wrap">
@@ -758,7 +825,7 @@ const LandingPage = () => {
         {/* Testimonials */}
         <section ref={testimonialsRef} className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-white">
           <div className="max-w-7xl mx-auto">
-            <motion.div 
+            <motion.div
               className="text-center mb-12 sm:mb-16"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -781,9 +848,9 @@ const LandingPage = () => {
                   className="bg-gray-50 rounded-xl p-5 sm:p-6 shadow-md hover:shadow-lg transition-all duration-300"
                 >
                   <div className="flex items-center mb-4">
-                    <img 
-                      src={testimonial.avatar} 
-                      alt={testimonial.name} 
+                    <img
+                      src={testimonial.avatar}
+                      alt={testimonial.name}
                       className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-3 sm:mr-4 object-cover"
                     />
                     <div>
@@ -806,7 +873,7 @@ const LandingPage = () => {
         {/* FAQ Section */}
         <section ref={faqRef} className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-gray-50">
           <div className="max-w-4xl mx-auto">
-            <motion.div 
+            <motion.div
               className="text-center mb-12 sm:mb-16"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -833,14 +900,13 @@ const LandingPage = () => {
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   >
                     <h3 className="text-base sm:text-lg font-semibold text-gray-900">{faq.question}</h3>
-                    <ChevronDown 
-                      className={`h-5 w-5 text-gray-500 transition-transform ${openFaq === i ? 'transform rotate-180' : ''}`} 
+                    <ChevronDown
+                      className={`h-5 w-5 text-gray-500 transition-transform ${openFaq === i ? 'transform rotate-180' : ''}`}
                     />
                   </button>
-                  <div 
-                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                      openFaq === i ? 'max-h-40 px-4 sm:px-6 pb-4 sm:pb-6' : 'max-h-0'
-                    }`}
+                  <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${openFaq === i ? 'max-h-40 px-4 sm:px-6 pb-4 sm:pb-6' : 'max-h-0'
+                      }`}
                   >
                     <p className="text-gray-600 text-sm sm:text-base">{faq.answer}</p>
                   </div>
@@ -853,7 +919,7 @@ const LandingPage = () => {
         {/* Final CTA */}
         <section ref={ctaRef} className="py-12 sm:py-20 px-4 md:px-8 lg:px-16 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
           <div className="max-w-5xl mx-auto text-center">
-            <motion.h2 
+            <motion.h2
               className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 sm:mb-6"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -861,7 +927,7 @@ const LandingPage = () => {
             >
               Rejoignez la Révolution du E-commerce !
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-lg sm:text-xl text-blue-100 max-w-3xl mx-auto mb-8 sm:mb-10"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -878,13 +944,16 @@ const LandingPage = () => {
               transition={{ delay: 0.2 }}
               className="inline-block"
             >
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-blue-600 hover:bg-blue-50 font-semibold text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-7 shadow-xl shadow-blue-900/30 transition-all hover:scale-105"
                 onClick={() => setActiveTab("register")}
               >
+                <Link to={"/dashboard"}>
                 Démarrer Mon Mois Gratuit
+                </Link>
               </Button>
+                
               <p className="mt-5 text-sm text-blue-100 flex items-center justify-center flex-wrap">
                 <Shield className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span>Garantie satisfaction • Annulation sans engagement</span>
@@ -900,7 +969,7 @@ const LandingPage = () => {
               <div className="col-span-1 sm:col-span-2">
                 <h3 className="text-white text-lg font-semibold mb-4">QuickShop</h3>
                 <p className="mb-4 text-gray-400 max-w-md text-sm sm:text-base">
-                  La plateforme e-commerce moderne qui aide les vendeurs à développer 
+                  La plateforme e-commerce moderne qui aide les vendeurs à développer
                   leur activité grâce à des outils puissants et une interface intuitive.
                 </p>
                 <div className="flex space-x-4">

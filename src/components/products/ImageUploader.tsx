@@ -81,7 +81,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange })
       </div>
       
       {previewImages.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4 mt-4">
           {previewImages.map((image) => (
             <div key={image.id} className="relative group rounded-md overflow-hidden border border-gray-200">
               <img 

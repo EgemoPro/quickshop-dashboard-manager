@@ -11,7 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useAppDispatch } from '@/store/hooks';
 import { updateSEOSettings } from '@/store/slices/strategySlice';
 import { Search, Share, Wifi, Link, Globe, Rss } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+// import { Badge } from '@/components/ui/badge';
 
 interface SEOSettingsProps {
   seoSettings: SEOSettingsType;

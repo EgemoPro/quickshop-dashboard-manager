@@ -1,16 +1,16 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Mail, PhoneCall, Edit } from "lucide-react";
+import { Mail, Edit, Link2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ContactButtonsProps {
   onEditProfile: () => void;
   email?: string;
-  phone?: string;
+  ref?: string;
 }
 
-const ContactButtons: React.FC<ContactButtonsProps> = ({ onEditProfile, email = "", phone = "" }) => {
+const ContactButtons: React.FC<ContactButtonsProps> = ({ onEditProfile, email = "", ref = "" }) => {
   const handleEmailClick = () => {
     if (email) {
       window.location.href = `mailto:${email}`;
@@ -19,11 +19,13 @@ const ContactButtons: React.FC<ContactButtonsProps> = ({ onEditProfile, email = 
     }
   };
 
-  const handlePhoneClick = () => {
-    if (phone) {
-      window.location.href = `tel:${phone}`;
+
+  const handleOpenSotrePreview = () => {
+    // previsualisation de la boutique
+    if (ref) {
+      window.location.href = `tel:${ref}`;
     } else {
-      toast.error("Aucun numéro de téléphone n'est disponible.");
+      toast.error("Infos de la boutique manquante, complètez les infos puis ressayez !");
     }
   };
 
@@ -33,9 +35,9 @@ const ContactButtons: React.FC<ContactButtonsProps> = ({ onEditProfile, email = 
         <Mail className="h-4 w-4 mr-2" />
         Email
       </Button>
-      <Button variant="outline" className="w-full" onClick={handlePhoneClick}>
-        <PhoneCall className="h-4 w-4 mr-2" />
-        Appeler
+      <Button variant="outline" className="w-full" onClick={handleOpenSotrePreview}>
+        <Link2 className="h-4 w-4 mr-2" />
+        Voir la boutique
       </Button>
       <Button variant="outline" className="w-full col-span-2" onClick={onEditProfile}>
         <Edit className="h-4 w-4 mr-2" />
