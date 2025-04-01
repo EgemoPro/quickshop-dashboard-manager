@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -8,19 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Store, User, Upload, Image as ImageIcon, Save } from "lucide-react";
-import ImageUploader from "@/components/products/ImageUploader";
-import { updateSettings, updateStoreConfig } from "@/store/slices/settingsSlice";
-import { updateStoreInfo } from "@/store/slices/authSlice";
-
-// Define paths for static images
-const STATIC_IMAGES = {
-  defaultLogo: "/images/default-logo.png",
-  defaultBanner: "/images/default-banner.jpg",
-  logoPath: "/images/store-logos/",
-  bannerPath: "/images/store-banners/"
-};
+import { updateStoreConfig } from "@/store/slices/settingsSlice";
+import { updateStoreInfo, updateUser } from "@/store/slices/authSlice";
+import { handleImageFileChange } from "@/utils/imageUpload";
 
 interface StoreProfileDialogProps {
   open: boolean;
@@ -38,6 +30,13 @@ const StoreProfileDialog: React.FC<StoreProfileDialogProps> = ({
   
   const [activeTab, setActiveTab] = useState("profile");
   const [isLoading, setIsLoading] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+  
+  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
+  const [isLogoUploading, setIsLogoUploading] = useState(false);
+  const [isBannerUploading, setIsBannerUploading] = useState(false);
   
   // Form states
   const [profileData, setProfileData] = useState({
@@ -73,15 +72,6 @@ const StoreProfileDialog: React.FC<StoreProfileDialogProps> = ({
     }
   }, [user, storeConfig]);
   
-  // Initialize images for preview
-  const [logoImages, setLogoImages] = useState<Array<{ id: string; url: string; name: string }>>([
-    ...(storeData.logo ? [{ id: "current-logo", url: storeData.logo, name: "Logo actuel" }] : [])
-  ]);
-  
-  const [bannerImages, setBannerImages] = useState<Array<{ id: string; url: string; name: string }>>([
-    ...(storeData.banner ? [{ id: "current-banner", url: storeData.banner, name: "Bannière actuelle" }] : [])
-  ]);
-  
   // Handlers
   const handleProfileChange = (field: string, value: string) => {
     setProfileData(prev => ({ ...prev, [field]: value }));
@@ -91,61 +81,95 @@ const StoreProfileDialog: React.FC<StoreProfileDialogProps> = ({
     setStoreData(prev => ({ ...prev, [field]: value }));
   };
   
-  // Simulate storing images to static folder
-  const saveImageToStatic = (imageUrl: string, type: 'logo' | 'banner') => {
-    // In a real app, this would upload the file to the server
-    // For this demo, we'll simulate by using a predefined path
-    const fileName = `${Date.now()}-${type}${type === 'logo' ? '.png' : '.jpg'}`;
-    const path = type === 'logo' 
-      ? `${STATIC_IMAGES.logoPath}${fileName}`
-      : `${STATIC_IMAGES.bannerPath}${fileName}`;
+  const handleAvatarClick = () => {
+    if (avatarInputRef.current) {
+      avatarInputRef.current.click();
+    }
+  };
+  
+  const handleLogoClick = () => {
+    if (logoInputRef.current) {
+      logoInputRef.current.click();
+    }
+  };
+  
+  const handleBannerClick = () => {
+    if (bannerInputRef.current) {
+      bannerInputRef.current.click();
+    }
+  };
+  
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsAvatarUploading(true);
     
-    console.log(`Saving ${type} to ${path}`);
-    return path;
+    handleImageFileChange(e, 'avatar', (result) => {
+      setProfileData(prev => ({
+        ...prev,
+        avatar: result.url
+      }));
+      
+      setIsAvatarUploading(false);
+      
+      toast({
+        title: "Avatar prêt",
+        description: "L'avatar sera enregistré lorsque vous sauvegarderez les modifications.",
+      });
+    });
   };
   
-  const handleLogoChange = (images: Array<{ id: string; url: string; name: string }>) => {
-    setLogoImages(images);
-    if (images.length > 0) {
-      // In a real application, we would save the image to the server here
-      // For now, we'll just use the URL directly
-      setStoreData(prev => ({ ...prev, logo: images[0].url }));
-    } else {
-      setStoreData(prev => ({ ...prev, logo: "" }));
-    }
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsLogoUploading(true);
+    
+    handleImageFileChange(e, 'logo', (result) => {
+      setStoreData(prev => ({
+        ...prev,
+        logo: result.url
+      }));
+      
+      setIsLogoUploading(false);
+      
+      toast({
+        title: "Logo prêt",
+        description: "Le logo sera enregistré lorsque vous sauvegarderez les modifications.",
+      });
+    });
   };
   
-  const handleBannerChange = (images: Array<{ id: string; url: string; name: string }>) => {
-    setBannerImages(images);
-    if (images.length > 0) {
-      setStoreData(prev => ({ ...prev, banner: images[0].url }));
-    } else {
-      setStoreData(prev => ({ ...prev, banner: "" }));
-    }
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsBannerUploading(true);
+    
+    handleImageFileChange(e, 'banner', (result) => {
+      setStoreData(prev => ({
+        ...prev,
+        banner: result.url
+      }));
+      
+      setIsBannerUploading(false);
+      
+      toast({
+        title: "Bannière prête",
+        description: "La bannière sera enregistrée lorsque vous sauvegarderez les modifications.",
+      });
+    });
   };
   
   const handleSave = () => {
     setIsLoading(true);
     
-    // Simulate saving images to static folder
-    let finalLogoPath = storeData.logo;
-    let finalBannerPath = storeData.banner;
-    
-    // Only process new images (not the ones that start with our static paths)
-    if (storeData.logo && !storeData.logo.startsWith(STATIC_IMAGES.logoPath)) {
-      finalLogoPath = saveImageToStatic(storeData.logo, 'logo');
-    }
-    
-    if (storeData.banner && !storeData.banner.startsWith(STATIC_IMAGES.bannerPath)) {
-      finalBannerPath = saveImageToStatic(storeData.banner, 'banner');
-    }
+    // Update user profile
+    dispatch(updateUser({
+      fullName: profileData.fullName,
+      email: profileData.email,
+      phone: profileData.phone,
+      avatar: profileData.avatar,
+    }));
     
     // Update store settings in Redux
     dispatch(updateStoreConfig({
       name: storeData.name,
       description: storeData.description,
-      logo: finalLogoPath,
-      banner: finalBannerPath,
+      logo: storeData.logo,
+      banner: storeData.banner,
     }));
     
     // Update store info in auth slice
@@ -153,8 +177,8 @@ const StoreProfileDialog: React.FC<StoreProfileDialogProps> = ({
       dispatch(updateStoreInfo({
         name: storeData.name,
         description: storeData.description,
-        logo: finalLogoPath,
-        banner: finalBannerPath,
+        logo: storeData.logo,
+        banner: storeData.banner,
       }));
     }
     
@@ -165,7 +189,7 @@ const StoreProfileDialog: React.FC<StoreProfileDialogProps> = ({
       
       toast({
         title: "Profil mis à jour",
-        description: "Les informations de votre boutique ont été mises à jour avec succès.",
+        description: "Vos informations ont été mises à jour avec succès.",
       });
     }, 1000);
   };
@@ -194,13 +218,40 @@ const StoreProfileDialog: React.FC<StoreProfileDialogProps> = ({
           
           <TabsContent value="profile" className="space-y-6">
             <div className="flex flex-col items-center mb-6">
-              <Avatar className="h-24 w-24 mb-4">
+              <Avatar
+                className="h-24 w-24 mb-4 cursor-pointer hover:opacity-90"
+                onClick={handleAvatarClick}
+              >
                 <AvatarImage src={profileData.avatar} alt={profileData.fullName} />
                 <AvatarFallback>{profileData.fullName.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
-              <Button size="sm" variant="outline" className="flex items-center gap-2">
-                <Upload className="h-4 w-4" />
-                Changer l'avatar
+              
+              <input
+                type="file"
+                ref={avatarInputRef}
+                onChange={handleAvatarChange}
+                accept="image/*"
+                style={{ display: 'none' }}
+              />
+              
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex items-center gap-2"
+                onClick={handleAvatarClick}
+                disabled={isAvatarUploading}
+              >
+                {isAvatarUploading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                    Chargement...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4" />
+                    Changer l'avatar
+                  </>
+                )}
               </Button>
             </div>
             
@@ -264,38 +315,102 @@ const StoreProfileDialog: React.FC<StoreProfileDialogProps> = ({
               <div className="grid gap-2">
                 <Label className="mb-1">Logo</Label>
                 <div className="bg-gray-50 p-4 rounded-md">
-                  {storeData.logo && (
-                    <div className="flex justify-center mb-4">
+                  <div className="flex justify-center mb-4">
+                    {storeData.logo ? (
                       <img 
                         src={storeData.logo} 
                         alt="Logo actuel" 
                         className="h-24 w-24 object-contain border rounded-md"
+                        onClick={handleLogoClick}
                       />
-                    </div>
-                  )}
-                  <ImageUploader 
-                    images={logoImages}
-                    onImagesChange={handleLogoChange}
+                    ) : (
+                      <div 
+                        className="h-24 w-24 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center cursor-pointer"
+                        onClick={handleLogoClick}
+                      >
+                        <ImageIcon className="h-8 w-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <input
+                    type="file"
+                    ref={logoInputRef}
+                    onChange={handleLogoChange}
+                    accept="image/*"
+                    style={{ display: 'none' }}
                   />
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={handleLogoClick}
+                    disabled={isLogoUploading}
+                  >
+                    {isLogoUploading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                        Chargement...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4" />
+                        {storeData.logo ? 'Changer le logo' : 'Ajouter un logo'}
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
               
               <div className="grid gap-2">
                 <Label className="mb-1">Bannière</Label>
                 <div className="bg-gray-50 p-4 rounded-md">
-                  {storeData.banner && (
-                    <div className="flex justify-center mb-4">
+                  <div className="flex justify-center mb-4">
+                    {storeData.banner ? (
                       <img 
                         src={storeData.banner} 
                         alt="Bannière actuelle" 
-                        className="h-32 w-full object-cover border rounded-md"
+                        className="h-32 w-full object-cover border rounded-md cursor-pointer"
+                        onClick={handleBannerClick}
                       />
-                    </div>
-                  )}
-                  <ImageUploader 
-                    images={bannerImages}
-                    onImagesChange={handleBannerChange}
+                    ) : (
+                      <div 
+                        className="h-32 w-full border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center cursor-pointer"
+                        onClick={handleBannerClick}
+                      >
+                        <ImageIcon className="h-8 w-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <input
+                    type="file"
+                    ref={bannerInputRef}
+                    onChange={handleBannerChange}
+                    accept="image/*"
+                    style={{ display: 'none' }}
                   />
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={handleBannerClick}
+                    disabled={isBannerUploading}
+                  >
+                    {isBannerUploading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                        Chargement...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4" />
+                        {storeData.banner ? 'Changer la bannière' : 'Ajouter une bannière'}
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
             </div>

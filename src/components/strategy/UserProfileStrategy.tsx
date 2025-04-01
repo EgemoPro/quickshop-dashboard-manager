@@ -1,17 +1,16 @@
-
-import React, { useState } from 'react';
-// import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
+import React, { useState, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { User } from '@/store/slices/authSlice';
 import { useAppDispatch } from '@/store/hooks';
 import { updateUser } from '@/store/slices/authSlice';
 import { Check, Upload } from 'lucide-react';
 import { ProfileSection } from './ProfileSection';
+import { handleImageFileChange } from '@/utils/imageUpload';
 
 interface UserProfileStrategyProps {
   user: User;
@@ -21,6 +20,8 @@ const UserProfileStrategy: React.FC<UserProfileStrategyProps> = ({ user }) => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
   
   // Form state
   const [userData, setUserData] = useState({
@@ -59,19 +60,69 @@ const UserProfileStrategy: React.FC<UserProfileStrategyProps> = ({ user }) => {
     }, 800);
   };
   
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsAvatarUploading(true);
+    
+    handleImageFileChange(e, 'avatar', (result) => {
+      // Update the local form state
+      setUserData(prev => ({
+        ...prev,
+        avatar: result.url
+      }));
+      
+      setIsAvatarUploading(false);
+      
+      toast({
+        title: "Image prête",
+        description: "L'image sera enregistrée lorsque vous sauvegarderez le profil.",
+      });
+    });
+  };
+  
   return (
     <div className="space-y-6">
       <ProfileSection title="Informations personnelles" description="Modifiez vos informations de profil">
         <div className="flex flex-col items-center mb-6">
-          <Avatar className="h-24 w-24 mb-4">
+          <Avatar 
+            className="h-24 w-24 mb-4 cursor-pointer hover:opacity-90"
+            onClick={handleAvatarClick}
+          >
             <AvatarImage src={userData.avatar} alt={userData.fullName} />
             <AvatarFallback>{userData.fullName.slice(0, 2).toUpperCase()}</AvatarFallback>
           </Avatar>
-          <Button size="sm"
-            onClick={(e) => null}
-            variant="outline" className="flex items-center gap-2">
-            <Upload className="h-4 w-4" />
-            Modifier la photo
+          
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            style={{ display: 'none' }}
+          />
+          
+          <Button 
+            size="sm"
+            onClick={handleAvatarClick}
+            variant="outline" 
+            className="flex items-center gap-2"
+            disabled={isAvatarUploading}
+          >
+            {isAvatarUploading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                Chargement...
+              </>
+            ) : (
+              <>
+                <Upload className="h-4 w-4" />
+                Modifier la photo
+              </>
+            )}
           </Button>
         </div>
         
