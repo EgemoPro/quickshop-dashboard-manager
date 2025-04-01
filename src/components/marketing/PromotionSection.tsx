@@ -7,9 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { MarketingCard } from "./MarketingCard";
+import MarketingCard from "./MarketingCard";
 import { useAppDispatch } from "@/store/hooks";
-import { addPromoCode, editPromoCode, removePromoCode, PromoCode } from "@/store/slices/marketingSlice";
+import { 
+  addPromoCode, 
+  updatePromoCode, 
+  deletePromoCode, 
+  PromoCode 
+} from "@/store/slices/marketingSlice";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -31,8 +36,9 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
     endDate: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"), // +30 days
     limitedUses: false,
     maxUses: 100,
-    applicableProducts: "all" as const, // Type assertion to 'all'
-    applicableCategories: "all" as const, // Type assertion to 'all'
+    usedCount: 0, // Added missing usedCount property
+    applicableProducts: "all" as const,
+    applicableCategories: "all" as const,
     active: true,
   });
 
@@ -46,6 +52,7 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
       endDate: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"),
       limitedUses: false,
       maxUses: 100,
+      usedCount: 0, // Added missing usedCount property
       applicableProducts: "all",
       applicableCategories: "all",
       active: true,
@@ -72,6 +79,7 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
       endDate: promo.endDate,
       limitedUses: promo.limitedUses,
       maxUses: promo.maxUses,
+      usedCount: promo.usedCount, // Added missing usedCount property
       applicableProducts: promo.applicableProducts,
       applicableCategories: promo.applicableCategories,
       active: promo.active,
@@ -82,7 +90,7 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
   };
 
   const handleDeletePromo = (id: string) => {
-    dispatch(removePromoCode(id));
+    dispatch(deletePromoCode(id)); // Changed from removePromoCode to deletePromoCode
     toast({
       title: "Code promo supprimé",
       description: "Le code promo a été supprimé avec succès."
@@ -91,7 +99,7 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
 
   const handleSubmit = () => {
     if (isEditing && currentPromoId) {
-      dispatch(editPromoCode({
+      dispatch(updatePromoCode({
         id: currentPromoId,
         ...formData
       }));
@@ -100,7 +108,9 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
         description: `Le code "${formData.code}" a été modifié avec succès.`
       });
     } else {
-      dispatch(addPromoCode(formData));
+      // We're excluding id in addPromoCode as it's generated
+      const { usedCount, ...promoWithoutCounts } = formData;
+      dispatch(addPromoCode(promoWithoutCounts));
       toast({
         title: "Code promo créé",
         description: `Le code "${formData.code}" a été créé avec succès.`
@@ -297,3 +307,5 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
     </MarketingCard>
   );
 };
+
+export default PromotionSection;

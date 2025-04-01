@@ -1,4 +1,3 @@
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface PromoCode {
@@ -157,6 +156,7 @@ export const marketingSlice = createSlice({
         id: newId,
         usedCount: 0,
       });
+      state.promoCodesCount = state.promoCodes.length;
     },
     updatePromoCode: (state, action: PayloadAction<Partial<PromoCode> & { id: string }>) => {
       const index = state.promoCodes.findIndex(code => code.id === action.payload.id);
@@ -169,6 +169,7 @@ export const marketingSlice = createSlice({
     },
     deletePromoCode: (state, action: PayloadAction<string>) => {
       state.promoCodes = state.promoCodes.filter(code => code.id !== action.payload);
+      state.promoCodesCount = state.promoCodes.length;
     },
     togglePromoCodeStatus: (state, action: PayloadAction<string>) => {
       const index = state.promoCodes.findIndex(code => code.id === action.payload);

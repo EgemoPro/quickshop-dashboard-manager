@@ -23,6 +23,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const Marketing = () => {
   const { 
+    promoCodes,
+    campaigns,
     activeCampaigns, 
     promoCodesCount, 
     emailSubscribers 
@@ -85,7 +87,7 @@ const Marketing = () => {
         </TabsContent>
 
         <TabsContent value="promotions" className="space-y-4 sm:space-y-6">
-          <PromotionSection />
+          <PromotionSection promoCodes={promoCodes} />
         </TabsContent>
 
         <TabsContent value="emails" className="space-y-4 sm:space-y-6">
