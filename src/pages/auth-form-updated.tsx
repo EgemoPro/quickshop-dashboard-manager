@@ -5,7 +5,6 @@ import type React from "react"
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { ArrowRight, Check, Loader2, Mail, Lock, Facebook, UserRound, Eye, EyeOff } from "lucide-react"
-import Image from "next/image"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -174,12 +173,10 @@ export default function AuthForm({
     <div className={cn("grid min-h-screen w-full lg:grid-cols-2", className)}>
       {/* Image Section */}
       <div className="relative hidden lg:block">
-        <Image
+        <img
           src={imageSrc || "/placeholder.svg"}
           alt={imageAlt}
-          fill
-          className="absolute inset-0 object-cover"
-          priority
+          className="absolute inset-0 object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute left-8 top-8 z-20">
@@ -655,4 +652,3 @@ export default function AuthForm({
     </div>
   )
 }
-

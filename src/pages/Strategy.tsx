@@ -50,6 +50,24 @@ const Strategy = () => {
 
   if (!user) return null;
 
+  // Create default values if missing properties
+  const storeInfo = {
+    name: user.storeInfo?.name || "",
+    description: user.storeInfo?.description || "",
+    logo: user.storeInfo?.logo || "",
+    banner: user.storeInfo?.banner || "",
+    contactEmail: user.storeInfo?.contactEmail || "",
+    website: user.storeInfo?.website || "",
+    address: user.storeInfo?.address || "",
+  };
+  
+  // Ensure storeStrategy has required properties
+  const completeStoreStrategy = {
+    storeDescription: storeStrategy?.storeDescription || "",
+    storeObjectives: storeStrategy?.storeObjectives || "",
+    ...storeStrategy
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -94,8 +112,8 @@ const Strategy = () => {
 
         <TabsContent value="store" className="space-y-4 sm:space-y-6 mt-2">
           <StoreProfileStrategy
-            storeInfo={user.storeInfo}
-            storeStrategy={storeStrategy}
+            storeInfo={storeInfo}
+            storeStrategy={completeStoreStrategy}
           />
         </TabsContent>
 

@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -5,7 +6,6 @@ import type React from "react"
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { ArrowRight, Check, Loader2 } from "lucide-react"
-import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -62,12 +62,10 @@ export default function PasswordlessLogin({
     <div className={cn("grid min-h-screen w-full lg:grid-cols-2", className)}>
       {/* Image Section */}
       <div className="relative hidden lg:block">
-        <Image
+        <img
           src={imageSrc || "/placeholder.svg"}
           alt={imageAlt}
-          fill
-          className="absolute inset-0 object-cover"
-          priority
+          className="absolute inset-0 object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute left-8 top-8 z-20">
@@ -171,4 +169,3 @@ export default function PasswordlessLogin({
     </div>
   )
 }
-

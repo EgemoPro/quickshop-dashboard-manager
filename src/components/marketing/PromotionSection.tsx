@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Calendar, Clock, FilePenLine, Trash, Plus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,7 +35,7 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
     endDate: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"), // +30 days
     limitedUses: false,
     maxUses: 100,
-    usedCount: 0, // Added missing usedCount property
+    usedCount: 0,
     applicableProducts: "all" as const,
     applicableCategories: "all" as const,
     active: true,
@@ -52,7 +51,7 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
       endDate: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"),
       limitedUses: false,
       maxUses: 100,
-      usedCount: 0, // Added missing usedCount property
+      usedCount: 0,
       applicableProducts: "all",
       applicableCategories: "all",
       active: true,
@@ -79,7 +78,7 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
       endDate: promo.endDate,
       limitedUses: promo.limitedUses,
       maxUses: promo.maxUses,
-      usedCount: promo.usedCount, // Added missing usedCount property
+      usedCount: promo.usedCount,
       applicableProducts: promo.applicableProducts,
       applicableCategories: promo.applicableCategories,
       active: promo.active,
@@ -90,7 +89,7 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
   };
 
   const handleDeletePromo = (id: string) => {
-    dispatch(deletePromoCode(id)); // Changed from removePromoCode to deletePromoCode
+    dispatch(deletePromoCode(id));
     toast({
       title: "Code promo supprimé",
       description: "Le code promo a été supprimé avec succès."
@@ -108,7 +107,6 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
         description: `Le code "${formData.code}" a été modifié avec succès.`
       });
     } else {
-      // We're excluding id in addPromoCode as it's generated
       const { usedCount, ...promoWithoutCounts } = formData;
       dispatch(addPromoCode(promoWithoutCounts));
       toast({
@@ -121,8 +119,8 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
   };
 
   return (
-    <MarketingCard title="Promotions et Codes Promo" icon={<Calendar className="h-5 w-5" />}>
-      <div>
+    <div>
+      <MarketingCard title="Promotions et Codes Promo" icon={<Calendar className="h-5 w-5" />}>
         <div className="flex justify-between items-center mb-4">
           <h4 className="text-sm font-medium">Codes promo actifs</h4>
           <Button size="sm" onClick={handleAddPromo} className="flex items-center gap-1">
@@ -168,143 +166,143 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
             ))
           )}
         </div>
+      </MarketingCard>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>{isEditing ? "Modifier le code promo" : "Ajouter un code promo"}</DialogTitle>
-              <DialogDescription>
-                {isEditing
-                  ? "Modifiez les détails du code promo ci-dessous."
-                  : "Remplissez les détails pour créer un nouveau code promo."}
-              </DialogDescription>
-            </DialogHeader>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{isEditing ? "Modifier le code promo" : "Ajouter un code promo"}</DialogTitle>
+            <DialogDescription>
+              {isEditing
+                ? "Modifiez les détails du code promo ci-dessous."
+                : "Remplissez les détails pour créer un nouveau code promo."}
+            </DialogDescription>
+          </DialogHeader>
 
-            <div className="grid gap-4 py-4">
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="code">Code</Label>
+              <Input
+                id="code"
+                value={formData.code}
+                onChange={(e) => handleChange("code", e.target.value.toUpperCase())}
+                placeholder="ex: SUMMER2023"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="code">Code</Label>
-                <Input
-                  id="code"
-                  value={formData.code}
-                  onChange={(e) => handleChange("code", e.target.value.toUpperCase())}
-                  placeholder="ex: SUMMER2023"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="discountType">Type de réduction</Label>
-                  <Select
-                    value={formData.discountType}
-                    onValueChange={(value) => handleChange("discountType", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Type de réduction" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="percentage">Pourcentage</SelectItem>
-                        <SelectItem value="fixed">Montant fixe</SelectItem>
-                        <SelectItem value="freeShipping">Livraison gratuite</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="discountValue">Valeur de la réduction</Label>
-                  <Input
-                    id="discountValue"
-                    type="number"
-                    value={formData.discountValue}
-                    onChange={(e) => handleChange("discountValue", parseFloat(e.target.value))}
-                    disabled={formData.discountType === "freeShipping"}
-                  />
-                </div>
+                <Label htmlFor="discountType">Type de réduction</Label>
+                <Select
+                  value={formData.discountType}
+                  onValueChange={(value) => handleChange("discountType", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Type de réduction" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="percentage">Pourcentage</SelectItem>
+                      <SelectItem value="fixed">Montant fixe</SelectItem>
+                      <SelectItem value="freeShipping">Livraison gratuite</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="minPurchase">Achat minimum (€)</Label>
+                <Label htmlFor="discountValue">Valeur de la réduction</Label>
                 <Input
-                  id="minPurchase"
+                  id="discountValue"
                   type="number"
-                  value={formData.minPurchase}
-                  onChange={(e) => handleChange("minPurchase", parseFloat(e.target.value))}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="startDate">Date de début</Label>
-                  <Input
-                    id="startDate"
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => handleChange("startDate", e.target.value)}
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="endDate">Date de fin</Label>
-                  <Input
-                    id="endDate"
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => handleChange("endDate", e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="limitedUses">Limiter le nombre d'utilisations</Label>
-                  <p className="text-xs text-gray-500">Limiter le nombre total d'utilisation</p>
-                </div>
-                <Switch
-                  id="limitedUses"
-                  checked={formData.limitedUses}
-                  onCheckedChange={(checked) => handleChange("limitedUses", checked)}
-                />
-              </div>
-
-              {formData.limitedUses && (
-                <div className="grid gap-2">
-                  <Label htmlFor="maxUses">Utilisations maximum</Label>
-                  <Input
-                    id="maxUses"
-                    type="number"
-                    value={formData.maxUses}
-                    onChange={(e) => handleChange("maxUses", parseInt(e.target.value))}
-                  />
-                </div>
-              )}
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="active">Code actif</Label>
-                  <p className="text-xs text-gray-500">Activer ou désactiver ce code</p>
-                </div>
-                <Switch
-                  id="active"
-                  checked={formData.active}
-                  onCheckedChange={(checked) => handleChange("active", checked)}
+                  value={formData.discountValue}
+                  onChange={(e) => handleChange("discountValue", parseFloat(e.target.value))}
+                  disabled={formData.discountType === "freeShipping"}
                 />
               </div>
             </div>
 
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Annuler
-              </Button>
-              <Button onClick={handleSubmit} disabled={!formData.code}>
-                <Check className="h-4 w-4 mr-2" />
-                {isEditing ? "Mettre à jour" : "Créer"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </MarketingCard>
+            <div className="grid gap-2">
+              <Label htmlFor="minPurchase">Achat minimum (€)</Label>
+              <Input
+                id="minPurchase"
+                type="number"
+                value={formData.minPurchase}
+                onChange={(e) => handleChange("minPurchase", parseFloat(e.target.value))}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="startDate">Date de début</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) => handleChange("startDate", e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="endDate">Date de fin</Label>
+                <Input
+                  id="endDate"
+                  type="date"
+                  value={formData.endDate}
+                  onChange={(e) => handleChange("endDate", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="limitedUses">Limiter le nombre d'utilisations</Label>
+                <p className="text-xs text-gray-500">Limiter le nombre total d'utilisation</p>
+              </div>
+              <Switch
+                id="limitedUses"
+                checked={formData.limitedUses}
+                onCheckedChange={(checked) => handleChange("limitedUses", checked)}
+              />
+            </div>
+
+            {formData.limitedUses && (
+              <div className="grid gap-2">
+                <Label htmlFor="maxUses">Utilisations maximum</Label>
+                <Input
+                  id="maxUses"
+                  type="number"
+                  value={formData.maxUses}
+                  onChange={(e) => handleChange("maxUses", parseInt(e.target.value))}
+                />
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="active">Code actif</Label>
+                <p className="text-xs text-gray-500">Activer ou désactiver ce code</p>
+              </div>
+              <Switch
+                id="active"
+                checked={formData.active}
+                onCheckedChange={(checked) => handleChange("active", checked)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Annuler
+            </Button>
+            <Button onClick={handleSubmit} disabled={!formData.code}>
+              <Check className="h-4 w-4 mr-2" />
+              {isEditing ? "Mettre à jour" : "Créer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 
