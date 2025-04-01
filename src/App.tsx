@@ -24,7 +24,8 @@ import {
   ChartCandlestick,
   LineChart,
   // Target,
-  BlocksIcon
+  BlocksIcon,
+  UserPlus2
 } from "lucide-react";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
@@ -50,6 +51,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AuthForm from "@/components/auth/auth-form";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { checkAuth, login, registerUser } from "./store/slices/authSlice";
+import FollowersDashboard from "./pages/followers-dashboard";
 
 const queryClient = new QueryClient();
 
@@ -205,6 +207,7 @@ const Navigation = () => {
         { to: "/shipping", label: "Expéditions", icon: Send }
       ]
     },
+    {to:"followers", icon: UserPlus2, label: "Followers"},
     { to: "/chat", icon: MessageCircle, label: "Chat" },
     { to: "/strategy", icon: Store, label: "Stratégie" },
     { to: "/plugins", icon: BlocksIcon, label: "Plugins" },
@@ -333,6 +336,14 @@ const AppContent = () => {
             isAuthenticated={isAuthenticated}>
             <DashboardLayout>
               <Products />
+            </DashboardLayout>
+          </ProtectedRoute>}
+        />
+        <Route path="/followers" element={
+          <ProtectedRoute
+            isAuthenticated={isAuthenticated}>
+            <DashboardLayout>
+              <FollowersDashboard />
             </DashboardLayout>
           </ProtectedRoute>}
         />
