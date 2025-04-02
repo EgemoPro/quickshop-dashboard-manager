@@ -17,6 +17,48 @@ import { useToast } from '@/hooks/use-toast';
 import { addKeyword, removeKeyword } from '@/store/slices/strategySlice';
 import { ProfileSection } from '@/components/strategy/ProfileSection';
 
+// Extended StoreInfo interface to match what we need
+interface ExtendedStoreInfo {
+  name: string;
+  description: string;
+  logo: string;
+  banner: string;
+  contactEmail: string;
+  website: string;
+  address: string;
+  createdAt?: string;
+  verified?: boolean;
+}
+
+// Extended StoreStrategy interface to match what we need
+interface ExtendedStoreStrategy {
+  storeDescription: string;
+  storeObjectives: string;
+  targetAudience?: string;
+  competitiveAdvantage?: string;
+  marketPosition?: string;
+  growthPlans?: string;
+  seoSettings: {
+    metaTitle: string;
+    metaDescription: string;
+    keywords: string[];
+    socialMediaSharing: boolean;
+    // Additional properties
+    sitemap?: boolean;
+    canonicalUrls?: boolean;
+    structuredData?: boolean;
+    robotsTxt?: string;
+    allowIndexing?: boolean;
+  };
+  socialProfiles: {
+    facebook: string;
+    instagram: string;
+    twitter: string;
+    linkedin: string;
+    youtube: string;
+  }[];
+}
+
 const Strategy = () => {
   const { user } = useAppSelector(state => state.auth);
   const { storeStrategy } = useAppSelector(state => state.strategy);
@@ -51,7 +93,7 @@ const Strategy = () => {
   if (!user) return null;
 
   // Create default values if missing properties
-  const storeInfo = {
+  const storeInfo: ExtendedStoreInfo = {
     name: user.storeInfo?.name || "",
     description: user.storeInfo?.description || "",
     logo: user.storeInfo?.logo || "",
@@ -59,13 +101,30 @@ const Strategy = () => {
     contactEmail: user.storeInfo?.contactEmail || "",
     website: user.storeInfo?.website || "",
     address: user.storeInfo?.address || "",
+    createdAt: user.storeInfo?.createdAt,
+    verified: user.storeInfo?.verified,
   };
   
   // Ensure storeStrategy has required properties
-  const completeStoreStrategy = {
+  const completeStoreStrategy: ExtendedStoreStrategy = {
     storeDescription: storeStrategy?.storeDescription || "",
     storeObjectives: storeStrategy?.storeObjectives || "",
-    ...storeStrategy
+    targetAudience: storeStrategy?.targetAudience || "",
+    competitiveAdvantage: storeStrategy?.competitiveAdvantage || "",
+    marketPosition: storeStrategy?.marketPosition || "",
+    growthPlans: storeStrategy?.growthPlans || "",
+    seoSettings: {
+      metaTitle: storeStrategy?.seoSettings?.metaTitle || "",
+      metaDescription: storeStrategy?.seoSettings?.metaDescription || "",
+      keywords: storeStrategy?.seoSettings?.keywords || [],
+      socialMediaSharing: storeStrategy?.seoSettings?.socialMediaSharing || false,
+      sitemap: storeStrategy?.seoSettings?.sitemap || false,
+      canonicalUrls: storeStrategy?.seoSettings?.canonicalUrls || false,
+      structuredData: storeStrategy?.seoSettings?.structuredData || false,
+      robotsTxt: storeStrategy?.seoSettings?.robotsTxt || "",
+      allowIndexing: storeStrategy?.seoSettings?.allowIndexing || true,
+    },
+    socialProfiles: storeStrategy?.socialProfiles || [],
   };
 
   return (
@@ -117,13 +176,13 @@ const Strategy = () => {
           />
         </TabsContent>
 
-        <TabsContent value='social' className="space-y-4 sm:space-y-6 mt-2" >
-          <ProfileSection title='Réseaux sociaux' >
+        <TabsContent value='social' className="space-y-4 sm:space-y-6 mt-2">
+          <ProfileSection title='Réseaux sociaux'>
             <SocialMediaConnections socialProfiles={storeStrategy.socialProfiles} onSocialProfilesChange={() => { }} />
           </ProfileSection>
         </TabsContent>
 
-        <TabsContent value='seo' className="space-y-4 sm:space-y-6 mt-2" >
+        <TabsContent value='seo' className="space-y-4 sm:space-y-6 mt-2">
           <ProfileSection title='Optimisation SEO'>
             <div className="space-y-4 sm:space-y-6">
               <div className="space-y-3 sm:space-y-4">
