@@ -2,19 +2,23 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package2, Plus, Edit, Trash2, Search, Filter, AlertTriangle, Image as ImageIcon } from "lucide-react";
+import { Package2, Plus, Edit, Trash2, Search, Filter, AlertTriangle, Image as ImageIcon, Pencil, Tag, Box } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addProduct, deleteProduct, updateProduct, setLoading, type Product, ProductImage } from "@/store/slices/productsSlice";
 import { useToast } from "@/components/ui/use-toast";
 import ImageUploader from "@/components/products/ImageUploader";
 import CategorySelect from "@/components/products/CategorySelect";
+import ProductCard from "@/components/products/ProductCard";
+import ProductForm from "@/components/products/ProductForm";
+import ProductFilters from "@/components/products/ProductFilters";
+import EmptyState from "@/components/products/EmptyState";
 
 const Products = () => {
   const dispatch = useAppDispatch();
@@ -170,202 +174,79 @@ const Products = () => {
               <h1 className="text-3xl font-bold text-gray-900">Produits</h1>
               <p className="text-gray-600 mt-1">Gérez votre catalogue de produits</p>
             </div>
-            <Button onClick={() => setIsAddModalOpen(true)}>
+            <Button onClick={() => setIsAddModalOpen(true)} className="bg-primary hover:bg-primary/90 shadow-sm">
               <Plus className="h-4 w-4 mr-2" />
               Ajouter un produit
             </Button>
           </div>
 
-          {/* Search and Filter Bar */}
-          <div className="mt-6 flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Rechercher un produit..."
-                className="pl-10"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-full md:w-[200px]">
-                <div className="flex items-center">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Tous les statuts" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les statuts</SelectItem>
-                <SelectItem value="instock">En stock</SelectItem>
-                <SelectItem value="lowstock">Stock faible</SelectItem>
-                <SelectItem value="outofstock">Rupture</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <ProductFilters 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery}
+            filterStatus={filterStatus}
+            setFilterStatus={setFilterStatus}
+          />
         </header>
 
-        <Card className="p-6 relative">
+        <Card className="p-6 relative shadow-md border-none overflow-hidden">
           {isLoading && (
-            <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10">
+            <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 backdrop-blur-sm">
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                <span>Chargement...</span>
+                <span className="font-medium">Chargement...</span>
               </div>
             </div>
           )}
           
-          <ScrollArea className="h-[600px]">
+          <ScrollArea className="h-[600px] pr-4">
             {filteredProducts.length > 0 ? (
-              <div className="grid gap-4">
-                {filteredProducts.map((product) => {
-                  const status = getProductStatus(product.stock);
-                  return (
-                    <div
-                      key={product.id}
-                      className="p-4 border rounded-lg bg-white hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-center justify-between flex-wrap gap-4">
-                        <div className="flex items-center gap-4">
-                          {product.images && product.images.length > 0 ? (
-                            <img 
-                              src={product.images[0].url} 
-                              alt={product.name}
-                              className="h-12 w-12 object-cover rounded"
-                            />
-                          ) : (
-                            <Package2 className="h-8 w-8 text-gray-400" />
-                          )}
-                          <div>
-                            <h3 className="font-medium">{product.name}</h3>
-                            <p className="text-sm text-gray-500">Prix: {product.price} {currencySymbol} </p>
-                            <p className="text-sm text-gray-500">Catégorie: {product.category}</p>
-                            <div className="flex items-center mt-1">
-                              {product.images && product.images.length > 0 && (
-                                <span className="text-xs text-gray-400 flex items-center">
-                                  <ImageIcon className="h-3 w-3 mr-1" /> 
-                                  {product.images.length} image{product.images.length > 1 ? 's' : ''}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="flex flex-col items-end">
-                            <Badge variant={status.variant}>
-                              {status.text}
-                            </Badge>
-                            <span className="text-sm text-gray-500 mt-1">
-                              Stock: {product.stock} unités
-                            </span>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => openEditModal(product)}>
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => {
-                                setProductToDelete(product.id);
-                                setShowDeleteDialog(true);
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProducts.map((product) => (
+                  <ProductCard 
+                    key={product.id}
+                    product={product}
+                    getProductStatus={getProductStatus}
+                    currencySymbol={currencySymbol}
+                    onEdit={openEditModal}
+                    onDelete={(id) => {
+                      setProductToDelete(id);
+                      setShowDeleteDialog(true);
+                    }}
+                  />
+                ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-[400px] text-gray-500">
-                <Package2 className="h-12 w-12 mb-4 opacity-30" />
-                <p>Aucun produit trouvé</p>
-                <p className="text-sm mt-2">Essayez de modifier vos filtres ou d'ajouter de nouveaux produits</p>
-              </div>
+              <EmptyState onAddProduct={() => setIsAddModalOpen(true)} />
             )}
           </ScrollArea>
         </Card>
 
         {/* Add Product Modal */}
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle>Ajouter un produit</DialogTitle>
-              <DialogDescription>
+          <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden bg-white rounded-xl">
+            <DialogHeader className="px-6 pt-6 pb-2">
+              <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                <Plus className="h-5 w-5 text-primary" />
+                Ajouter un produit
+              </DialogTitle>
+              <DialogDescription className="text-gray-500">
                 Remplissez les informations du nouveau produit ci-dessous.
               </DialogDescription>
             </DialogHeader>
             
-            <div className="grid gap-6 py-4">
-              <div className="grid gap-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right font-medium">
-                    Nom
-                  </Label>
-                  <Input
-                    id="name"
-                    value={formState.name}
-                    onChange={(e) => setFormState({...formState, name: e.target.value})}
-                    className="col-span-3"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="price" className="text-right font-medium">
-                    Prix ({currencySymbol})
-                  </Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    value={formState.price}
-                    onChange={(e) => setFormState({...formState, price: e.target.value})}
-                    className="col-span-3"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="stock" className="text-right font-medium">
-                    Stock
-                  </Label>
-                  <Input
-                    id="stock"
-                    type="number"
-                    value={formState.stock}
-                    onChange={(e) => setFormState({...formState, stock: parseInt(e.target.value) || 0})}
-                    className="col-span-3"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <div className="text-right font-medium">
-                    Catégorie
-                  </div>
-                  <div className="col-span-3">
-                    <CategorySelect 
-                      selectedCategory={formState.category} 
-                      onCategoryChange={(category) => setFormState({...formState, category})}
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="font-medium">Images</Label>
-                <ImageUploader 
-                  images={formState.images}
-                  onImagesChange={handleImagesChange}
-                />
-              </div>
-            </div>
+            <ProductForm 
+              formState={formState}
+              setFormState={setFormState}
+              currencySymbol={currencySymbol}
+              onImagesChange={handleImagesChange}
+            />
             
-            <DialogFooter>
+            <DialogFooter className="px-6 py-4 bg-gray-50 border-t">
               <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
                 Annuler
               </Button>
-              <Button type="submit" onClick={handleAddProduct}>
+              <Button type="submit" onClick={handleAddProduct} className="gap-1">
+                <Plus className="h-4 w-4" />
                 Ajouter
               </Button>
             </DialogFooter>
@@ -374,80 +255,30 @@ const Products = () => {
 
         {/* Edit Product Modal */}
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle>Modifier le produit</DialogTitle>
-              <DialogDescription>
+          <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden bg-white rounded-xl">
+            <DialogHeader className="px-6 pt-6 pb-2">
+              <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                <Pencil className="h-5 w-5 text-blue-500" />
+                Modifier le produit
+              </DialogTitle>
+              <DialogDescription className="text-gray-500">
                 Modifiez les informations du produit ci-dessous.
               </DialogDescription>
             </DialogHeader>
             
-            <div className="grid gap-6 py-4">
-              <div className="grid gap-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="edit-name" className="text-right font-medium">
-                    Nom
-                  </Label>
-                  <Input
-                    id="edit-name"
-                    value={formState.name}
-                    onChange={(e) => setFormState({...formState, name: e.target.value})}
-                    className="col-span-3"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="edit-price" className="text-right font-medium">
-                    Prix ({currencySymbol})
-                  </Label>
-                  <Input
-                    id="edit-price"
-                    value={formState.price}
-                    onChange={(e) => setFormState({...formState, price: e.target.value})}
-                    className="col-span-3"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="edit-stock" className="text-right font-medium">
-                    Stock
-                  </Label>
-                  <Input
-                    id="edit-stock"
-                    type="number"
-                    value={formState.stock}
-                    onChange={(e) => setFormState({...formState, stock: parseInt(e.target.value) || 0})}
-                    className="col-span-3"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <div className="text-right font-medium">
-                    Catégorie
-                  </div>
-                  <div className="col-span-3">
-                    <CategorySelect 
-                      selectedCategory={formState.category} 
-                      onCategoryChange={(category) => setFormState({...formState, category})}
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="font-medium">Images</Label>
-                <ImageUploader 
-                  images={formState.images}
-                  onImagesChange={handleImagesChange}
-                />
-              </div>
-            </div>
+            <ProductForm 
+              formState={formState}
+              setFormState={setFormState}
+              currencySymbol={currencySymbol}
+              onImagesChange={handleImagesChange}
+            />
             
-            <DialogFooter>
+            <DialogFooter className="px-6 py-4 bg-gray-50 border-t">
               <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
                 Annuler
               </Button>
-              <Button type="submit" onClick={handleEditProduct}>
+              <Button type="submit" onClick={handleEditProduct} className="gap-1 bg-blue-500 hover:bg-blue-600">
+                <Pencil className="h-4 w-4" />
                 Mettre à jour
               </Button>
             </DialogFooter>
@@ -456,17 +287,22 @@ const Products = () => {
 
         {/* Delete Confirmation Dialog */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-destructive">
+          <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-white rounded-xl">
+            <DialogHeader className="px-6 pt-6 pb-2">
+              <DialogTitle className="flex items-center gap-2 text-red-500 font-bold text-xl">
                 <AlertTriangle className="h-5 w-5" />
                 Confirmer la suppression
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-gray-500">
                 Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter>
+            <div className="px-6 py-4">
+              <div className="p-4 bg-red-50 rounded-lg border border-red-100 text-sm text-red-600">
+                Cette action supprimera définitivement le produit de votre catalogue. Les données supprimées ne pourront pas être récupérées.
+              </div>
+            </div>
+            <DialogFooter className="px-6 py-4 bg-gray-50 border-t">
               <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
                 Annuler
               </Button>
