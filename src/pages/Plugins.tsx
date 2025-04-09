@@ -2,11 +2,12 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, ExternalLink, ZapIcon, Download, ShoppingBag, TruckIcon, CreditCard, BarChart3, Globe, Shield } from "lucide-react";
+import { Search, ExternalLink, ZapIcon, Download, ShoppingBag, TruckIcon, CreditCard, BarChart3, Globe, Shield, Plug } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DashboardLayout from "@/components/DashboardLayout";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Plugin {
   id: string;
@@ -23,6 +24,7 @@ interface Plugin {
 const Plugins: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [isLoading, setIsLoading] = useState(false);
 
   const plugins: Plugin[] = [
     {
@@ -115,7 +117,7 @@ const Plugins: React.FC = () => {
   });
 
   const getCategoryLabel = (category: string) => {
-    const categories = {
+    const categories: Record<string, { label: string; color: string }> = {
       payment: { label: "Paiement", color: "bg-green-100 text-green-800" },
       shipping: { label: "Livraison", color: "bg-blue-100 text-blue-800" },
       marketing: { label: "Marketing", color: "bg-purple-100 text-purple-800" },
@@ -124,28 +126,31 @@ const Plugins: React.FC = () => {
       other: { label: "Autre", color: "bg-gray-100 text-gray-800" }
     };
     
-    return categories[category as keyof typeof categories] || categories.other;
+    return categories[category] || categories.other;
   };
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Plugins</h1>
+            <h1 className="text-2xl font-bold tracking-tight flex items-center">
+              <Plug className="mr-2 h-6 w-6 text-purple-600" />
+              Plugins
+            </h1>
             <p className="text-muted-foreground">
               Étendez les fonctionnalités de votre boutique avec des plugins
             </p>
           </div>
-          <Button>
+          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
             <Download className="mr-2 h-4 w-4" /> Découvrir plus de plugins
           </Button>
         </div>
 
-        <div className="border rounded-lg overflow-hidden bg-card">
+        <div className="border rounded-lg overflow-hidden bg-card shadow-sm">
           <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-            <div className="flex flex-col md:flex-row md:items-center justify-between px-4 pt-4">
-              <TabsList className="mb-4 md:mb-0">
+            <div className="flex flex-col md:flex-row md:items-center justify-between p-4 border-b bg-muted/30">
+              <TabsList className="mb-4 md:mb-0 bg-background/90 backdrop-blur-sm">
                 <TabsTrigger value="all">Tous</TabsTrigger>
                 <TabsTrigger value="installed">Installés</TabsTrigger>
                 <TabsTrigger value="payment">Paiement</TabsTrigger>
@@ -159,7 +164,7 @@ const Plugins: React.FC = () => {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Rechercher des plugins..."
-                  className="pl-10"
+                  className="pl-10 bg-background/80 backdrop-blur-sm"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -168,42 +173,44 @@ const Plugins: React.FC = () => {
 
             <TabsContent value="all" className="p-0 m-0">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                {filteredPlugins.length > 0 ? (
+                {isLoading ? (
+                  Array(6).fill(0).map((_, index) => (
+                    <PluginCardSkeleton key={index} />
+                  ))
+                ) : filteredPlugins.length > 0 ? (
                   filteredPlugins.map((plugin) => (
                     <PluginCard key={plugin.id} plugin={plugin} />
                   ))
                 ) : (
-                  <div className="col-span-full text-center py-12">
-                    <p className="text-muted-foreground">Aucun plugin trouvé</p>
+                  <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
+                    <Search className="h-12 w-12 text-muted-foreground mb-4" />
+                    <p className="text-lg font-medium mb-2">Aucun plugin trouvé</p>
+                    <p className="text-muted-foreground max-w-md">
+                      Essayez de modifier vos critères de recherche ou explorez notre marketplace pour découvrir plus de plugins.
+                    </p>
                   </div>
                 )}
               </div>
             </TabsContent>
 
-            <TabsContent value="installed" className="p-0 m-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                {filteredPlugins.length > 0 ? (
-                  filteredPlugins.map((plugin) => (
-                    <PluginCard key={plugin.id} plugin={plugin} />
-                  ))
-                ) : (
-                  <div className="col-span-full text-center py-12">
-                    <p className="text-muted-foreground">Aucun plugin installé</p>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            {["payment", "shipping", "marketing", "analytics", "security", "other"].map((category) => (
+            {["installed", "payment", "shipping", "marketing", "analytics", "security", "other"].map((category) => (
               <TabsContent key={category} value={category} className="p-0 m-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                  {filteredPlugins.length > 0 ? (
+                  {isLoading ? (
+                    Array(3).fill(0).map((_, index) => (
+                      <PluginCardSkeleton key={index} />
+                    ))
+                  ) : filteredPlugins.length > 0 ? (
                     filteredPlugins.map((plugin) => (
                       <PluginCard key={plugin.id} plugin={plugin} />
                     ))
                   ) : (
-                    <div className="col-span-full text-center py-12">
-                      <p className="text-muted-foreground">Aucun plugin dans cette catégorie</p>
+                    <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
+                      <Search className="h-12 w-12 text-muted-foreground mb-4" />
+                      <p className="text-lg font-medium mb-2">Aucun plugin dans cette catégorie</p>
+                      <p className="text-muted-foreground max-w-md">
+                        Explorez notre marketplace pour découvrir plus de plugins dans cette catégorie.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -224,15 +231,15 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin }) => {
   const categoryInfo = getCategoryLabel(plugin.category);
   
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-md">
-      <CardHeader className="pb-2">
+    <Card className="overflow-hidden transition-all hover:shadow-md border-transparent hover:border-purple-200 group">
+      <CardHeader className="pb-2 bg-gradient-to-r from-background to-muted/30">
         <div className="flex justify-between items-start">
           <div className="flex items-start space-x-4">
-            <div className={`p-2 rounded-md ${plugin.installed ? 'bg-blue-100' : 'bg-gray-100'}`}>
-              <plugin.icon className={`h-5 w-5 ${plugin.installed ? 'text-blue-700' : 'text-gray-700'}`} />
+            <div className={`p-2 rounded-md ${plugin.installed ? 'bg-purple-100' : 'bg-gray-100'} transition-colors group-hover:scale-105`}>
+              <plugin.icon className={`h-5 w-5 ${plugin.installed ? 'text-purple-700' : 'text-gray-700'}`} />
             </div>
             <div>
-              <CardTitle className="text-lg">{plugin.name}</CardTitle>
+              <CardTitle className="text-lg group-hover:text-purple-700 transition-colors">{plugin.name}</CardTitle>
               <CardDescription className="text-xs mt-1">
                 Par {plugin.author}
               </CardDescription>
@@ -244,7 +251,7 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin }) => {
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
           {plugin.description}
         </p>
         <div className="flex justify-between items-center mt-2">
@@ -276,7 +283,7 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin }) => {
           <Button 
             variant={plugin.installed ? "outline" : "default"} 
             size="sm" 
-            className="w-full"
+            className={`w-full ${plugin.installed ? '' : 'bg-purple-600 hover:bg-purple-700'}`}
           >
             {plugin.installed ? "Configurer" : "Installer"}
           </Button>
@@ -289,17 +296,38 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin }) => {
   );
 };
 
-function getCategoryLabel(category: string) {
-  const categories: Record<string, { label: string; color: string }> = {
-    payment: { label: "Paiement", color: "bg-green-100 text-green-800" },
-    shipping: { label: "Livraison", color: "bg-blue-100 text-blue-800" },
-    marketing: { label: "Marketing", color: "bg-purple-100 text-purple-800" },
-    analytics: { label: "Analytique", color: "bg-yellow-100 text-yellow-800" },
-    security: { label: "Sécurité", color: "bg-red-100 text-red-800" },
-    other: { label: "Autre", color: "bg-gray-100 text-gray-800" }
-  };
-  
-  return categories[category] || categories.other;
-}
+const PluginCardSkeleton: React.FC = () => {
+  return (
+    <Card className="overflow-hidden animate-pulse">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <div className="flex items-start space-x-4">
+            <Skeleton className="h-9 w-9 rounded-md" />
+            <div>
+              <Skeleton className="h-5 w-32 mb-2" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+          <Skeleton className="h-5 w-20 rounded-full" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-4 w-full mb-2" />
+        <Skeleton className="h-4 w-full mb-2" />
+        <Skeleton className="h-4 w-3/4 mb-4" />
+        
+        <div className="flex justify-between items-center mt-2">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-16" />
+        </div>
+        
+        <div className="flex justify-between items-center mt-4">
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-8 w-8 ml-2 rounded-md" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default Plugins;
