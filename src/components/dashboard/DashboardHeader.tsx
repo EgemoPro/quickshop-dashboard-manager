@@ -1,8 +1,16 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Bell, UserCircle, Menu } from "lucide-react";
+import { Moon, Sun, Bell, UserCircle, Menu, Settings, LogOut, HelpCircle } from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface DashboardHeaderProps {
   darkMode: boolean;
@@ -11,17 +19,16 @@ interface DashboardHeaderProps {
   setMobileMenuOpen: (open: boolean) => void;
 }
 
-
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ 
   darkMode, 
   toggleDarkMode, 
   mobileMenuOpen, 
   setMobileMenuOpen 
 }) => {
-    const {
-      isLoading,
-      user
-    } = useAppSelector(state=> state.auth)
+  const {
+    isLoading,
+    user
+  } = useAppSelector(state => state.auth);
 
   return (
     <header className={`fixed z-20 w-full top-0 left-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} shadow-sm px-4 sm:px-6 py-3 transition-colors duration-300`}>
@@ -47,14 +54,41 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
           </Button>
           
-          <div className="hidden sm:flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
-              <UserCircle className="h-7 w-7" />
-            </div>
-            <div className="hidden md:block">
-              <p className="text-sm font-medium">{user?.fullName}</p>
-              {user.storeInfo?.verified && <p className="text-xs text-gray-500 dark:text-gray-400">Vendeur Pro</p>}
-            </div>
+          <div className="hidden sm:flex items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 -mr-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                    <UserCircle className="h-7 w-7" />
+                  </div>
+                  <div className="hidden md:block text-left">
+                    <p className="text-sm font-medium">{user?.fullName}</p>
+                    {user.storeInfo?.verified && <p className="text-xs text-gray-500 dark:text-gray-400">Vendeur Pro</p>}
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="flex items-center cursor-pointer">
+                  <UserCircle className="mr-2 h-4 w-4" />
+                  <span>Profil</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex items-center cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Paramètres</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex items-center cursor-pointer">
+                  <HelpCircle className="mr-2 h-4 w-4" />
+                  <span>Aide</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="flex items-center text-red-600 cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Déconnexion</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
