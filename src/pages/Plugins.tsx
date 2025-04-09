@@ -109,7 +109,7 @@ const Plugins: React.FC = () => {
                           plugin.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab = activeTab === "all" || 
                       (activeTab === "installed" && plugin.installed) ||
-                      (activeTab === "category" && plugin.category === activeTab);
+                      (activeTab === plugin.category);
     
     return matchesSearch && matchesTab;
   });
@@ -148,6 +148,12 @@ const Plugins: React.FC = () => {
               <TabsList className="mb-4 md:mb-0">
                 <TabsTrigger value="all">Tous</TabsTrigger>
                 <TabsTrigger value="installed">Installés</TabsTrigger>
+                <TabsTrigger value="payment">Paiement</TabsTrigger>
+                <TabsTrigger value="shipping">Livraison</TabsTrigger>
+                <TabsTrigger value="marketing">Marketing</TabsTrigger>
+                <TabsTrigger value="analytics">Analytique</TabsTrigger>
+                <TabsTrigger value="security">Sécurité</TabsTrigger>
+                <TabsTrigger value="other">Autre</TabsTrigger>
               </TabsList>
               <div className="relative w-full md:w-64 mb-4 md:mb-0">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -187,6 +193,22 @@ const Plugins: React.FC = () => {
                 )}
               </div>
             </TabsContent>
+
+            {["payment", "shipping", "marketing", "analytics", "security", "other"].map((category) => (
+              <TabsContent key={category} value={category} className="p-0 m-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                  {filteredPlugins.length > 0 ? (
+                    filteredPlugins.map((plugin) => (
+                      <PluginCard key={plugin.id} plugin={plugin} />
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-12">
+                      <p className="text-muted-foreground">Aucun plugin dans cette catégorie</p>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            ))}
           </Tabs>
         </div>
       </div>

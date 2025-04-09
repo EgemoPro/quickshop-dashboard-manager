@@ -14,49 +14,30 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { addKeyword, removeKeyword } from '@/store/slices/strategySlice';
+import { addKeyword, removeKeyword, SocialMediaProfile } from '@/store/slices/strategySlice';
 import { ProfileSection } from '@/components/strategy/ProfileSection';
 
 // Extended StoreInfo interface to match what we need
-interface ExtendedStoreInfo {
+interface StoreInfo {
   name: string;
   description: string;
   logo: string;
   banner: string;
-  contactEmail: string;
-  website: string;
-  address: string;
-  createdAt?: string;
-  verified?: boolean;
 }
 
 // Extended StoreStrategy interface to match what we need
-interface ExtendedStoreStrategy {
-  storeDescription: string;
-  storeObjectives: string;
-  targetAudience?: string;
-  competitiveAdvantage?: string;
-  marketPosition?: string;
-  growthPlans?: string;
+interface StoreStrategy {
   seoSettings: {
-    metaTitle: string;
-    metaDescription: string;
     keywords: string[];
-    socialMediaSharing: boolean;
-    // Additional properties
-    sitemap?: boolean;
-    canonicalUrls?: boolean;
-    structuredData?: boolean;
+    metaDescription: string;
+    sitemap: boolean;
+    socialSharing: boolean;
+    canonicalUrls: boolean;
+    structuredData: boolean;
     robotsTxt?: string;
     allowIndexing?: boolean;
   };
-  socialProfiles: {
-    facebook: string;
-    instagram: string;
-    twitter: string;
-    linkedin: string;
-    youtube: string;
-  }[];
+  socialProfiles: SocialMediaProfile[];
 }
 
 const Strategy = () => {
@@ -93,32 +74,20 @@ const Strategy = () => {
   if (!user) return null;
 
   // Create default values if missing properties
-  const storeInfo: ExtendedStoreInfo = {
+  const storeInfo: StoreInfo = {
     name: user.storeInfo?.name || "",
     description: user.storeInfo?.description || "",
     logo: user.storeInfo?.logo || "",
     banner: user.storeInfo?.banner || "",
-    contactEmail: user.storeInfo?.contactEmail || "",
-    website: user.storeInfo?.website || "",
-    address: user.storeInfo?.address || "",
-    createdAt: user.storeInfo?.createdAt,
-    verified: user.storeInfo?.verified,
   };
   
   // Ensure storeStrategy has required properties
-  const completeStoreStrategy: ExtendedStoreStrategy = {
-    storeDescription: storeStrategy?.storeDescription || "",
-    storeObjectives: storeStrategy?.storeObjectives || "",
-    targetAudience: storeStrategy?.targetAudience || "",
-    competitiveAdvantage: storeStrategy?.competitiveAdvantage || "",
-    marketPosition: storeStrategy?.marketPosition || "",
-    growthPlans: storeStrategy?.growthPlans || "",
+  const completeStoreStrategy: StoreStrategy = {
     seoSettings: {
-      metaTitle: storeStrategy?.seoSettings?.metaTitle || "",
-      metaDescription: storeStrategy?.seoSettings?.metaDescription || "",
       keywords: storeStrategy?.seoSettings?.keywords || [],
-      socialMediaSharing: storeStrategy?.seoSettings?.socialMediaSharing || false,
+      metaDescription: storeStrategy?.seoSettings?.metaDescription || "",
       sitemap: storeStrategy?.seoSettings?.sitemap || false,
+      socialSharing: storeStrategy?.seoSettings?.socialSharing || false,
       canonicalUrls: storeStrategy?.seoSettings?.canonicalUrls || false,
       structuredData: storeStrategy?.seoSettings?.structuredData || false,
       robotsTxt: storeStrategy?.seoSettings?.robotsTxt || "",
