@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, Link, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Link, Navigate, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useIsMobile } from "./hooks/use-mobile";
 import {
@@ -27,6 +27,7 @@ import {
   BlocksIcon,
   UserPlus2
 } from "lucide-react";
+
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { useState, useEffect, useRef } from "react";
@@ -207,7 +208,7 @@ const Navigation = () => {
         { to: "/shipping", label: "Expéditions", icon: Send }
       ]
     },
-    {to:"followers", icon: UserPlus2, label: "Followers"},
+    { to: "followers", icon: UserPlus2, label: "Followers" },
     { to: "/chat", icon: MessageCircle, label: "Chat" },
     { to: "/strategy", icon: Store, label: "Stratégie" },
     { to: "/plugins", icon: BlocksIcon, label: "Plugins" },
@@ -273,54 +274,68 @@ const Navigation = () => {
 };
 
 interface UserData {
-  [key: string]: string; 
+  email: string;
+  password: string;
+  fullname?: string;
+  type: string;
+  [key: string]: string | undefined;
 }
 
 const AppContent = () => {
+
+  const { isLoading, user, token } = useAppSelector(state => state.auth)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userData, setUserData] = useState<UserData>()
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
 
-  // const {isLoading, user, token} = useAppSelector(state => state.auth)
-  // const dispatch = useAppDispatch()
-
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
-  const [userData, setUserData] = useState<UserData>()
   const isLandingPage = location.pathname === "/landing";
+  const isLoginPage = location.pathname === "/login";
 
-  const onSubmit = async (data:UserData, type:string) =>{
+  const onSubmit = async (data: UserData, type: string) => {
     console.log(data, type)
-    setUserData(prev=>({...prev, ...data, type}))
-
+    setUserData(prev => ({ ...prev, ...data, type }))
   }
 
-  // useEffect(()=>{
-  //   if(userData?.type === 'login'){
+  useEffect(() => {
+    setIsAuthenticated(!!(token && user));
+  }, [token, user]);
 
-  //     dispatch(login({email: userData.email, password: userData.password}))
-  //   }
-  //   if(userData?.type === 'register'){
-  //     dispatch(registerUser({fullname:userData.fullname, email: userData.email, password: userData.password}))
-  //   }
-  //   console.log(userData)
-  // },[userData])
+  useEffect(() => {
+    if (isAuthenticated && isLoginPage) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
-  // useEffect(() => {
-  //   if (!token) {
-  //     checkAuth();
-  //   }else if(token && user){
-  //     setIsAuthenticated(true)
-      
-  //   }
-  // },[user])
+  useEffect(() => {
+    if (!userData) return
 
-  // if(user && isAuthenticated)
-  //   return <Navigate to="/dashboard" replace />
+    switch (userData?.type) {
+      case 'register':
+        dispatch(registerUser({ fullname: userData.fullname, email: userData.email, password: userData.password }));
+        break;
+      default:
+        dispatch(login({ email: userData.email, password: userData.password }));
+        break;
+        console.log("No valid userData type provided");
+    }
+    console.log(userData);
+  }, [userData]);
+
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+ 
   return (
     <div className="min-h-screen">
       <Routes>
         <Route path="/" element={<Navigate to="/landing" replace />} />
-        <Route path="/login" element={<AuthForm onSubmit={onSubmit} />} />
         <Route path="/landing" element={<Landing />} />
+        <Route path="/login" element={<AuthForm onSubmit={onSubmit} />} />
         <Route path="*" element={<NotFound />} />
 
         <Route path="/dashboard" element={

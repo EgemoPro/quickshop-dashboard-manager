@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import api from "../../lib/axios";
 import { AppDispatch } from "../store";
 
-const JWT_TOKEN:string = "jwt"
+const JWT_TOKEN: string = "jwt"
 
 export interface UserPreferences {
   darkMode: boolean;
@@ -40,43 +40,45 @@ interface AuthState {
   error: string | null;
 }
 
+const initialState: AuthState = {
+  user: null,
+  token: localStorage.getItem(JWT_TOKEN),
+  isAuthenticated: !!localStorage.getItem(JWT_TOKEN),
+  isLoading: false,
+  error: null,
+};
+
+
 // const initialState: AuthState = {
-//   user: null,
-//   token: localStorage.getItem(JWT_TOKEN),
-//   isAuthenticated: !!localStorage.getItem(JWT_TOKEN),
+//   user: {
+//     id: "user-001",
+//     fullName: "Eliezer Denis Gaston",
+//     email: "eliezerodjo@gmail.com",
+//     phone: "0022788783406",
+//     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
+//     bio: "Entrepreneur passionné par le commerce en ligne et les produits artisanaux de qualité.",
+//     role: "vendor",
+//     preferences: {
+//       darkMode: false,
+//       notifications: true,
+//       language: "fr",
+//     },
+//     storeInfo: {
+//       id: "store-001",
+//       name: "NeoArt",
+//       description: "Une boutique spécialisée dans les produits artisanaux de qualité.",
+//       logo: "https://api.dicebear.com/7.x/initials/svg?seed=BD",
+//       banner: "https://placehold.co/1200x300/e2e8f0/1e293b?text=Bannière+Neo+Art",
+//       verified: true,
+//       createdAt: "2022-03-15T10:30:00Z",
+//     },
+//   },
+//   token: "fake-jwt-token",
+//   isAuthenticated: true,
 //   isLoading: false,
 //   error: null,
 // };
 
-const initialState: AuthState = {
-  user: {
-    id: "user-001",
-    fullName: "Eliezer Denis Gaston",
-    email: "eliezerodjo@gmail.com",
-    phone: "0022788783406",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
-    bio: "Entrepreneur passionné par le commerce en ligne et les produits artisanaux de qualité.",
-    role: "vendor",
-    preferences: {
-      darkMode: false,
-      notifications: true,
-      language: "fr",
-    },
-    storeInfo: {
-      id: "store-001",
-      name: "NeoArt",
-      description: "Une boutique spécialisée dans les produits artisanaux de qualité.",
-      logo: "https://api.dicebear.com/7.x/initials/svg?seed=BD",
-      banner: "https://placehold.co/1200x300/e2e8f0/1e293b?text=Bannière+Neo+Art",
-      verified: true,
-      createdAt: "2022-03-15T10:30:00Z",
-    },
-  },
-  token: "fake-jwt-token",
-  isAuthenticated: true,
-  isLoading: false,
-  error: null,
-};
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -153,15 +155,32 @@ interface authCredentials {
   email: string;
   password: string;
 }
-
+const utils = {
+  preferences: {
+    darkMode: false,
+    notifications: true,
+    language: "fr",
+  },
+  storeInfo: {
+    id: "store-001",
+    name: "NeoArt",
+    description: "Une boutique spécialisée dans les produits artisanaux de qualité.",
+    logo: "https://api.dicebear.com/7.x/initials/svg?seed=BD",
+    banner: "https://placehold.co/1200x300/e2e8f0/1e293b?text=Bannière+Neo+Art",
+    verified: true,
+    createdAt: "2022-03-15T10:30:00Z",
+  }
+}
 export const login = (credentials: authCredentials) => async (dispatch: AppDispatch) => {
   dispatch(authRequest());
-  try {
-    const response = await api.post("/auth/customer/login", credentials);
-    const { token, user } = response.data;
 
+  try {
+    console.table(credentials)
+    const response = await api.post("/auth/customer/login", credentials);
+    const { token, payload: {_id: id, fullname:fullName, ...user} } = response.data;
+
+    dispatch(authSuccess({ user : {id, fullName, ...user, ...utils}, token }));
     localStorage.setItem(JWT_TOKEN, token);
-    dispatch(authSuccess({ user, token }));
     return true;
   } catch (error: any) {
     dispatch(authFailure(error.response?.data?.message || "Erreur de connexion"));
@@ -170,22 +189,22 @@ export const login = (credentials: authCredentials) => async (dispatch: AppDispa
 };
 
 // Register
-interface registerCredentials { 
+interface registerCredentials {
   fullname: string;
-  username?: string; 
-  email: string; 
-  password: string; 
+  username?: string;
+  email: string;
+  password: string;
   // role: string 
 }
-export const registerUser = (userData: registerCredentials ) => async (dispatch: AppDispatch) => {
+export const registerUser = (userData: registerCredentials) => async (dispatch: AppDispatch) => {
   dispatch(authRequest());
   try {
     const response = await api.post("/auth/customer/register", userData);
-    const { token, payload:user } = response.data;
-    
-    console.log(token, user)
+    const { token, payload: {_id: id, fullname:fullName, ...user} } = response.data;
+
+    console.log(token, {id, user})
     localStorage.setItem(JWT_TOKEN, token);
-    dispatch(authSuccess({ user, token }));
+    dispatch(authSuccess({ user : {id, fullName, ...user, ...utils}, token }));
     return true;
   } catch (error: any) {
     dispatch(authFailure(error.response?.data?.message || "Erreur d'inscription"));

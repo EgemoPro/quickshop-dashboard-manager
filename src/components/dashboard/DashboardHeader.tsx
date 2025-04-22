@@ -74,10 +74,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   <UserCircle className="mr-2 h-4 w-4" />
                   <span>Profil</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center cursor-pointer">
+                {/* <DropdownMenuItem className="flex items-center cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Paramètres</span>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem className="flex items-center cursor-pointer">
                   <HelpCircle className="mr-2 h-4 w-4" />
                   <span>Aide</span>

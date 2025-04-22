@@ -60,7 +60,7 @@ export default function AuthForm({
   onSubmit,
   onSocialLogin,
   logo,
-  imageSrc = "/placeholder.svg?height=800&width=600",
+  imageSrc = "/images/shoes.jpg",
   imageAlt = "Dashboard illustration",
   title = "Shadow Shop",
   description = "Sign in to your account",
@@ -70,6 +70,10 @@ export default function AuthForm({
   const [isSuccess, setIsSuccess] = useState(false)
   const [activeTab, setActiveTab] = useState<"passwordless" | "login" | "register">("passwordless")
   const [lastEmail, setLastEmail] = useState("")
+
+
+  
+
 
   // Form for passwordless login
   const passwordlessForm = useForm<z.infer<typeof passwordlessSchema>>({
