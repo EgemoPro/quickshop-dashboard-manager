@@ -32,20 +32,20 @@ const ShipmentCard: React.FC<ShipmentCardProps> = ({
   onTrackShipment 
 }) => {
   return (
-    <Card>
+    <Card className="hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="pb-2">
         <div className="flex justify-between">
-          <div className="flex space-x-2 items-center">
-            <Avatar className="h-8 w-8 border">
+          <div className="flex space-x-3 items-center">
+            <Avatar className="h-10 w-10 border bg-primary/5">
               {shipment.carrierLogo ? (
-                <img src={shipment.carrierLogo} alt={shipment.carrier} />
+                <img src={shipment.carrierLogo} alt={shipment.carrier} className="p-2" />
               ) : (
-                <span className="text-xs">{shipment.carrier.substring(0, 2).toUpperCase()}</span>
+                <span className="text-sm font-medium">{shipment.carrier.substring(0, 2).toUpperCase()}</span>
               )}
             </Avatar>
             <div>
-              <CardTitle className="text-base">Commande #{shipment.orderId}</CardTitle>
-              <p className="text-xs text-muted-foreground">
+              <CardTitle className="text-lg">Commande #{shipment.orderId}</CardTitle>
+              <p className="text-sm text-muted-foreground">
                 Envoi #{shipment.id}
               </p>
             </div>
@@ -53,52 +53,52 @@ const ShipmentCard: React.FC<ShipmentCardProps> = ({
           <ShipmentStatusBadge status={shipment.status} />
         </div>
       </CardHeader>
-      <CardContent className="pb-2">
-        <div className="grid grid-cols-2 gap-y-2 text-sm">
+      <CardContent className="pb-4">
+        <div className="grid grid-cols-2 gap-y-4 text-sm mt-2">
           <div>
-            <p className="text-muted-foreground">Destinataire</p>
-            <p className="font-medium">{shipment.recipientName}</p>
-            <p className="text-xs">{shipment.recipientLocation}</p>
+            <p className="text-muted-foreground font-medium mb-1">Destinataire</p>
+            <p className="font-semibold">{shipment.recipientName}</p>
+            <p className="text-sm text-muted-foreground">{shipment.recipientLocation}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Date d'envoi</p>
-            <p>{new Date(shipment.shipDate).toLocaleDateString()}</p>
+            <p className="text-muted-foreground font-medium mb-1">Date d'envoi</p>
+            <p className="font-semibold">{new Date(shipment.shipDate).toLocaleDateString()}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Estimation de livraison</p>
-            <p>{new Date(shipment.estimatedDelivery).toLocaleDateString()}</p>
+            <p className="text-muted-foreground font-medium mb-1">Estimation</p>
+            <p className="font-semibold">{new Date(shipment.estimatedDelivery).toLocaleDateString()}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Dernière mise à jour</p>
-            <p>{shipment.lastUpdate ? new Date(shipment.lastUpdate).toLocaleDateString() : "N/A"}</p>
+            <p className="text-muted-foreground font-medium mb-1">Dernière mise à jour</p>
+            <p className="font-semibold">{shipment.lastUpdate ? new Date(shipment.lastUpdate).toLocaleDateString() : "N/A"}</p>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between pt-2">
+      <CardFooter className="flex justify-between pt-2 gap-2">
         <Button 
           variant="outline" 
           size="sm" 
-          className="text-xs"
+          className="flex-1"
           onClick={() => onViewDetails(shipment.id)}
         >
-          <FileText className="h-3 w-3 mr-1" />
+          <FileText className="h-4 w-4 mr-2" />
           Détails
         </Button>
         <Button 
           variant="outline" 
-          size="sm" 
-          className="text-xs"
+          size="sm"
+          className="flex-1"
         >
-          <Map className="h-3 w-3 mr-1" />
+          <Map className="h-4 w-4 mr-2" />
           Adresse
         </Button>
         <Button 
           variant="default" 
-          size="sm" 
-          className="text-xs"
+          size="sm"
+          className="flex-1"
           onClick={() => onTrackShipment(shipment.trackingNumber)}
         >
-          <ExternalLink className="h-3 w-3 mr-1" />
+          <ExternalLink className="h-4 w-4 mr-2" />
           Suivi
         </Button>
       </CardFooter>
