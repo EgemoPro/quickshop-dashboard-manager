@@ -1,4 +1,3 @@
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface ProductImage {
@@ -15,8 +14,7 @@ export interface Product {
   price: string;
   images: ProductImage[];
   description?: string;
-  rating?: number;
-  reviews?: number;
+  availabilityZone: string;
 }
 
 export interface Category {
@@ -28,6 +26,7 @@ interface ProductsState {
   lowStockProducts: Product[];
   productPerformance: Array<{ name: string; value: number }>;
   categories: Category[];
+  availabilityZones: Array<{ id: string; name: string }>;
   isLoading: boolean;
   error: string | null;
 }
@@ -69,6 +68,16 @@ const initialState: ProductsState = {
     { id: '3', name: 'Maison' },
     { id: '4', name: 'Sports' },
     { id: '5', name: 'Beauté' },
+  ],
+  availabilityZones: [
+    { id: 'everywhere', name: 'Partout' },
+    { id: 'europe', name: 'Europe' },
+    { id: 'northamerica', name: 'Amérique du Nord' },
+    { id: 'southamerica', name: 'Amérique du Sud' },
+    { id: 'asia', name: 'Asie' },
+    { id: 'africa', name: 'Afrique' },
+    { id: 'oceania', name: 'Océanie' },
+    { id: 'france', name: 'France uniquement' },
   ],
   isLoading: false,
   error: null,

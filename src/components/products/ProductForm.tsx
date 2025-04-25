@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,8 +6,10 @@ import ImageUploader from "@/components/products/ImageUploader";
 import CategorySelect from "@/components/products/CategorySelect";
 import { CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tag, ImageIcon, Info, Box } from "lucide-react";
+import { Tag, ImageIcon, Info, Box, Globe } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAppSelector } from "@/store/hooks";
 
 interface ProductFormProps {
   formState: {
@@ -18,6 +19,7 @@ interface ProductFormProps {
     category: string;
     images: ProductImage[];
     description?: string;
+    availabilityZone: string;
   };
   setFormState: React.Dispatch<React.SetStateAction<{
     name: string;
@@ -26,6 +28,7 @@ interface ProductFormProps {
     category: string;
     images: ProductImage[];
     description?: string;
+    availabilityZone: string;
   }>>;
   currencySymbol: string;
   onImagesChange: (images: ProductImage[]) => void;
@@ -37,13 +40,19 @@ const ProductForm: React.FC<ProductFormProps> = ({
   currencySymbol,
   onImagesChange
 }) => {
+  const { availabilityZones } = useAppSelector((state) => state.products);
+
   return (
     <div className="max-h-[70vh] overflow-y-auto px-6 py-4">
       <Tabs defaultValue="info" className="w-full">
-        <TabsList className="w-full mb-6 grid grid-cols-3">
+        <TabsList className="w-full mb-6 grid grid-cols-4">
           <TabsTrigger value="info" className="flex items-center gap-2">
             <Info className="h-4 w-4" />
             <span>Informations</span>
+          </TabsTrigger>
+          <TabsTrigger value="options" className="flex items-center gap-2">
+            <Globe className="h-4 w-4" />
+            <span>Options</span>
           </TabsTrigger>
           <TabsTrigger value="inventory" className="flex items-center gap-2">
             <Box className="h-4 w-4" />
@@ -108,6 +117,32 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 onCategoryChange={(category) => setFormState({...formState, category})}
               />
             </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="options" className="mt-0 space-y-6">
+          <div>
+            <Label htmlFor="availabilityZone" className="text-gray-700 font-medium mb-1.5 block">
+              Zone de disponibilité
+            </Label>
+            <Select 
+              value={formState.availabilityZone} 
+              onValueChange={(value) => setFormState({...formState, availabilityZone: value})}
+            >
+              <SelectTrigger className="w-full border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary">
+                <SelectValue placeholder="Choisissez une zone de disponibilité" />
+              </SelectTrigger>
+              <SelectContent>
+                {availabilityZones.map((zone) => (
+                  <SelectItem key={zone.id} value={zone.id}>
+                    {zone.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-gray-500 mt-1">
+              Sélectionnez la zone où ce produit sera disponible à la vente
+            </p>
           </div>
         </TabsContent>
         

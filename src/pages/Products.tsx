@@ -42,6 +42,7 @@ const Products = () => {
     category: "Vêtements",
     images: [] as ProductImage[],
     description: "",
+    availabilityZone: "everywhere",
   });
 
   // Filter products based on search and status
@@ -75,6 +76,7 @@ const Products = () => {
       category: formState.category,
       images: formState.images,
       description: formState.description,
+      availabilityZone: formState.availabilityZone,
     };
     
     dispatch(addProduct(newProduct));
@@ -102,6 +104,7 @@ const Products = () => {
       category: formState.category,
       images: formState.images,
       description: formState.description,
+      availabilityZone: formState.availabilityZone,
     };
     
     dispatch(updateProduct(updatedProduct));
@@ -139,6 +142,7 @@ const Products = () => {
       category: product.category,
       images: product.images || [],
       description: product.description || "",
+      availabilityZone: product.availabilityZone,
     });
     setIsEditModalOpen(true);
   };
@@ -160,6 +164,7 @@ const Products = () => {
       category: "Vêtements",
       images: [],
       description: "",
+      availabilityZone: "everywhere",
     });
     setCurrentProduct(null);
   };
