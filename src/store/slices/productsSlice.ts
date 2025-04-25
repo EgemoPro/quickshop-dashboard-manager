@@ -14,6 +14,9 @@ export interface Product {
   category: string;
   price: string;
   images: ProductImage[];
+  description?: string;
+  rating?: number;
+  reviews?: number;
 }
 
 export interface Category {
