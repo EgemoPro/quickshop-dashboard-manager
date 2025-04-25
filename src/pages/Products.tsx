@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -42,6 +41,7 @@ const Products = () => {
     stock: 0,
     category: "Vêtements",
     images: [] as ProductImage[],
+    description: "",
   });
 
   // Filter products based on search and status
@@ -74,6 +74,7 @@ const Products = () => {
       stock: formState.stock,
       category: formState.category,
       images: formState.images,
+      description: formState.description,
     };
     
     dispatch(addProduct(newProduct));
@@ -100,6 +101,7 @@ const Products = () => {
       stock: formState.stock,
       category: formState.category,
       images: formState.images,
+      description: formState.description,
     };
     
     dispatch(updateProduct(updatedProduct));
@@ -136,6 +138,7 @@ const Products = () => {
       stock: product.stock,
       category: product.category,
       images: product.images || [],
+      description: product.description || "",
     });
     setIsEditModalOpen(true);
   };
@@ -156,6 +159,7 @@ const Products = () => {
       stock: 0,
       category: "Vêtements",
       images: [],
+      description: "",
     });
     setCurrentProduct(null);
   };

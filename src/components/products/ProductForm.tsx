@@ -8,6 +8,7 @@ import CategorySelect from "@/components/products/CategorySelect";
 import { CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tag, ImageIcon, Info, Box } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ProductFormProps {
   formState: {
@@ -16,6 +17,7 @@ interface ProductFormProps {
     stock: number;
     category: string;
     images: ProductImage[];
+    description?: string;
   };
   setFormState: React.Dispatch<React.SetStateAction<{
     name: string;
@@ -23,6 +25,7 @@ interface ProductFormProps {
     stock: number;
     category: string;
     images: ProductImage[];
+    description?: string;
   }>>;
   currencySymbol: string;
   onImagesChange: (images: ProductImage[]) => void;
@@ -64,6 +67,19 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 value={formState.name}
                 onChange={(e) => setFormState({...formState, name: e.target.value})}
                 className="border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="description" className="text-gray-700 font-medium mb-1.5 block">
+                Description
+              </Label>
+              <Textarea
+                id="description"
+                placeholder="Décrivez votre produit..."
+                value={formState.description || ""}
+                onChange={(e) => setFormState({...formState, description: e.target.value})}
+                className="min-h-[100px] border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary resize-none"
               />
             </div>
             
