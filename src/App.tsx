@@ -284,7 +284,7 @@ interface UserData {
 const AppContent = () => {
 
   const { isLoading, user, token } = useAppSelector(state => state.auth)
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // 1
   const [userData, setUserData] = useState<UserData>()
   const dispatch = useAppDispatch()
   const navigate = useNavigate();

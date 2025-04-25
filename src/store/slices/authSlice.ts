@@ -40,44 +40,44 @@ interface AuthState {
   error: string | null;
 }
 
-const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem(JWT_TOKEN),
-  isAuthenticated: !!localStorage.getItem(JWT_TOKEN),
-  isLoading: false,
-  error: null,
-};
-
-
 // const initialState: AuthState = {
-//   user: {
-//     id: "user-001",
-//     fullName: "Eliezer Denis Gaston",
-//     email: "eliezerodjo@gmail.com",
-//     phone: "0022788783406",
-//     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
-//     bio: "Entrepreneur passionné par le commerce en ligne et les produits artisanaux de qualité.",
-//     role: "vendor",
-//     preferences: {
-//       darkMode: false,
-//       notifications: true,
-//       language: "fr",
-//     },
-//     storeInfo: {
-//       id: "store-001",
-//       name: "NeoArt",
-//       description: "Une boutique spécialisée dans les produits artisanaux de qualité.",
-//       logo: "https://api.dicebear.com/7.x/initials/svg?seed=BD",
-//       banner: "https://placehold.co/1200x300/e2e8f0/1e293b?text=Bannière+Neo+Art",
-//       verified: true,
-//       createdAt: "2022-03-15T10:30:00Z",
-//     },
-//   },
-//   token: "fake-jwt-token",
-//   isAuthenticated: true,
+//   user: null,
+//   token: localStorage.getItem(JWT_TOKEN),
+//   isAuthenticated: !!localStorage.getItem(JWT_TOKEN),
 //   isLoading: false,
 //   error: null,
 // };
+
+
+const initialState: AuthState = {
+  user: {
+    id: "user-001",
+    fullName: "Eliezer Denis Gaston",
+    email: "eliezerodjo@gmail.com",
+    phone: "0022788783406",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
+    bio: "Entrepreneur passionné par le commerce en ligne et les produits artisanaux de qualité.",
+    role: "vendor",
+    preferences: {
+      darkMode: false,
+      notifications: true,
+      language: "fr",
+    },
+    storeInfo: {
+      id: "store-001",
+      name: "NeoArt",
+      description: "Une boutique spécialisée dans les produits artisanaux de qualité.",
+      logo: "https://api.dicebear.com/7.x/initials/svg?seed=BD",
+      banner: "https://placehold.co/1200x300/e2e8f0/1e293b?text=Bannière+Neo+Art",
+      verified: true,
+      createdAt: "2022-03-15T10:30:00Z",
+    },
+  },
+  token: "fake-jwt-token",
+  isAuthenticated: true,
+  isLoading: false,
+  error: null,
+};
 
 export const authSlice = createSlice({
   name: "auth",
