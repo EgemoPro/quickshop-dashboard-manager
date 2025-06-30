@@ -4,8 +4,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import { ArrowUpRight, ArrowDownRight, TrendingUp, ShoppingBag, Users, CreditCard } from 'lucide-react';
 
 // Sample data for the chart
@@ -31,6 +29,19 @@ const MarketingOverview = () => {
   const revenueChange = 18.2; // percentage
   const visitorChange = 12.5;
   const conversionChange = -3.8;
+
+  const formatTimeAgo = (date: Date | string) => {
+    const now = new Date();
+    const past = new Date(date);
+    const diffInDays = Math.floor((now.getTime() - past.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (diffInDays === 0) return "aujourd'hui";
+    if (diffInDays === 1) return "il y a 1 jour";
+    if (diffInDays < 7) return `il y a ${diffInDays} jours`;
+    if (diffInDays < 30) return `il y a ${Math.floor(diffInDays / 7)} semaine${diffInDays >= 14 ? 's' : ''}`;
+    if (diffInDays < 365) return `il y a ${Math.floor(diffInDays / 30)} mois`;
+    return `il y a ${Math.floor(diffInDays / 365)} an${diffInDays >= 730 ? 's' : ''}`;
+  };
   
   return (
     <Card>
@@ -112,7 +123,7 @@ const MarketingOverview = () => {
               <p className="text-3xl font-bold">{activeCampaigns}</p>
               <p className="text-sm text-gray-500 mt-1">
                 {campaigns.length > 0 
-                  ? `La dernière campagne a été créée ${formatDistanceToNow(new Date(campaigns[campaigns.length - 1].startDate), { addSuffix: true, locale: fr })}.`
+                  ? `La dernière campagne a été créée ${formatTimeAgo(campaigns[campaigns.length - 1].startDate)}.`
                   : 'Aucune campagne n\'est active pour le moment.'}
               </p>
             </div>

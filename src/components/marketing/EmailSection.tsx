@@ -10,7 +10,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, Mail, Edit2, Trash2, Send, Copy } from 'lucide-react';
-import { format } from 'date-fns';
 import { EmailTemplate, addEmailTemplate, updateEmailTemplate, deleteEmailTemplate } from '@/store/slices/marketingSlice';
 
 const EmailSection = () => {
@@ -30,6 +29,15 @@ const EmailSection = () => {
     setSubject('');
     setContent('');
     setEditingTemplate(null);
+  };
+
+  const formatDate = (date: Date | string) => {
+    const d = new Date(date);
+    return d.toLocaleDateString('fr-FR', { 
+      year: 'numeric', 
+      month: '2-digit', 
+      day: '2-digit' 
+    });
   };
 
   const handleEdit = (template: EmailTemplate) => {
@@ -173,7 +181,7 @@ const EmailSection = () => {
                       <span className="font-medium">Objet:</span> {template.subject}
                     </div>
                     <div className="mt-1">
-                      <span className="font-medium">Dernière modification:</span> {format(new Date(template.lastEdited), 'dd/MM/yyyy')}
+                      <span className="font-medium">Dernière modification:</span> {formatDate(template.lastEdited)}
                     </div>
                   </div>
                 </div>

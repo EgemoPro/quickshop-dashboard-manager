@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -12,7 +11,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Badge } from '@/components/ui/badge';
 import { Facebook, Instagram, Mail, MessageSquare, PlusCircle, Calendar as CalendarIcon, Check, Edit2, Trash2 } from 'lucide-react';
 import { addCampaign, deleteCampaign, updateCampaignStatus, updateCampaign } from '@/store/slices/marketingSlice';
-import { format } from 'date-fns';
 import { Campaign } from '@/store/slices/marketingSlice';
 
 // Icons mapping for platforms
@@ -64,6 +62,19 @@ const CampaignsSection = () => {
     setEditingCampaign(null);
   };
 
+  const formatDate = (date: Date | string) => {
+    const d = new Date(date);
+    return d.toLocaleDateString('fr-FR', { 
+      year: 'numeric', 
+      month: '2-digit', 
+      day: '2-digit' 
+    });
+  };
+
+  const formatDateForInput = (date: Date) => {
+    return date.toISOString().split('T')[0];
+  };
+
   const handleEdit = (campaign: Campaign) => {
     setEditingCampaign(campaign);
     setName(campaign.name);
@@ -92,8 +103,8 @@ const CampaignsSection = () => {
       platform,
       status,
       budget,
-      startDate: startDate ? format(startDate, 'yyyy-MM-dd') : '',
-      endDate: endDate ? format(endDate, 'yyyy-MM-dd') : '',
+      startDate: startDate ? formatDateForInput(startDate) : '',
+      endDate: endDate ? formatDateForInput(endDate) : '',
       target: {
         demographics: demographics.split(',').map(item => item.trim()),
         interests: interests.split(',').map(item => item.trim()),
@@ -209,7 +220,7 @@ const CampaignsSection = () => {
                             className="w-full justify-start text-left font-normal"
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {startDate ? format(startDate, 'PPP') : <span>Choisir une date</span>}
+                            {startDate ? formatDate(startDate) : <span>Choisir une date</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
@@ -232,7 +243,7 @@ const CampaignsSection = () => {
                             className="w-full justify-start text-left font-normal"
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {endDate ? format(endDate, 'PPP') : <span>Choisir une date</span>}
+                            {endDate ? formatDate(endDate) : <span>Choisir une date</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
@@ -319,7 +330,7 @@ const CampaignsSection = () => {
                       <span className="font-medium">Budget:</span> {campaign.budget}€
                     </div>
                     <div className="mt-1">
-                      <span className="font-medium">Période:</span> {format(new Date(campaign.startDate), 'dd/MM/yyyy')} - {format(new Date(campaign.endDate), 'dd/MM/yyyy')}
+                      <span className="font-medium">Période:</span> {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
                     </div>
                   </div>
                 </div>

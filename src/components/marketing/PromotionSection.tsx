@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Calendar, Clock, FilePenLine, Trash, Plus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,6 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { format } from "date-fns";
 
 export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) => {
   const { toast } = useToast();
@@ -26,13 +26,17 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
   const [isEditing, setIsEditing] = useState(false);
   const [currentPromoId, setCurrentPromoId] = useState<string | null>(null);
 
+  const formatDateForInput = (date: Date) => {
+    return date.toISOString().split('T')[0];
+  };
+
   const [formData, setFormData] = useState<Omit<PromoCode, 'id'>>({
     code: "",
     discountType: "percentage",
     discountValue: 10,
     minPurchase: 0,
-    startDate: format(new Date(), "yyyy-MM-dd"),
-    endDate: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"), // +30 days
+    startDate: formatDateForInput(new Date()),
+    endDate: formatDateForInput(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)), // +30 days
     limitedUses: false,
     maxUses: 100,
     usedCount: 0,
@@ -47,8 +51,8 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
       discountType: "percentage",
       discountValue: 10,
       minPurchase: 0,
-      startDate: format(new Date(), "yyyy-MM-dd"),
-      endDate: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"),
+      startDate: formatDateForInput(new Date()),
+      endDate: formatDateForInput(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
       limitedUses: false,
       maxUses: 100,
       usedCount: 0,
