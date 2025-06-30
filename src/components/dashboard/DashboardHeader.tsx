@@ -107,7 +107,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Déconnexion</span>
                 </DropdownMenuItem>
-              </DropDownMenuContent>
+              </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
