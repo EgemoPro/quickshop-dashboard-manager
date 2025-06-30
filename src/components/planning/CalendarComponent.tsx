@@ -1,21 +1,29 @@
 
 import React from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
-import { format, parse, startOfWeek, getDay } from "date-fns";
-import { fr } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Loader2 } from "lucide-react";
 import { ScheduledEvent } from "@/store/slices/planningSlice";
 import EventComponent from "./EventComponent";
 
-const locales = { fr };
-// Create a proper localizer for react-big-calendar
+// Create a simple localizer without date-fns imports
 const localizer = dateFnsLocalizer({
-  format: (date, formatStr) => format(date, formatStr, { locale: fr }),
-  parse: (str, formatStr) => parse(str, formatStr, new Date()),
-  startOfWeek: (date) => startOfWeek(date, { locale: fr }),
-  getDay,
-  locales
+  format: (date: Date, formatStr: string) => {
+    if (formatStr === 'MMMM yyyy') {
+      return date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    }
+    if (formatStr === 'EEEE') {
+      return date.toLocaleDateString('fr-FR', { weekday: 'long' });
+    }
+    if (formatStr === 'dd') {
+      return date.getDate().toString();
+    }
+    return date.toLocaleDateString('fr-FR');
+  },
+  parse: (str: string) => new Date(str),
+  startOfWeek: () => new Date(),
+  getDay: (date: Date) => date.getDay(),
+  locales: {}
 });
 
 interface CalendarComponentProps {

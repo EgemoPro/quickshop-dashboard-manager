@@ -23,26 +23,26 @@ interface ExtendedStoreInfo {
   description: string;
   logo: string;
   banner: string;
-  contactEmail: string;
-  website: string;
-  address: string;
+  contactEmail?: string;
+  website?: string;
+  address?: string;
   createdAt?: string;
   verified?: boolean;
 }
 
 // Extended StoreStrategy interface to match what we need
 interface ExtendedStoreStrategy {
-  storeDescription: string;
-  storeObjectives: string;
+  storeDescription?: string;
+  storeObjectives?: string;
   targetAudience?: string;
   competitiveAdvantage?: string;
   marketPosition?: string;
   growthPlans?: string;
   seoSettings: {
-    metaTitle: string;
+    metaTitle?: string;
     metaDescription: string;
     keywords: string[];
-    socialMediaSharing: boolean;
+    socialSharing: boolean;
     // Additional properties
     sitemap?: boolean;
     canonicalUrls?: boolean;
@@ -50,13 +50,16 @@ interface ExtendedStoreStrategy {
     robotsTxt?: string;
     allowIndexing?: boolean;
   };
-  socialProfiles: {
-    facebook: string;
-    instagram: string;
-    twitter: string;
-    linkedin: string;
-    youtube: string;
-  }[];
+  socialProfiles: Array<{
+    platform: string;
+    url: string;
+    connected: boolean;
+    username?: string;
+    followers?: number;
+    engagement?: number;
+    posts?: number;
+    lastUpdated?: string;
+  }>;
 }
 
 const Strategy = () => {
@@ -117,7 +120,7 @@ const Strategy = () => {
       metaTitle: storeStrategy?.seoSettings?.metaTitle || "",
       metaDescription: storeStrategy?.seoSettings?.metaDescription || "",
       keywords: storeStrategy?.seoSettings?.keywords || [],
-      socialMediaSharing: storeStrategy?.seoSettings?.socialMediaSharing || false,
+      socialSharing: storeStrategy?.seoSettings?.socialSharing || false,
       sitemap: storeStrategy?.seoSettings?.sitemap || false,
       canonicalUrls: storeStrategy?.seoSettings?.canonicalUrls || false,
       structuredData: storeStrategy?.seoSettings?.structuredData || false,

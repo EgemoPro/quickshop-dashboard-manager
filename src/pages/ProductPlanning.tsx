@@ -1,5 +1,5 @@
+
 import React, { useEffect, useState } from "react";
-import { format, addDays } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -40,9 +40,9 @@ const ProductPlanning = () => {
     title: "",
     description: "",
     type: "product" as EventType,
-    startDate: format(new Date(), "yyyy-MM-dd"),
+    startDate: new Date().toISOString().split('T')[0],
     startTime: "10:00",
-    endDate: format(new Date(), "yyyy-MM-dd"),
+    endDate: new Date().toISOString().split('T')[0],
     endTime: "11:00",
     productId: "",
     campaignId: "",
@@ -87,15 +87,16 @@ const ProductPlanning = () => {
   // Open add event dialog with default time
   const openAddDialog = () => {
     const now = new Date();
-    const tomorrow = addDays(now, 1);
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
 
     setEventForm({
       title: "",
       description: "",
       type: "product",
-      startDate: format(tomorrow, "yyyy-MM-dd"),
+      startDate: tomorrow.toISOString().split('T')[0],
       startTime: "10:00",
-      endDate: format(tomorrow, "yyyy-MM-dd"),
+      endDate: tomorrow.toISOString().split('T')[0],
       endTime: "11:00",
       productId: "",
       campaignId: "",
@@ -120,10 +121,10 @@ const ProductPlanning = () => {
       title: event.title,
       description: event.description || "",
       type: event.type,
-      startDate: format(event.start, "yyyy-MM-dd"),
-      startTime: format(event.start, "HH:mm"),
-      endDate: format(event.end, "yyyy-MM-dd"),
-      endTime: format(event.end, "HH:mm"),
+      startDate: event.start.toISOString().split('T')[0],
+      startTime: event.start.toTimeString().slice(0, 5),
+      endDate: event.end.toISOString().split('T')[0],
+      endTime: event.end.toTimeString().slice(0, 5),
       productId: event.productId || "",
       campaignId: event.campaignId || "",
       orderId: event.orderId || ""
@@ -215,10 +216,10 @@ const ProductPlanning = () => {
   const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
     setEventForm({
       ...eventForm,
-      startDate: format(start, "yyyy-MM-dd"),
-      startTime: format(start, "HH:mm"),
-      endDate: format(end, "yyyy-MM-dd"),
-      endTime: format(end, "HH:mm"),
+      startDate: start.toISOString().split('T')[0],
+      startTime: start.toTimeString().slice(0, 5),
+      endDate: end.toISOString().split('T')[0],
+      endTime: end.toTimeString().slice(0, 5),
     });
     setShowAddDialog(true);
   };
