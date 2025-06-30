@@ -1,4 +1,3 @@
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface SocialMediaProfile {
@@ -15,6 +14,7 @@ export interface SocialMediaProfile {
 export interface SEOSettings {
   keywords: string[];
   metaDescription: string;
+  metaTitle?: string;
   sitemap: boolean;
   socialSharing: boolean;
   canonicalUrls: boolean;
@@ -67,6 +67,12 @@ export interface SEOSettings {
 }
 
 export interface StoreStrategy {
+  storeDescription?: string;
+  storeObjectives?: string;
+  targetAudience?: string;
+  competitiveAdvantage?: string;
+  marketPosition?: string;
+  growthPlans?: string;
   socialProfiles: SocialMediaProfile[];
   seoSettings: SEOSettings;
   marketInsights?: {
@@ -114,6 +120,12 @@ interface StrategyState {
 
 const initialState: StrategyState = {
   storeStrategy: {
+    storeDescription: "",
+    storeObjectives: "",
+    targetAudience: "",
+    competitiveAdvantage: "",
+    marketPosition: "",
+    growthPlans: "",
     socialProfiles: [
       {
         platform: "Facebook",
@@ -160,6 +172,7 @@ const initialState: StrategyState = {
     seoSettings: {
       keywords: ["artisanal", "fait main", "écologique", "durable", "premium", "qualité"],
       metaDescription: "Boutique en ligne proposant des produits artisanaux de qualité, fabriqués à la main avec des matériaux durables et écologiques.",
+      metaTitle: "",
       sitemap: true,
       socialSharing: true,
       canonicalUrls: true,

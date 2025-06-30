@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -108,8 +107,7 @@ const Plugins: React.FC = () => {
     const matchesSearch = plugin.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           plugin.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab = activeTab === "all" || 
-                      (activeTab === "installed" && plugin.installed) ||
-                      (activeTab === "category" && plugin.category === activeTab);
+                      (activeTab === "installed" && plugin.installed);
     
     return matchesSearch && matchesTab;
   });

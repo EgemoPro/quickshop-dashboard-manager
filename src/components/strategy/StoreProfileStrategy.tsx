@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,38 +5,20 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAppDispatch } from '@/store/hooks';
-import { updateStoreStrategy } from '@/store/slices/strategySlice';
+import { updateStoreStrategy, StoreStrategy } from '@/store/slices/strategySlice';
 import { ProfileSection } from './ProfileSection';
 import { Upload, Image as ImageIcon } from 'lucide-react';
 import { updateStoreInfo } from '@/store/slices/authSlice';
 import { handleImageFileChange } from '@/utils/imageUpload';
-
-// Add the missing properties to StoreStrategy type 
-interface StoreStrategy {
-  storeDescription: string;
-  storeObjectives: string;
-  targetAudience?: string;
-  competitiveAdvantage?: string;
-  marketPosition?: string;
-  growthPlans?: string;
-  seoSettings: {
-    metaTitle: string;
-    metaDescription: string;
-    keywords: string[];
-    socialMediaSharing: boolean;
-    // Add any other properties from seoSettings
-  };
-  socialProfiles: any[];
-}
 
 interface StoreInfo {
   name: string;
   description: string;
   logo: string;
   banner: string;
-  contactEmail: string;
-  website: string;
-  address: string;
+  contactEmail?: string;
+  website?: string;
+  address?: string;
   createdAt?: string;
   verified?: boolean;
 }
@@ -173,7 +154,7 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
             <Label htmlFor="storeWebsite">Site web</Label>
             <Input
               id="storeWebsite"
-              value={storeInfo.website}
+              value={storeInfo.website || ''}
               disabled
               className="mt-1 bg-muted"
             />

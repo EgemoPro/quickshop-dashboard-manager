@@ -17,51 +17,6 @@ import { useToast } from '@/hooks/use-toast';
 import { addKeyword, removeKeyword } from '@/store/slices/strategySlice';
 import { ProfileSection } from '@/components/strategy/ProfileSection';
 
-// Extended StoreInfo interface to match what we need
-interface ExtendedStoreInfo {
-  name: string;
-  description: string;
-  logo: string;
-  banner: string;
-  contactEmail?: string;
-  website?: string;
-  address?: string;
-  createdAt?: string;
-  verified?: boolean;
-}
-
-// Extended StoreStrategy interface to match what we need
-interface ExtendedStoreStrategy {
-  storeDescription?: string;
-  storeObjectives?: string;
-  targetAudience?: string;
-  competitiveAdvantage?: string;
-  marketPosition?: string;
-  growthPlans?: string;
-  seoSettings: {
-    metaTitle?: string;
-    metaDescription: string;
-    keywords: string[];
-    socialSharing: boolean;
-    // Additional properties
-    sitemap?: boolean;
-    canonicalUrls?: boolean;
-    structuredData?: boolean;
-    robotsTxt?: string;
-    allowIndexing?: boolean;
-  };
-  socialProfiles: Array<{
-    platform: string;
-    url: string;
-    connected: boolean;
-    username?: string;
-    followers?: number;
-    engagement?: number;
-    posts?: number;
-    lastUpdated?: string;
-  }>;
-}
-
 const Strategy = () => {
   const { user } = useAppSelector(state => state.auth);
   const { storeStrategy } = useAppSelector(state => state.strategy);
@@ -95,8 +50,8 @@ const Strategy = () => {
 
   if (!user) return null;
 
-  // Create default values if missing properties
-  const storeInfo: ExtendedStoreInfo = {
+  // Create safe access to user store info with fallbacks
+  const storeInfo = {
     name: user.storeInfo?.name || "",
     description: user.storeInfo?.description || "",
     logo: user.storeInfo?.logo || "",
@@ -106,28 +61,6 @@ const Strategy = () => {
     address: user.storeInfo?.address || "",
     createdAt: user.storeInfo?.createdAt,
     verified: user.storeInfo?.verified,
-  };
-  
-  // Ensure storeStrategy has required properties
-  const completeStoreStrategy: ExtendedStoreStrategy = {
-    storeDescription: storeStrategy?.storeDescription || "",
-    storeObjectives: storeStrategy?.storeObjectives || "",
-    targetAudience: storeStrategy?.targetAudience || "",
-    competitiveAdvantage: storeStrategy?.competitiveAdvantage || "",
-    marketPosition: storeStrategy?.marketPosition || "",
-    growthPlans: storeStrategy?.growthPlans || "",
-    seoSettings: {
-      metaTitle: storeStrategy?.seoSettings?.metaTitle || "",
-      metaDescription: storeStrategy?.seoSettings?.metaDescription || "",
-      keywords: storeStrategy?.seoSettings?.keywords || [],
-      socialSharing: storeStrategy?.seoSettings?.socialSharing || false,
-      sitemap: storeStrategy?.seoSettings?.sitemap || false,
-      canonicalUrls: storeStrategy?.seoSettings?.canonicalUrls || false,
-      structuredData: storeStrategy?.seoSettings?.structuredData || false,
-      robotsTxt: storeStrategy?.seoSettings?.robotsTxt || "",
-      allowIndexing: storeStrategy?.seoSettings?.allowIndexing || true,
-    },
-    socialProfiles: storeStrategy?.socialProfiles || [],
   };
 
   return (
@@ -175,7 +108,7 @@ const Strategy = () => {
         <TabsContent value="store" className="space-y-4 sm:space-y-6 mt-2">
           <StoreProfileStrategy
             storeInfo={storeInfo}
-            storeStrategy={completeStoreStrategy}
+            storeStrategy={storeStrategy}
           />
         </TabsContent>
 
