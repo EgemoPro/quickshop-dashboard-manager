@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, Bell, UserCircle, Menu, Settings, LogOut, HelpCircle } from "lucide-react";
@@ -13,6 +14,8 @@ import {
 import { useDispatch } from "react-redux";
 import { logout } from "@/store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardHeaderProps {
   darkMode: boolean;
@@ -31,6 +34,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     isLoading,
     user
   } = useAppSelector(state => state.auth);
+  const isMobile = useIsMobile();
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -46,19 +50,22 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     }
   }
 
-
   return (
     <header className={`fixed z-20 w-full top-0 left-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} shadow-sm px-4 sm:px-6 py-3 transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center md:hidden">
-          <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            <span className="sr-only">Ouvrir le menu</span>
-            <Menu className="h-5 w-5" />
-          </Button>
-        </div>
+        <div className="flex items-center space-x-4">
+          <SidebarTrigger className="flex items-center justify-center" />
+          
+          {isMobile && (
+            <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              <span className="sr-only">Ouvrir le menu</span>
+              <Menu className="h-5 w-5" />
+            </Button>
+          )}
 
-        <div className="hidden md:flex items-center ml-16 space-x-4">
-          <h1 className="text-xl font-bold">Shadow Dashboard</h1>
+          <div className="hidden md:flex items-center">
+            <h1 className="text-xl font-bold">Shadow Dashboard</h1>
+          </div>
         </div>
 
         <div className="flex items-center space-x-2 sm:space-x-4">
@@ -91,10 +98,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   <UserCircle className="mr-2 h-4 w-4" />
                   <span>Profil</span>
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem className="flex items-center cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Paramètres</span>
-                </DropdownMenuItem> */}
                 <DropdownMenuItem className="flex items-center cursor-pointer">
                   <HelpCircle className="mr-2 h-4 w-4" />
                   <span>Aide</span>
@@ -104,7 +107,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Déconnexion</span>
                 </DropdownMenuItem>
-              </DropdownMenuContent>
+              </DropDownMenuContent>
             </DropdownMenu>
           </div>
         </div>
