@@ -17,6 +17,18 @@ import { useToast } from '@/hooks/use-toast';
 import { addKeyword, removeKeyword } from '@/store/slices/strategySlice';
 import { ProfileSection } from '@/components/strategy/ProfileSection';
 
+interface StoreInfo {
+  name: string;
+  description: string;
+  logo: string;
+  banner: string;
+  contactEmail?: string;
+  website?: string;
+  address?: string;
+  createdAt?: string;
+  verified?: boolean;
+}
+
 const Strategy = () => {
   const { user } = useAppSelector(state => state.auth);
   const { storeStrategy } = useAppSelector(state => state.strategy);
@@ -51,7 +63,7 @@ const Strategy = () => {
   if (!user) return null;
 
   // Create safe access to user store info with fallbacks
-  const storeInfo = {
+  const storeInfo: StoreInfo = {
     name: user.storeInfo?.name || "",
     description: user.storeInfo?.description || "",
     logo: user.storeInfo?.logo || "",
