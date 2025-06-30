@@ -6,13 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/store/hooks";
 import { useCurrency } from "@/hooks/use-currency";
+import { selectLowStockProducts } from "@/store/slices/productsSlice";
 
 interface LowStockProductsProps {
   darkMode: boolean;
 }
 
 const LowStockProducts: React.FC<LowStockProductsProps> = ({ darkMode }) => {
-  const { lowStockProducts } = useAppSelector(state => state.products);
+  const lowStockProducts = useAppSelector(selectLowStockProducts);
   const { formatCurrency } = useCurrency();
 
   return (
@@ -37,31 +38,26 @@ const LowStockProducts: React.FC<LowStockProductsProps> = ({ darkMode }) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {lowStockProducts.map((product) => {
-              // Extraire le prix sans la devise pour le formater correctement
-              const priceValue = product.price.replace(/[^\d,.]/g, '');
-              
-              return (
-                <div 
-                  key={product.id}
-                  className={`p-3 rounded-lg border ${
-                    darkMode ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-100 hover:bg-gray-50'
-                  } transition-colors duration-200`}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-medium text-sm">{product.name}</p>
-                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
-                        {product.category} • {formatCurrency(priceValue)}
-                      </p>
-                    </div>
-                    <Badge variant="destructive" className="mt-1">
-                      Stock: {product.stock}
-                    </Badge>
+            {lowStockProducts.map((product) => (
+              <div 
+                key={product._id}
+                className={`p-3 rounded-lg border ${
+                  darkMode ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-100 hover:bg-gray-50'
+                } transition-colors duration-200`}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium text-sm">{product.title}</p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
+                      {product.category} • {formatCurrency(product.price.toString())}
+                    </p>
                   </div>
+                  <Badge variant="destructive" className="mt-1">
+                    Stock: {product.stock}
+                  </Badge>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -10,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Package2, Plus, Edit, Trash2, Search, Filter, AlertTriangle, Image as ImageIcon, Pencil, Tag, Box } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addProduct, deleteProduct, updateProduct, setLoading, type Product, ProductImage } from "@/store/slices/productsSlice";
+import { fetchAllProducts, createProduct, updateProduct, deleteProduct, selectLowStockProducts, type Product, ProductImage } from "@/store/slices/productsSlice";
 import { useToast } from "@/components/ui/use-toast";
 import ImageUploader from "@/components/products/ImageUploader";
 import CategorySelect from "@/components/products/CategorySelect";
@@ -22,7 +23,8 @@ import EmptyState from "@/components/products/EmptyState";
 const Products = () => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
-  const { lowStockProducts, isLoading } = useAppSelector((state) => state.products);
+  const { products, isLoading } = useAppSelector((state) => state.products);
+  const lowStockProducts = useAppSelector(selectLowStockProducts);
   const { currencySymbol } = useAppSelector((state) => state.settings);
   
   // Local state for UI
@@ -45,9 +47,14 @@ const Products = () => {
     availabilityZone: "everywhere",
   });
 
+  // Load products on component mount
+  useEffect(() => {
+    dispatch(fetchAllProducts());
+  }, [dispatch]);
+
   // Filter products based on search and status
-  const filteredProducts = lowStockProducts.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
     if (filterStatus === "all") return matchesSearch;
     if (filterStatus === "instock") return matchesSearch && product.stock > 10;
     if (filterStatus === "lowstock") return matchesSearch && product.stock <= 10 && product.stock > 0;
@@ -63,86 +70,107 @@ const Products = () => {
   };
 
   // Handle adding a new product
-  const handleAddProduct = () => {
-    const priceWithSymbol = formState.price.includes(currencySymbol) 
-      ? formState.price 
-      : `${formState.price} ${currencySymbol}`;
-      
-    const newProduct: Product = {
-      id: `PRD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
-      name: formState.name,
-      price: priceWithSymbol,
+  const handleAddProduct = async () => {
+    const newProduct = {
+      sku: `PRD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
+      title: formState.name,
+      description: formState.description || "",
+      price: parseFloat(formState.price),
       stock: formState.stock,
       category: formState.category,
       images: formState.images,
-      description: formState.description,
-      availabilityZone: formState.availabilityZone,
+      tags: [],
+      available: true,
+      colors: [],
+      sizes: [],
     };
     
-    dispatch(addProduct(newProduct));
-    setIsAddModalOpen(false);
-    resetForm();
-    
-    toast({
-      title: "Produit ajouté",
-      description: `${newProduct.name} a été ajouté avec succès.`,
-    });
+    try {
+      await dispatch(createProduct(newProduct)).unwrap();
+      setIsAddModalOpen(false);
+      resetForm();
+      
+      toast({
+        title: "Produit ajouté",
+        description: `${newProduct.title} a été ajouté avec succès.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'ajouter le produit.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Handle editing a product
-  const handleEditProduct = () => {
-    if (!currentProduct) return;
+  const handleEditProduct = async () => {
+    if (!currentProduct?._id) return;
     
-    const priceValue = formState.price.replace(currencySymbol, '').trim();
-    const priceWithSymbol = `${priceValue} ${currencySymbol}`;
-    
-    const updatedProduct: Product = {
-      ...currentProduct,
-      name: formState.name,
-      price: priceWithSymbol,
+    const updatedData = {
+      title: formState.name,
+      description: formState.description || "",
+      price: parseFloat(formState.price),
       stock: formState.stock,
       category: formState.category,
       images: formState.images,
-      description: formState.description,
-      availabilityZone: formState.availabilityZone,
     };
     
-    dispatch(updateProduct(updatedProduct));
-    setIsEditModalOpen(false);
-    resetForm();
-    
-    toast({
-      title: "Produit mis à jour",
-      description: `${updatedProduct.name} a été mis à jour avec succès.`,
-    });
+    try {
+      await dispatch(updateProduct({ 
+        id: currentProduct._id, 
+        productData: updatedData 
+      })).unwrap();
+      setIsEditModalOpen(false);
+      resetForm();
+      
+      toast({
+        title: "Produit mis à jour",
+        description: `${formState.name} a été mis à jour avec succès.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de mettre à jour le produit.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Handle deleting a product
-  const handleDeleteProduct = () => {
+  const handleDeleteProduct = async () => {
     if (!productToDelete) return;
     
-    dispatch(deleteProduct(productToDelete));
-    setShowDeleteDialog(false);
-    setProductToDelete(null);
-    
-    toast({
-      title: "Produit supprimé",
-      description: "Le produit a été supprimé avec succès.",
-      variant: "destructive",
-    });
+    try {
+      await dispatch(deleteProduct(productToDelete)).unwrap();
+      setShowDeleteDialog(false);
+      setProductToDelete(null);
+      
+      toast({
+        title: "Produit supprimé",
+        description: "Le produit a été supprimé avec succès.",
+        variant: "destructive",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le produit.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Open edit modal with product data
   const openEditModal = (product: Product) => {
     setCurrentProduct(product);
     setFormState({
-      name: product.name,
-      price: product.price.replace(currencySymbol, '').trim(),
+      name: product.title,
+      price: product.price.toString(),
       stock: product.stock,
       category: product.category,
       images: product.images || [],
       description: product.description || "",
-      availabilityZone: product.availabilityZone,
+      availabilityZone: "everywhere", // Default since this field doesn't exist in API model yet
     });
     setIsEditModalOpen(true);
   };
@@ -212,7 +240,7 @@ const Products = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
                   <ProductCard 
-                    key={product.id}
+                    key={product._id}
                     product={product}
                     getProductStatus={getProductStatus}
                     currencySymbol={currencySymbol}

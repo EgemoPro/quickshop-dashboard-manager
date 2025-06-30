@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {product.images && product.images.length > 0 ? (
           <img 
             src={product.images[0].url} 
-            alt={product.name}
+            alt={product.title}
             className="w-full h-full object-cover transition-transform hover:scale-105"
           />
         ) : (
@@ -48,7 +48,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       
       <div className="p-4 flex-1 flex flex-col">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-semibold text-gray-900 line-clamp-1">{product.name}</h3>
+          <h3 className="font-semibold text-gray-900 line-clamp-1">{product.title}</h3>
         </div>
         
         <div className="space-y-2 mb-4 flex-1">
@@ -71,7 +71,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         
         <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-          <div className="font-bold text-lg text-primary">{product.price}</div>
+          <div className="font-bold text-lg text-primary">{product.price} {currencySymbol}</div>
           
           <div className="flex gap-1">
             <Button 
@@ -85,7 +85,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => onDelete(product.id)}
+              onClick={() => onDelete(product._id!)}
               className="text-red-500 hover:text-red-700 hover:bg-red-50"
             >
               <Trash2 className="h-4 w-4" />

@@ -253,6 +253,20 @@ export const productsSlice = createSlice({
   }
 });
 
+// Selectors
+export const selectLowStockProducts = (state: { products: ProductsState }) => 
+  state.products.products.filter(product => product.stock <= 10);
+
+export const selectProductPerformance = (state: { products: ProductsState }) => {
+  // Mock data for now - in real app this would be calculated from sales data
+  return [
+    { name: 'Électronique', value: 40, color: '#8b5cf6' },
+    { name: 'Mode', value: 25, color: '#3b82f6' },
+    { name: 'Maison', value: 20, color: '#10b981' },
+    { name: 'Sports', value: 15, color: '#f59e0b' },
+  ];
+};
+
 export const { 
   clearError,
   setCurrentProduct,
