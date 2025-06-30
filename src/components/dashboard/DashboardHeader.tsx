@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, Bell, UserCircle, Menu, Settings, LogOut, HelpCircle } from "lucide-react";
@@ -11,6 +10,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDispatch } from "react-redux";
+import { logout } from "@/store/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardHeaderProps {
   darkMode: boolean;
@@ -30,6 +32,21 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     user
   } = useAppSelector(state => state.auth);
 
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    if (window.confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
+      try {
+        dispatch(logout());
+        navigate("/", { replace: true });
+      } catch (error) {
+        console.error("Erreur lors de la déconnexion :", error);
+      }
+    }
+  }
+
+
   return (
     <header className={`fixed z-20 w-full top-0 left-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} shadow-sm px-4 sm:px-6 py-3 transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -41,7 +58,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </div>
 
         <div className="hidden md:flex items-center ml-16 space-x-4">
-          <h1 className="text-xl font-bold">QuickShop Dashboard</h1>
+          <h1 className="text-xl font-bold">Shadow Dashboard</h1>
         </div>
 
         <div className="flex items-center space-x-2 sm:space-x-4">
@@ -83,7 +100,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   <span>Aide</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex items-center text-red-600 cursor-pointer">
+                <DropdownMenuItem onClick={handleLogout} className="flex items-center text-red-600 cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Déconnexion</span>
                 </DropdownMenuItem>

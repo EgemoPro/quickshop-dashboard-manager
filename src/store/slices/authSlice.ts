@@ -40,44 +40,44 @@ interface AuthState {
   error: string | null;
 }
 
-// const initialState: AuthState = {
-//   user: null,
-//   token: localStorage.getItem(JWT_TOKEN),
-//   isAuthenticated: !!localStorage.getItem(JWT_TOKEN),
-//   isLoading: false,
-//   error: null,
-// };
-
-
 const initialState: AuthState = {
-  user: {
-    id: "user-001",
-    fullName: "Eliezer Denis Gaston",
-    email: "eliezerodjo@gmail.com",
-    phone: "0022788783406",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
-    bio: "Entrepreneur passionné par le commerce en ligne et les produits artisanaux de qualité.",
-    role: "vendor",
-    preferences: {
-      darkMode: false,
-      notifications: true,
-      language: "fr",
-    },
-    storeInfo: {
-      id: "store-001",
-      name: "NeoArt",
-      description: "Une boutique spécialisée dans les produits artisanaux de qualité.",
-      logo: "https://api.dicebear.com/7.x/initials/svg?seed=BD",
-      banner: "https://placehold.co/1200x300/e2e8f0/1e293b?text=Bannière+Neo+Art",
-      verified: true,
-      createdAt: "2022-03-15T10:30:00Z",
-    },
-  },
-  token: "fake-jwt-token",
-  isAuthenticated: true,
+  user: null,
+  token: localStorage.getItem(JWT_TOKEN),
+  isAuthenticated: !!localStorage.getItem(JWT_TOKEN),
   isLoading: false,
   error: null,
 };
+
+
+// const initialState: AuthState = {
+//   user: {
+//     id: "user-001",
+//     fullName: "Eliezer Denis Gaston",
+//     email: "eliezerodjo@gmail.com",
+//     phone: "0022788783406",
+//     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
+//     bio: "Entrepreneur passionné par le commerce en ligne et les produits artisanaux de qualité.",
+//     role: "vendor",
+//     preferences: {
+//       darkMode: false,
+//       notifications: true,
+//       language: "fr",
+//     },
+//     storeInfo: {
+//       id: "store-001",
+//       name: "NeoArt",
+//       description: "Une boutique spécialisée dans les produits artisanaux de qualité.",
+//       logo: "https://api.dicebear.com/7.x/initials/svg?seed=BD",
+//       banner: "https://placehold.co/1200x300/e2e8f0/1e293b?text=Bannière+Neo+Art",
+//       verified: true,
+//       createdAt: "2022-03-15T10:30:00Z",
+//     },
+//   },
+//   token: "fake-jwt-token",
+//   isAuthenticated: true,
+//   isLoading: false,
+//   error: null,
+// };
 
 export const authSlice = createSlice({
   name: "auth",
@@ -155,6 +155,7 @@ interface authCredentials {
   email: string;
   password: string;
 }
+
 const utils = {
   preferences: {
     darkMode: false,
@@ -176,14 +177,15 @@ export const login = (credentials: authCredentials) => async (dispatch: AppDispa
 
   try {
     console.table(credentials)
-    const response = await api.post("/auth/customer/login", credentials);
+    const response = await api.post("/auth/store/login", credentials);
     const { token, payload: {_id: id, fullname:fullName, ...user} } = response.data;
 
     dispatch(authSuccess({ user : {id, fullName, ...user, ...utils}, token }));
     localStorage.setItem(JWT_TOKEN, token);
     return true;
   } catch (error: any) {
-    dispatch(authFailure(error.response?.data?.message || "Erreur de connexion"));
+    const errorMessage = error.response?.data?.message || error.message || "Erreur de connexion";
+    dispatch(authFailure(errorMessage));
     return false;
   }
 };
@@ -199,7 +201,7 @@ interface registerCredentials {
 export const registerUser = (userData: registerCredentials) => async (dispatch: AppDispatch) => {
   dispatch(authRequest());
   try {
-    const response = await api.post("/auth/customer/register", userData);
+    const response = await api.post("/auth/store/register", userData);
     const { token, payload: {_id: id, fullname:fullName, ...user} } = response.data;
 
     console.log(token, {id, user})
@@ -207,7 +209,8 @@ export const registerUser = (userData: registerCredentials) => async (dispatch: 
     dispatch(authSuccess({ user : {id, fullName, ...user, ...utils}, token }));
     return true;
   } catch (error: any) {
-    dispatch(authFailure(error.response?.data?.message || "Erreur d'inscription"));
+    const errorMessage = error.response?.data?.message || error.message || "Erreur de connexion";
+    dispatch(authFailure(errorMessage));
     return false;
   }
 };
@@ -221,14 +224,27 @@ export const checkAuth = () => async (dispatch: AppDispatch) => {
   }
 
   try {
-    const response = await api.get("/auth/customer/profile", {
+    const response = await api.get("/auth/store/profile", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    dispatch(authSuccess({ user: response.data, token }));
+
+    const {
+      token: newToken,
+      payload :{
+        _id: id, 
+        fullname:fullName, 
+        ...user
+      }
+    } = response.data
+
+    dispatch(authSuccess({ user : {id, fullName, ...user, ...utils}, token: newToken }));
+    localStorage.setItem(JWT_TOKEN, token);
+    console.log("response data",response.data)
     return true;
   } catch (error) {
     localStorage.removeItem(JWT_TOKEN);
-    dispatch(logout());
+    const errorMessage = error.response?.data?.message || error.message || "Erreur de connexion";
+    dispatch(authFailure(errorMessage));
     return false;
   }
 };
@@ -239,7 +255,7 @@ export const updateUserInfo = (userData: Partial<User>) => async (dispatch: AppD
   if (!token) return false;
 
   try {
-    const response = await api.put("/customer/update", userData, {
+    const response = await api.put("/store/update", userData, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

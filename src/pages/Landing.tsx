@@ -56,8 +56,8 @@ const LandingPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // const [showPassword, setShowPassword] = useState(false);
+  // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -76,54 +76,54 @@ const LandingPage = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
-  };
+  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { id, value } = e.target;
+  //   setFormData((prev) => ({ ...prev, [id]: value }));
+  // };
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  // const handleLogin = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
 
-    // Simuler un délai d'authentification
-    setTimeout(() => {
-      setIsLoading(false);
-      // Pour l'instant, on considère tous les logins comme réussis
-      toast({
-        title: "Connexion réussie",
-        description: "Bienvenue sur QuickShop!",
-      });
-      // Rediriger vers le dashboard
-      navigate("/dashboard");
-    }, 1500);
-  };
+  //   // Simuler un délai d'authentification
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //     // Pour l'instant, on considère tous les logins comme réussis
+  //     toast({
+  //       title: "Connexion réussie",
+  //       description: "Bienvenue sur QuickShop!",
+  //     });
+  //     // Rediriger vers le dashboard
+  //     navigate("/dashboard");
+  //   }, 1500);
+  // };
 
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleRegister = (e: React.FormEvent) => {
+  //   e.preventDefault();
 
-    // Validation simple
-    if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Erreur d'inscription",
-        description: "Les mots de passe ne correspondent pas.",
-        variant: "destructive",
-      });
-      return;
-    }
+  //   // Validation simple
+  //   if (formData.password !== formData.confirmPassword) {
+  //     toast({
+  //       title: "Erreur d'inscription",
+  //       description: "Les mots de passe ne correspondent pas.",
+  //       variant: "destructive",
+  //     });
+  //     return;
+  //   }
 
-    setIsLoading(true);
+  //   setIsLoading(true);
 
-    // Simuler un délai d'inscription
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: "Inscription réussie",
-        description: "Votre compte a été créé avec succès!",
-      });
-      // Rediriger vers le dashboard
-      navigate("/dashboard");
-    }, 1500);
-  };
+  //   // Simuler un délai d'inscription
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //     toast({
+  //       title: "Inscription réussie",
+  //       description: "Votre compte a été créé avec succès!",
+  //     });
+  //     // Rediriger vers le dashboard
+  //     navigate("/dashboard");
+  //   }, 1500);
+  // };
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -137,13 +137,13 @@ const LandingPage = () => {
     }),
   };
 
-  const fadeIn = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.6 }
-    }
-  };
+  // const fadeIn = {
+  //   hidden: { opacity: 0 },
+  //   visible: {
+  //     opacity: 1,
+  //     transition: { duration: 0.6 }
+  //   }
+  // };
 
   const slideInLeft = {
     hidden: { x: -60, opacity: 0 },
@@ -154,14 +154,14 @@ const LandingPage = () => {
     }
   };
 
-  const slideInRight = {
-    hidden: { x: 60, opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: { duration: 0.6 }
-    }
-  };
+  // const slideInRight = {
+  //   hidden: { x: 60, opacity: 0 },
+  //   visible: {
+  //     x: 0,
+  //     opacity: 1,
+  //     transition: { duration: 0.6 }
+  //   }
+  // };
 
   const advantages = [
     {

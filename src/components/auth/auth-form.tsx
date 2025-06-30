@@ -228,9 +228,9 @@ export default function AuthForm({
           transition={{ duration: 0.5 }}
           className="mx-auto w-full h-full flex items-center justify-center max-w-md"
         >
-          <div className="flex flex-col max-md:space-y-2 text-center lg:hidden">
+          {/* <div className="flex flex-col max-md:space-y-2 text-center lg:hidden">
             <div className="mx-auto">{logoComponent}</div>
-          </div>
+          </div> */}
 
           <Card className="max-md:mt-8">
             <CardHeader>

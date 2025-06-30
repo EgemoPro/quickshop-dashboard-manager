@@ -53,6 +53,7 @@ import AuthForm from "@/components/auth/auth-form";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { checkAuth, login, registerUser } from "./store/slices/authSlice";
 import FollowersDashboard from "./pages/followers-dashboard";
+import Loader from "./components/ModernLoaderCard";
 
 const queryClient = new QueryClient();
 
@@ -284,7 +285,7 @@ interface UserData {
 const AppContent = () => {
 
   const { isLoading, user, token } = useAppSelector(state => state.auth)
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // 1
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // 1
   const [userData, setUserData] = useState<UserData>()
   const dispatch = useAppDispatch()
   const navigate = useNavigate();
@@ -298,6 +299,10 @@ const AppContent = () => {
     console.log(data, type)
     setUserData(prev => ({ ...prev, ...data, type }))
   }
+
+  useEffect(()=>{
+    dispatch(checkAuth());
+  },[dispatch])
 
   useEffect(() => {
     setIsAuthenticated(!!(token && user));
@@ -319,14 +324,19 @@ const AppContent = () => {
       default:
         dispatch(login({ email: userData.email, password: userData.password }));
         break;
-        console.log("No valid userData type provided");
+        // console.log("No valid userData type provided");
     }
     console.log(userData);
   }, [userData]);
 
-
+  console.log("isAuthenticated", isAuthenticated);
+  console.log("token", token);
+  console.log("user", user);
+  
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="flex items-center justify-center min-h-screen w-full">
+      <Loader />
+    </div>;
   }
 
  

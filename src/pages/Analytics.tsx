@@ -142,8 +142,11 @@ const Analytics = () => {
                       <BarChart data={salesData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
-                        <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
-                        <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                        {!isMobile && 
+                          (<>
+                            <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+                            <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                          </>)}
                         <Tooltip />
                         <Legend />
                         <Bar yAxisId="left" dataKey="ventes" name="Nombre de ventes" fill="#8884d8" />
@@ -218,7 +221,7 @@ const Analytics = () => {
                       ]}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
-                        <YAxis />
+                        {!isMobile && (<YAxis />)}
                         <Tooltip />
                         <Legend />
                         <Area type="monotone" dataKey="nouveaux" name="Nouveaux clients" stroke="#8884d8" fill="#8884d8" />
@@ -235,9 +238,11 @@ const Analytics = () => {
                         growth: parseFloat(item.growth.replace('%', ''))
                       }))}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis yAxisId="left" />
-                        <YAxis yAxisId="right" orientation="right" />
+                          <XAxis dataKey="name" />
+                        {!isMobile && (<>
+                          <YAxis yAxisId="left" />
+                          <YAxis yAxisId="right" orientation="right" />
+                        </>)}
                         <Tooltip />
                         <Legend />
                         <Line yAxisId="left" type="monotone" dataKey="ventes" name="Ventes" stroke="#8884d8" activeDot={{ r: 8 }} />

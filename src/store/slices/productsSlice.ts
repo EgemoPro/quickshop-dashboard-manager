@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import api from "../../lib/axios";
 
 export interface ProductImage {
   id: string;
@@ -31,6 +32,19 @@ interface ProductsState {
   error: string | null;
 }
 
+const fetchProducts = createAsyncThunk(
+  "products/fetchProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/api/products");
+      const data = response.data;
+      return data as Product[];
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Unknown error");
+    }
+  }
+);
+
 const generateLowStockProducts = (): Product[] => {
   const categories = ["Vêtements", "Électronique", "Maison", "Sports", "Beauté"];
   const products = [
@@ -38,7 +52,7 @@ const generateLowStockProducts = (): Product[] => {
     "Enceinte Bluetooth", "Lampe de Bureau", "Tapis de Yoga", "Crème Hydratante"
   ];
   
-  return Array.from({ length: 8 }, (_, i) => {
+  return Array.from({ length: 1 }, (_, i) => {
     const id = `PRD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
     return {
       id,
@@ -47,6 +61,7 @@ const generateLowStockProducts = (): Product[] => {
       category: categories[Math.floor(Math.random() * categories.length)],
       price: `${(Math.random() * 190 + 10).toFixed(2)}`,
       images: [],
+      availabilityZone: "Afrique"
     };
   });
 };
@@ -138,7 +153,7 @@ export const productsSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
-  },
+  }
 });
 
 export const { 

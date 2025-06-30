@@ -8,6 +8,7 @@ import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { setPeriod } from "@/store/slices/salesSlice";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 import { useCurrency } from "@/hooks/use-currency";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SalesChartProps {
   darkMode: boolean;
@@ -17,6 +18,7 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
   const dispatch = useAppDispatch();
   const { salesData, period } = useAppSelector(state => state.sales);
   const { currencySymbol } = useCurrency();
+  const isMobile = useIsMobile()
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -82,11 +84,11 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
                     tick={{ fill: darkMode ? '#bbb' : '#666' }}
                     axisLine={{ stroke: darkMode ? '#555' : '#ddd' }}
                   />
-                  <YAxis 
+                  {!isMobile && (<YAxis 
                     tick={{ fill: darkMode ? '#bbb' : '#666' }}
                     axisLine={{ stroke: darkMode ? '#555' : '#ddd' }}
                     
-                  />
+                  />)}
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ bottom: 0 }} />
                   <Bar 
