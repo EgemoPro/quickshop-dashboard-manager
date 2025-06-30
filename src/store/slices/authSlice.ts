@@ -1,3 +1,4 @@
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import api from "../../lib/axios";
 import { AppDispatch } from "../store";
@@ -16,6 +17,9 @@ export interface StoreInfo {
   description?: string;
   logo: string;
   banner?: string;
+  contactEmail?: string;
+  website?: string;
+  address?: string;
   verified: boolean;
   createdAt: string;
 }

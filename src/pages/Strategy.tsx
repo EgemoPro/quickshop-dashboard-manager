@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,18 +15,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { addKeyword, removeKeyword } from '@/store/slices/strategySlice';
 import { ProfileSection } from '@/components/strategy/ProfileSection';
-
-interface StoreInfo {
-  name: string;
-  description: string;
-  logo: string;
-  banner: string;
-  contactEmail?: string;
-  website?: string;
-  address?: string;
-  createdAt?: string;
-  verified?: boolean;
-}
+import { StoreInfo } from '@/store/slices/authSlice';
 
 const Strategy = () => {
   const { user } = useAppSelector(state => state.auth);
@@ -64,6 +52,7 @@ const Strategy = () => {
 
   // Create safe access to user store info with fallbacks
   const storeInfo: StoreInfo = {
+    id: user.storeInfo?.id || "",
     name: user.storeInfo?.name || "",
     description: user.storeInfo?.description || "",
     logo: user.storeInfo?.logo || "",
@@ -71,8 +60,8 @@ const Strategy = () => {
     contactEmail: user.storeInfo?.contactEmail || "",
     website: user.storeInfo?.website || "",
     address: user.storeInfo?.address || "",
-    createdAt: user.storeInfo?.createdAt,
-    verified: user.storeInfo?.verified,
+    createdAt: user.storeInfo?.createdAt || "",
+    verified: user.storeInfo?.verified || false,
   };
 
   return (
