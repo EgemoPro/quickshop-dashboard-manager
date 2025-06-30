@@ -8,20 +8,8 @@ import { useAppDispatch } from '@/store/hooks';
 import { updateStoreStrategy, StoreStrategy } from '@/store/slices/strategySlice';
 import { ProfileSection } from './ProfileSection';
 import { Upload, Image as ImageIcon } from 'lucide-react';
-import { updateStoreInfo } from '@/store/slices/authSlice';
+import { updateStoreInfo, StoreInfo } from '@/store/slices/authSlice';
 import { handleImageFileChange } from '@/utils/imageUpload';
-
-interface StoreInfo {
-  name: string;
-  description: string;
-  logo: string;
-  banner: string;
-  contactEmail?: string;
-  website?: string;
-  address?: string;
-  createdAt?: string;
-  verified?: boolean;
-}
 
 interface StoreProfileStrategyProps {
   storeInfo: StoreInfo;
