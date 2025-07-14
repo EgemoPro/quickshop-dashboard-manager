@@ -11,6 +11,9 @@ export interface UserPreferences {
 }
 
 export interface StoreInfo {
+  address: string;
+  website: string;
+  contactEmail: string;
   id: string;
   name: string;
   description?: string;

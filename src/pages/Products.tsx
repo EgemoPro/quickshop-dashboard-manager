@@ -1,30 +1,36 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package2, Plus, Edit, Trash2, Search, Filter, AlertTriangle, Image as ImageIcon, Pencil, Tag, Box } from "lucide-react";
+import { Plus, AlertTriangle, Image as ImageIcon, Pencil } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addProduct, deleteProduct, updateProduct, setLoading, type Product, ProductImage } from "@/store/slices/productsSlice";
+import { addProduct, deleteProduct, updateProduct, setLoading } from "@/store/slices/productsSlice";
+import { type Product, ProductImage } from "../types/productSlicesTypes"
 import { useToast } from "@/components/ui/use-toast";
-import ImageUploader from "@/components/products/ImageUploader";
-import CategorySelect from "@/components/products/CategorySelect";
 import ProductCard from "@/components/products/ProductCard";
 import ProductForm from "@/components/products/ProductForm";
 import ProductFilters from "@/components/products/ProductFilters";
 import EmptyState from "@/components/products/EmptyState";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from "@/components/ui/tabs";
+
+interface TabsType {
+  name: string;
+  path: string;
+}
 
 const Products = () => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const { lowStockProducts, isLoading } = useAppSelector((state) => state.products);
   const { currencySymbol } = useAppSelector((state) => state.settings);
-  
+  console.log(lowStockProducts)
   // Local state for UI
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -33,7 +39,10 @@ const Products = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
-  
+  const [tabsPath, setTabsPath] = useState<TabsType>({
+    name: "Liste",
+    path: "/list"
+  })
   // Form state for adding/editing products
   const [formState, setFormState] = useState({
     name: "",
@@ -64,10 +73,10 @@ const Products = () => {
 
   // Handle adding a new product
   const handleAddProduct = () => {
-    const priceWithSymbol = formState.price.includes(currencySymbol) 
-      ? formState.price 
+    const priceWithSymbol = formState.price.includes(currencySymbol)
+      ? formState.price
       : `${formState.price} ${currencySymbol}`;
-      
+
     const newProduct: Product = {
       id: `PRD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
       name: formState.name,
@@ -78,11 +87,11 @@ const Products = () => {
       description: formState.description,
       availabilityZone: formState.availabilityZone,
     };
-    
+
     dispatch(addProduct(newProduct));
     setIsAddModalOpen(false);
     resetForm();
-    
+
     toast({
       title: "Produit ajouté",
       description: `${newProduct.name} a été ajouté avec succès.`,
@@ -92,10 +101,10 @@ const Products = () => {
   // Handle editing a product
   const handleEditProduct = () => {
     if (!currentProduct) return;
-    
+
     const priceValue = formState.price.replace(currencySymbol, '').trim();
     const priceWithSymbol = `${priceValue} ${currencySymbol}`;
-    
+
     const updatedProduct: Product = {
       ...currentProduct,
       name: formState.name,
@@ -106,11 +115,11 @@ const Products = () => {
       description: formState.description,
       availabilityZone: formState.availabilityZone,
     };
-    
+
     dispatch(updateProduct(updatedProduct));
     setIsEditModalOpen(false);
     resetForm();
-    
+
     toast({
       title: "Produit mis à jour",
       description: `${updatedProduct.name} a été mis à jour avec succès.`,
@@ -120,11 +129,11 @@ const Products = () => {
   // Handle deleting a product
   const handleDeleteProduct = () => {
     if (!productToDelete) return;
-    
+
     dispatch(deleteProduct(productToDelete));
     setShowDeleteDialog(false);
     setProductToDelete(null);
-    
+
     toast({
       title: "Produit supprimé",
       description: "Le produit a été supprimé avec succès.",
@@ -177,10 +186,19 @@ const Products = () => {
         transition={{ duration: 0.5 }}
         className="container mx-auto px-4 py-8"
       >
-        <header className="mb-8">
+        {isLoading && (
+          <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 backdrop-blur-sm">
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              <span className="font-medium">Chargement...</span>
+            </div>
+          </div>
+        )}
+
+        <header className="mb-5">
           <div className="flex justify-between items-center flex-wrap gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Produits</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Produits {">"} {tabsPath.name}</h1>
               <p className="text-gray-600 mt-1">Gérez votre catalogue de produits</p>
             </div>
             <Button onClick={() => setIsAddModalOpen(true)} className="bg-primary hover:bg-primary/90 shadow-sm">
@@ -189,46 +207,60 @@ const Products = () => {
             </Button>
           </div>
 
-          <ProductFilters 
-            searchQuery={searchQuery} 
+          <ProductFilters
+            searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
             filterStatus={filterStatus}
             setFilterStatus={setFilterStatus}
           />
         </header>
 
-        <Card className="p-6 relative shadow-md border-none overflow-hidden">
-          {isLoading && (
-            <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 backdrop-blur-sm">
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                <span className="font-medium">Chargement...</span>
-              </div>
-            </div>
-          )}
-          
-          <ScrollArea className="h-[600px] pr-4">
-            {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
-                  <ProductCard 
-                    key={product.id}
-                    product={product}
-                    getProductStatus={getProductStatus}
-                    currencySymbol={currencySymbol}
-                    onEdit={openEditModal}
-                    onDelete={(id) => {
-                      setProductToDelete(id);
-                      setShowDeleteDialog(true);
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <EmptyState onAddProduct={() => setIsAddModalOpen(true)} />
-            )}
-          </ScrollArea>
-        </Card>
+        <Tabs defaultValue="list"  >
+          <TabsList className="mb-5">
+            <TabsTrigger value="list" >
+              Liste
+            </TabsTrigger>
+
+            <TabsTrigger value="new" >
+              Créer
+            </TabsTrigger>
+          </TabsList>
+
+          <Card className="p-6 relative shadow-md border-none overflow-hidden">
+            <TabsContent value="list" >
+
+              <ScrollArea className="h-[600px] pr-4">
+                {filteredProducts.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        getProductStatus={getProductStatus}
+                        currencySymbol={currencySymbol}
+                        onEdit={openEditModal}
+                        onDelete={(id) => {
+                          setProductToDelete(id);
+                          setShowDeleteDialog(true);
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState onAddProduct={() => setIsAddModalOpen(true)} />
+                )}
+              </ScrollArea>
+            </TabsContent>
+            <TabsContent value="new">
+
+            </TabsContent>
+          </Card>
+
+
+        </Tabs>
+
+
+
 
         {/* Add Product Modal */}
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
@@ -242,14 +274,14 @@ const Products = () => {
                 Remplissez les informations du nouveau produit ci-dessous.
               </DialogDescription>
             </DialogHeader>
-            
-            <ProductForm 
+
+            <ProductForm
               formState={formState}
               setFormState={setFormState}
               currencySymbol={currencySymbol}
               onImagesChange={handleImagesChange}
             />
-            
+
             <DialogFooter className="px-6 py-4 bg-gray-50 border-t">
               <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
                 Annuler
@@ -274,14 +306,14 @@ const Products = () => {
                 Modifiez les informations du produit ci-dessous.
               </DialogDescription>
             </DialogHeader>
-            
-            <ProductForm 
+
+            <ProductForm
               formState={formState}
               setFormState={setFormState}
               currencySymbol={currencySymbol}
               onImagesChange={handleImagesChange}
             />
-            
+
             <DialogFooter className="px-6 py-4 bg-gray-50 border-t">
               <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
                 Annuler

@@ -39,7 +39,7 @@ const LowStockProducts: React.FC<LowStockProductsProps> = ({ darkMode }) => {
           <div className="space-y-4">
             {lowStockProducts.map((product) => {
               // Extraire le prix sans la devise pour le formater correctement
-              const priceValue = product.price.replace(/[^\d,.]/g, '');
+              const priceValue = product.price
               
               return (
                 <div 

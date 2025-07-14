@@ -1,57 +1,80 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import api from "../../lib/axios";
+import {
+  type Product,
+  type Category,
+  type ProductImage,
+  type ProductsState,
+  productsApiRequestHandlerType
+} from "../../types/productSlicesTypes"
+import { handleRequest } from "@/utils/handleRequest";
 
-export interface ProductImage {
-  id: string;
-  url: string;
-  name: string;
-}
 
-export interface Product {
-  id: string;
-  name: string;
-  stock: number;
-  category: string;
-  price: string;
-  images: ProductImage[];
-  description?: string;
-  availabilityZone: string;
-}
 
-export interface Category {
-  id: string;
-  name: string;
-}
-
-interface ProductsState {
-  lowStockProducts: Product[];
-  productPerformance: Array<{ name: string; value: number }>;
-  categories: Category[];
-  availabilityZones: Array<{ id: string; name: string }>;
-  isLoading: boolean;
-  error: string | null;
-}
-
-const fetchProducts = createAsyncThunk(
-  "products/fetchProducts",
-  async (_, { rejectWithValue }) => {
+export const productsApiRequestHandler = createAsyncThunk(
+  "products/productsApiRequestHandler",
+  async ({ limit = 10, page = 1 }:productsApiRequestHandlerType , 
+    { rejectWithValue }) => {
     try {
-      const response = await api.get("/api/products");
-      const data = response.data;
-      return data as Product[];
+      const response = await handleRequest(() =>
+        api.get("/products", {
+          params: { page, limit },
+        })
+      );
+
+      const { products } = response.data.payload;
+
+      return products.map(p => {
+        const {title: name, _id: id, price,  ...reste} = p;
+        return {
+          name,
+          id,
+          price: JSON.stringify(price),
+          ...reste
+        }
+      }) as Product[];
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : "Unknown error");
     }
   }
 );
 
+// Ajouter un produit
+export const addProduct = createAsyncThunk(
+  "products/addProduct",
+  async (newProduct: Partial<Product>, { rejectWithValue }) => {
+    const {
+      name: title,
+      id,
+      ...reste
+    } = newProduct;
+    try {
+      const response = await handleRequest(() =>
+        api.post("/products/new", {
+          title,
+          sku: `id-${Math.ceil(Math.random()*1000).toString().padStart(4,'0')}`,
+          ...reste
+        })
+      );
+      const product = response.data.payload;
+      return {
+        ...product,
+        price: JSON.stringify(product.price)
+      } as Product;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Échec ajout produit");
+    }
+  }
+);
+
+/*
 const generateLowStockProducts = (): Product[] => {
   const categories = ["Vêtements", "Électronique", "Maison", "Sports", "Beauté"];
   const products = [
-    "T-shirt Premium", "Jean Classique", "Chaussures de Sport", "Montre Connectée", 
+    "T-shirt Premium", "Jean Classique", "Chaussures de Sport", "Montre Connectée",
     "Enceinte Bluetooth", "Lampe de Bureau", "Tapis de Yoga", "Crème Hydratante"
   ];
-  
+
   return Array.from({ length: 1 }, (_, i) => {
     const id = `PRD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
     return {
@@ -65,7 +88,7 @@ const generateLowStockProducts = (): Product[] => {
     };
   });
 };
-
+*/
 const generateProductPerformance = () => {
   const categories = ['Vêtements', 'Électronique', 'Maison', 'Sports', 'Beauté'];
   return categories.map(category => ({
@@ -75,7 +98,7 @@ const generateProductPerformance = () => {
 };
 
 const initialState: ProductsState = {
-  lowStockProducts: generateLowStockProducts(),
+  lowStockProducts: [], //generateLowStockProducts(),
   productPerformance: generateProductPerformance(),
   categories: [
     { id: '1', name: 'Vêtements' },
@@ -105,9 +128,9 @@ export const productsSlice = createSlice({
     setLowStockProducts: (state, action: PayloadAction<Product[]>) => {
       state.lowStockProducts = action.payload;
     },
-    addProduct: (state, action: PayloadAction<Product>) => {
-      state.lowStockProducts.push(action.payload);
-    },
+    // addProduct: (state, action: PayloadAction<Product>) => {
+    //   state.lowStockProducts.push(action.payload);
+    // },
     updateProduct: (state, action: PayloadAction<Product>) => {
       const index = state.lowStockProducts.findIndex(p => p.id === action.payload.id);
       if (index !== -1) {
@@ -153,22 +176,49 @@ export const productsSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
-  }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(productsApiRequestHandler.pending, (state, action) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(productsApiRequestHandler.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.lowStockProducts = Array.isArray(action.payload) ? action.payload : [];
+      })
+      .addCase(productsApiRequestHandler.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = <string>action.payload;
+      })
+      // Add case for addProductAsync
+      .addCase(addProduct.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(addProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.lowStockProducts.push(action.payload);
+      })
+      .addCase(addProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+  },
 });
 
-export const { 
-  setLowStockProducts, 
-  addProduct,
+export const {
+  setLowStockProducts,
   updateProduct,
   deleteProduct,
-  updateProductStock, 
+  updateProductStock,
   setProductPerformance,
   addProductImage,
   removeProductImage,
   addCategory,
-  removeCategory, 
-  setLoading, 
-  setError 
+  removeCategory,
+  setLoading,
+  setError
 } = productsSlice.actions;
 
 export default productsSlice.reducer;

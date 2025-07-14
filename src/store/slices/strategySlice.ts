@@ -13,6 +13,8 @@ export interface SocialMediaProfile {
 }
 
 export interface SEOSettings {
+  socialMediaSharing: boolean;
+  metaTitle: string;
   keywords: string[];
   metaDescription: string;
   sitemap: boolean;
