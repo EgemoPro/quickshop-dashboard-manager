@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { X, Upload, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ProductImage } from '@/store/slices/productsSlice';
+import { ProductImage } from '@/types/productSlicesTypes';
 import { useToast } from '@/components/ui/use-toast';
 
 interface ImageUploaderProps {
@@ -19,9 +19,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange })
     const newImages = acceptedFiles.map(file => {
       const previewUrl = URL.createObjectURL(file);
       return {
-        id: Math.random().toString(36).substring(2, 9),
         url: previewUrl,
-        name: file.name
+        alt: file.name
       };
     });
 
@@ -43,8 +42,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange })
     maxSize: 5 * 1024 * 1024, // 5MB
   });
 
-  const removeImage = (id: string) => {
-    const updatedImages = previewImages.filter(image => image.id !== id);
+  const removeImage = (index: number) => {
+    const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
     onImagesChange(updatedImages);
     
@@ -81,12 +80,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange })
       </div>
       
       {previewImages.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4 mt-4">
-          {previewImages.map((image) => (
-            <div key={image.id} className="relative group rounded-md overflow-hidden border border-gray-200">
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4 mt-4">
+          {previewImages.map((image, index) => (
+            <div key={index} className="relative group rounded-md overflow-hidden border border-gray-200">
               <img 
                 src={image.url} 
-                alt={image.name} 
+                alt={image.alt || `Image ${index + 1}`} 
                 className="h-32 w-full object-cover" 
               />
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -95,14 +94,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange })
                   variant="destructive"
                   onClick={(e) => {
                     e.stopPropagation();
-                    removeImage(image.id);
+                    removeImage(index);
                   }}
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
               <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-1 text-xs truncate">
-                {image.name}
+                {image.alt || `Image ${index + 1}`}
               </div>
             </div>
           ))}

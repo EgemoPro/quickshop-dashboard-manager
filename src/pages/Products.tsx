@@ -1,55 +1,44 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, AlertTriangle, Image as ImageIcon, Pencil } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertTriangle, Pencil } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addProduct, deleteProduct, updateProduct, setLoading } from "@/store/slices/productsSlice";
-import { type Product, ProductImage } from "../types/productSlicesTypes"
+import { addProduct, deleteProduct, updateProduct } from "@/store/slices/productsSlice";
+import { type Product } from "@/types/productSlicesTypes";
 import { useToast } from "@/components/ui/use-toast";
 import ProductCard from "@/components/products/ProductCard";
 import ProductForm from "@/components/products/ProductForm";
+import ProductFormCreate from "@/components/products/ProductFormCreate";
 import ProductFilters from "@/components/products/ProductFilters";
 import EmptyState from "@/components/products/EmptyState";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger
-} from "@/components/ui/tabs";
-
-interface TabsType {
-  name: string;
-  path: string;
-}
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Products = () => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const { lowStockProducts, isLoading } = useAppSelector((state) => state.products);
   const { currencySymbol } = useAppSelector((state) => state.settings);
-  console.log(lowStockProducts)
+
   // Local state for UI
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
-  const [tabsPath, setTabsPath] = useState<TabsType>({
-    name: "Liste",
-    path: "/list"
-  })
-  // Form state for adding/editing products
+  const [activeTab, setActiveTab] = useState("list");
+
+  // Form state for editing products
   const [formState, setFormState] = useState({
     name: "",
     price: "",
     stock: 0,
     category: "Vêtements",
-    images: [] as ProductImage[],
+    images: [],
     description: "",
     availabilityZone: "everywhere",
   });
@@ -71,26 +60,17 @@ const Products = () => {
     return { text: "Rupture", variant: "destructive" as const };
   };
 
-  // Handle adding a new product
-  const handleAddProduct = () => {
-    const priceWithSymbol = formState.price.includes(currencySymbol)
-      ? formState.price
-      : `${formState.price} ${currencySymbol}`;
-
+  // Handle creating a new product
+  const handleCreateProduct = (newProductData: any) => {
     const newProduct: Product = {
       id: `PRD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
-      name: formState.name,
-      price: priceWithSymbol,
-      stock: formState.stock,
-      category: formState.category,
-      images: formState.images,
-      description: formState.description,
-      availabilityZone: formState.availabilityZone,
+      ...newProductData,
+      reviews: 0,
+      available: true,
     };
 
     dispatch(addProduct(newProduct));
-    setIsAddModalOpen(false);
-    resetForm();
+    setActiveTab("list");
 
     toast({
       title: "Produit ajouté",
@@ -102,13 +82,10 @@ const Products = () => {
   const handleEditProduct = () => {
     if (!currentProduct) return;
 
-    const priceValue = formState.price.replace(currencySymbol, '').trim();
-    const priceWithSymbol = `${priceValue} ${currencySymbol}`;
-
     const updatedProduct: Product = {
       ...currentProduct,
       name: formState.name,
-      price: priceWithSymbol,
+      price: parseFloat(formState.price),
       stock: formState.stock,
       category: formState.category,
       images: formState.images,
@@ -146,18 +123,18 @@ const Products = () => {
     setCurrentProduct(product);
     setFormState({
       name: product.name,
-      price: product.price.replace(currencySymbol, '').trim(),
+      price: product.price.toString(),
       stock: product.stock,
       category: product.category,
       images: product.images || [],
       description: product.description || "",
-      availabilityZone: product.availabilityZone,
+      availabilityZone: product.availabilityZone || "everywhere",
     });
     setIsEditModalOpen(true);
   };
 
   // Handle image changes
-  const handleImagesChange = (images: ProductImage[]) => {
+  const handleImagesChange = (images: any[]) => {
     setFormState({
       ...formState,
       images,
@@ -195,40 +172,30 @@ const Products = () => {
           </div>
         )}
 
-        <header className="mb-5">
+        <header className="mb-8">
           <div className="flex justify-between items-center flex-wrap gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Produits {">"} {tabsPath.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Produits</h1>
               <p className="text-gray-600 mt-1">Gérez votre catalogue de produits</p>
             </div>
-            <Button onClick={() => setIsAddModalOpen(true)} className="bg-primary hover:bg-primary/90 shadow-sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Ajouter un produit
-            </Button>
           </div>
-
-          <ProductFilters
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            filterStatus={filterStatus}
-            setFilterStatus={setFilterStatus}
-          />
         </header>
 
-        <Tabs defaultValue="list"  >
-          <TabsList className="mb-5">
-            <TabsTrigger value="list" >
-              Liste
-            </TabsTrigger>
-
-            <TabsTrigger value="new" >
-              Créer
-            </TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="list">Liste des produits</TabsTrigger>
+            <TabsTrigger value="create">Créer un produit</TabsTrigger>
           </TabsList>
 
-          <Card className="p-6 relative shadow-md border-none overflow-hidden">
-            <TabsContent value="list" >
+          <TabsContent value="list" className="space-y-6">
+            <ProductFilters
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              filterStatus={filterStatus}
+              setFilterStatus={setFilterStatus}
+            />
 
+            <Card className="p-6 shadow-md border-none overflow-hidden">
               <ScrollArea className="h-[600px] pr-4">
                 {filteredProducts.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -247,52 +214,19 @@ const Products = () => {
                     ))}
                   </div>
                 ) : (
-                  <EmptyState onAddProduct={() => setIsAddModalOpen(true)} />
+                  <EmptyState onAddProduct={() => setActiveTab("create")} />
                 )}
               </ScrollArea>
-            </TabsContent>
-            <TabsContent value="new">
+            </Card>
+          </TabsContent>
 
-            </TabsContent>
-          </Card>
-
-
-        </Tabs>
-
-
-
-
-        {/* Add Product Modal */}
-        <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-          <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden bg-white rounded-xl">
-            <DialogHeader className="px-6 pt-6 pb-2">
-              <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-                <Plus className="h-5 w-5 text-primary" />
-                Ajouter un produit
-              </DialogTitle>
-              <DialogDescription className="text-gray-500">
-                Remplissez les informations du nouveau produit ci-dessous.
-              </DialogDescription>
-            </DialogHeader>
-
-            <ProductForm
-              formState={formState}
-              setFormState={setFormState}
+          <TabsContent value="create">
+            <ProductFormCreate 
+              onSubmit={handleCreateProduct}
               currencySymbol={currencySymbol}
-              onImagesChange={handleImagesChange}
             />
-
-            <DialogFooter className="px-6 py-4 bg-gray-50 border-t">
-              <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
-                Annuler
-              </Button>
-              <Button type="submit" onClick={handleAddProduct} className="gap-1">
-                <Plus className="h-4 w-4" />
-                Ajouter
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          </TabsContent>
+        </Tabs>
 
         {/* Edit Product Modal */}
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>

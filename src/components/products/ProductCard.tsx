@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Package2, ImageIcon, Tag, ShoppingBag } from "lucide-react";
-import { Product } from "@/store/slices/productsSlice";
+import { Product } from "@/types/productSlicesTypes";
 
 interface ProductCardProps {
   product: Product;
@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {product.images && product.images.length > 0 ? (
           <img 
             src={product.images[0].url} 
-            alt={product.name}
+            alt={product.images[0].alt || product.name}
             className="w-full h-full object-cover transition-transform hover:scale-105"
           />
         ) : (
@@ -71,7 +71,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         
         <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-          <div className="font-bold text-lg text-primary">{product.price}</div>
+          <div className="font-bold text-lg text-primary">{product.price} {currencySymbol}</div>
           
           <div className="flex gap-1">
             <Button 

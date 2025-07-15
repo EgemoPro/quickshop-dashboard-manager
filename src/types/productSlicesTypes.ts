@@ -1,19 +1,33 @@
+
 export interface ProductImage {
-  id: string;
   url: string;
+  alt?: string;
+}
+
+export interface ProductSize {
   name: string;
+  dimensions?: string;
 }
 
 export interface Product {
   id: string;
+  sku: string;
   name: string;
+  description: string;
+  brand?: string;
+  price: number;
   stock: number;
-  category: string;
-  price: string;
+  originalPrice?: number;
+  reviews?: number;
   images: ProductImage[];
-  description?: string;
+  category: string;
+  tags: string[];
+  available: boolean;
+  colors: string[];
+  sizes: ProductSize[];
+  dimensions?: string;
+  weight?: string;
   availabilityZone?: string;
-  sku ?: string;
 }
 
 export interface Category {
