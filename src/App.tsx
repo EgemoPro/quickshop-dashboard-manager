@@ -24,12 +24,12 @@ import Analytics from "./pages/Analytics";
 import Payments from "./pages/Payments";
 import Shipping from "./pages/Shipping";
 import Strategy from "./pages/Strategy";
+import FollowersDashboard from "./pages/followers-dashboard";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthForm from "@/components/auth/auth-form";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { checkAuth, login, registerUser } from "./store/slices/authSlice";
-import FollowersDashboard from "./pages/followers-dashboard";
 import Loader from "./components/ModernLoaderCard";
 
 const queryClient = new QueryClient();

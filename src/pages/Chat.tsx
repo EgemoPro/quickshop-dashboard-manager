@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { addMessage, markAllAsRead } from "@/store/slices/messagesSlice";
 import { MessageCircle, Send, User, Users, Search, PlusCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Chat() {
   const [activeTab, setActiveTab] = useState("active");
@@ -41,7 +42,12 @@ export default function Chat() {
   };
   
   return (
-    <div className="container mx-auto p-4">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="container mx-auto p-4"
+    >
       <h1 className="text-2xl font-bold mb-4">Messagerie</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -233,6 +239,6 @@ export default function Chat() {
           </Card>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

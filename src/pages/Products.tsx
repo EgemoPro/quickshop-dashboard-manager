@@ -21,6 +21,7 @@ const Products = () => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const { lowStockProducts, isLoading } = useAppSelector((state) => state.products);
+  const {user} = useAppSelector(state=> state.auth)
   const { currencySymbol } = useAppSelector((state) => state.settings);
 
   // Local state for UI
@@ -63,7 +64,7 @@ const Products = () => {
   // Handle creating a new product
   const handleCreateProduct = (newProductData: any) => {
     const newProduct: Product = {
-      id: `PRD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
+      shopId: user.id,
       ...newProductData,
       reviews: 0,
       available: true,

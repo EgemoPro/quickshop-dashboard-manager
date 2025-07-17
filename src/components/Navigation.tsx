@@ -52,7 +52,7 @@ export const navigationItems = [
       { to: "/shipping", label: "Expéditions", icon: Send }
     ]
   },
-  { to: "followers", icon: Users2, label: "Followers" },
+  { to: "/followers", icon: Users2, label: "Followers" },
   { to: "/chat", icon: MessageSquareDot, label: "Chat" },
   { to: "/strategy", icon: Store, label: "Stratégie" },
   { to: "/plugins", icon: BlocksIcon, label: "Plugins" },
