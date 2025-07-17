@@ -67,28 +67,7 @@ export const addProduct = createAsyncThunk(
   }
 );
 
-/*
-const generateLowStockProducts = (): Product[] => {
-  const categories = ["Vêtements", "Électronique", "Maison", "Sports", "Beauté"];
-  const products = [
-    "T-shirt Premium", "Jean Classique", "Chaussures de Sport", "Montre Connectée",
-    "Enceinte Bluetooth", "Lampe de Bureau", "Tapis de Yoga", "Crème Hydratante"
-  ];
 
-  return Array.from({ length: 1 }, (_, i) => {
-    const id = `PRD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
-    return {
-      id,
-      name: products[Math.floor(Math.random() * products.length)],
-      stock: Math.floor(Math.random() * 20),
-      category: categories[Math.floor(Math.random() * categories.length)],
-      price: `${(Math.random() * 190 + 10).toFixed(2)}`,
-      images: [],
-      availabilityZone: "Afrique"
-    };
-  });
-};
-*/
 const generateProductPerformance = () => {
   const categories = ['Vêtements', 'Électronique', 'Maison', 'Sports', 'Beauté'];
   return categories.map(category => ({
