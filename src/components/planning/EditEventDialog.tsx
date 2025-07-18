@@ -49,92 +49,96 @@ const EditEventDialog: React.FC<EditEventDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Modifier la publication</DialogTitle>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="pb-4 border-b">
+          <DialogTitle className="text-xl font-semibold">✏️ Modifier l'événement</DialogTitle>
         </DialogHeader>
         
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="title" className="text-right">
-              Titre
+        <div className="space-y-6 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="title" className="text-sm font-semibold">
+              Titre de l'événement
             </Label>
             <Input
               id="title"
               name="title"
               value={eventForm.title}
               onChange={handleChange}
-              className="col-span-3"
+              placeholder="Entrez le titre de l'événement"
+              className="w-full"
             />
           </div>
           
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="type" className="text-right">
-              Type
+          <div className="space-y-2">
+            <Label htmlFor="type" className="text-sm font-semibold">
+              Type d'événement
             </Label>
             <Select 
               value={eventForm.type} 
               onValueChange={(value) => handleSelectChange("type", value)}
             >
-              <SelectTrigger className="col-span-3">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Sélectionner un type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="product">Produit</SelectItem>
-                <SelectItem value="message">Message</SelectItem>
-                <SelectItem value="marketing">Marketing</SelectItem>
-                <SelectItem value="order">Commande</SelectItem>
+                <SelectItem value="product">📦 Produit</SelectItem>
+                <SelectItem value="message">💬 Message</SelectItem>
+                <SelectItem value="marketing">📊 Marketing</SelectItem>
+                <SelectItem value="order">🛒 Commande</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
           {eventForm.type === "product" && (
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="productId" className="text-right">
-                ID Produit
+            <div className="space-y-2">
+              <Label htmlFor="productId" className="text-sm font-semibold">
+                Référence produit
               </Label>
               <Input
                 id="productId"
                 name="productId"
                 value={eventForm.productId}
                 onChange={handleChange}
-                className="col-span-3"
+                placeholder="Ex: PRD-12345"
+                className="w-full"
               />
             </div>
           )}
           
           {eventForm.type === "marketing" && (
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="campaignId" className="text-right">
-                ID Campagne
+            <div className="space-y-2">
+              <Label htmlFor="campaignId" className="text-sm font-semibold">
+                Référence campagne
               </Label>
               <Input
                 id="campaignId"
                 name="campaignId"
                 value={eventForm.campaignId || ""}
                 onChange={handleChange}
-                className="col-span-3"
+                placeholder="Ex: CAMP-001"
+                className="w-full"
               />
             </div>
           )}
           
           {eventForm.type === "order" && (
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="orderId" className="text-right">
-                ID Commande
+            <div className="space-y-2">
+              <Label htmlFor="orderId" className="text-sm font-semibold">
+                Numéro de commande
               </Label>
               <Input
                 id="orderId"
                 name="orderId"
                 value={eventForm.orderId || ""}
                 onChange={handleChange}
-                className="col-span-3"
+                placeholder="Ex: ORD-582791"
+                className="w-full"
               />
             </div>
           )}
           
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="description" className="text-right">
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-sm font-semibold">
               Description
             </Label>
             <Textarea
@@ -142,84 +146,98 @@ const EditEventDialog: React.FC<EditEventDialogProps> = ({
               name="description"
               value={eventForm.description}
               onChange={handleChange}
-              className="col-span-3"
+              placeholder="Ajoutez une description détaillée..."
+              className="w-full resize-none"
               rows={3}
             />
           </div>
           
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="startDate" className="text-right">
-              Date début
-            </Label>
-            <Input
-              id="startDate"
-              name="startDate"
-              type="date"
-              value={eventForm.startDate}
-              onChange={handleChange}
-              className="col-span-3"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="startDate" className="text-sm font-semibold">
+                📅 Date de début
+              </Label>
+              <Input
+                id="startDate"
+                name="startDate"
+                type="date"
+                value={eventForm.startDate}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="startTime" className="text-sm font-semibold">
+                🕐 Heure de début
+              </Label>
+              <Input
+                id="startTime"
+                name="startTime"
+                type="time"
+                value={eventForm.startTime}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
           </div>
           
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="startTime" className="text-right">
-              Heure début
-            </Label>
-            <Input
-              id="startTime"
-              name="startTime"
-              type="time"
-              value={eventForm.startTime}
-              onChange={handleChange}
-              className="col-span-3"
-            />
-          </div>
-          
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="endDate" className="text-right">
-              Date fin
-            </Label>
-            <Input
-              id="endDate"
-              name="endDate"
-              type="date"
-              value={eventForm.endDate}
-              onChange={handleChange}
-              className="col-span-3"
-            />
-          </div>
-          
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="endTime" className="text-right">
-              Heure fin
-            </Label>
-            <Input
-              id="endTime"
-              name="endTime"
-              type="time"
-              value={eventForm.endTime}
-              onChange={handleChange}
-              className="col-span-3"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="endDate" className="text-sm font-semibold">
+                📅 Date de fin
+              </Label>
+              <Input
+                id="endDate"
+                name="endDate"
+                type="date"
+                value={eventForm.endDate}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="endTime" className="text-sm font-semibold">
+                🕐 Heure de fin
+              </Label>
+              <Input
+                id="endTime"
+                name="endTime"
+                type="time"
+                value={eventForm.endTime}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
           </div>
         </div>
         
-        <DialogFooter className="flex justify-between">
+        <DialogFooter className="flex justify-between items-center gap-3 pt-6 border-t">
           <Button 
             variant="destructive" 
             onClick={onDeletePrompt}
-            className="mr-auto"
+            className="hover:bg-destructive/90 transition-colors"
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Supprimer
           </Button>
-          <Button 
-            type="submit" 
-            onClick={onEditEvent}
-            disabled={!canSave}
-          >
-            Enregistrer
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+            >
+              Annuler
+            </Button>
+            <Button 
+              type="submit" 
+              onClick={onEditEvent}
+              disabled={!canSave}
+              className="bg-primary hover:bg-primary/90 transition-colors"
+            >
+              💾 Enregistrer
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

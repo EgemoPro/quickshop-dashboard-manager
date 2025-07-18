@@ -1,7 +1,6 @@
 
 import React from "react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { formatDate } from "@/utils/formatDate";
 import { Button } from "@/components/ui/button";
 import { Package2, MessageCircle, Edit, Trash2, Loader2, BarChart3, ShoppingBag } from "lucide-react";
 import { ScheduledEvent } from "@/store/slices/planningSlice";
@@ -88,7 +87,7 @@ const ScheduledEventsList: React.FC<ScheduledEventsListProps> = ({
             <div>
               <h3 className="font-medium">{event.title}</h3>
               <p className="text-sm text-gray-500">
-                {format(event.start, "EEEE d MMMM yyyy, HH:mm", { locale: fr })}
+                {formatDate(event.start, 'datetime')}
               </p>
               {event.description && (
                 <p className="text-sm text-gray-500 truncate max-w-xs">

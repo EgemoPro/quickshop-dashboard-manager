@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, Mail, Edit2, Trash2, Send, Copy } from 'lucide-react';
-import { format } from 'date-fns';
+import { formatDate } from '@/utils/formatDate';
 import { EmailTemplate, addEmailTemplate, updateEmailTemplate, deleteEmailTemplate } from '@/store/slices/marketingSlice';
 
 const EmailSection = () => {
@@ -173,7 +173,7 @@ const EmailSection = () => {
                       <span className="font-medium">Objet:</span> {template.subject}
                     </div>
                     <div className="mt-1">
-                      <span className="font-medium">Dernière modification:</span> {format(new Date(template.lastEdited), 'dd/MM/yyyy')}
+                      <span className="font-medium">Dernière modification:</span> {formatDate(new Date(template.lastEdited), 'short')}
                     </div>
                   </div>
                 </div>

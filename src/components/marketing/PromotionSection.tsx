@@ -17,7 +17,7 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { format } from "date-fns";
+import { getDateForInput } from "@/utils/formatDate";
 
 export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) => {
   const { toast } = useToast();
@@ -31,8 +31,8 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
     discountType: "percentage",
     discountValue: 10,
     minPurchase: 0,
-    startDate: format(new Date(), "yyyy-MM-dd"),
-    endDate: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"), // +30 days
+    startDate: getDateForInput(new Date()),
+    endDate: getDateForInput(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)), // +30 days
     limitedUses: false,
     maxUses: 100,
     usedCount: 0,
@@ -47,8 +47,8 @@ export const PromotionSection = ({ promoCodes }: { promoCodes: PromoCode[] }) =>
       discountType: "percentage",
       discountValue: 10,
       minPurchase: 0,
-      startDate: format(new Date(), "yyyy-MM-dd"),
-      endDate: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"),
+      startDate: getDateForInput(new Date()),
+      endDate: getDateForInput(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
       limitedUses: false,
       maxUses: 100,
       usedCount: 0,

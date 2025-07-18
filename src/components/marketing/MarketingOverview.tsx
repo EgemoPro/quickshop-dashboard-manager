@@ -4,8 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { formatDistanceToNow } from '@/utils/formatDate';
 import { ArrowUpRight, ArrowDownRight, TrendingUp, ShoppingBag, Users, CreditCard } from 'lucide-react';
 
 // Sample data for the chart
@@ -112,7 +111,7 @@ const MarketingOverview = () => {
               <p className="text-3xl font-bold">{activeCampaigns}</p>
               <p className="text-sm text-gray-500 mt-1">
                 {campaigns.length > 0 
-                  ? `La dernière campagne a été créée ${formatDistanceToNow(new Date(campaigns[campaigns.length - 1].startDate), { addSuffix: true, locale: fr })}.`
+                  ? `La dernière campagne a été créée ${formatDistanceToNow(new Date(campaigns[campaigns.length - 1].startDate))}.`
                   : 'Aucune campagne n\'est active pour le moment.'}
               </p>
             </div>

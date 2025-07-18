@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Badge } from '@/components/ui/badge';
 import { Facebook, Instagram, Mail, MessageSquare, PlusCircle, Calendar as CalendarIcon, Check, Edit2, Trash2 } from 'lucide-react';
 import { addCampaign, deleteCampaign, updateCampaignStatus, updateCampaign } from '@/store/slices/marketingSlice';
-import { format } from 'date-fns';
+import { getDateForInput } from '@/utils/formatDate';
 import { Campaign } from '@/store/slices/marketingSlice';
 
 // Icons mapping for platforms
@@ -92,8 +92,8 @@ const CampaignsSection = () => {
       platform,
       status,
       budget,
-      startDate: startDate ? format(startDate, 'yyyy-MM-dd') : '',
-      endDate: endDate ? format(endDate, 'yyyy-MM-dd') : '',
+      startDate: startDate ? getDateForInput(startDate) : '',
+      endDate: endDate ? getDateForInput(endDate) : '',
       target: {
         demographics: demographics.split(',').map(item => item.trim()),
         interests: interests.split(',').map(item => item.trim()),
@@ -209,7 +209,7 @@ const CampaignsSection = () => {
                             className="w-full justify-start text-left font-normal"
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {startDate ? format(startDate, 'PPP') : <span>Choisir une date</span>}
+                            {startDate ? startDate.toLocaleDateString('fr-FR') : <span>Choisir une date</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
@@ -232,7 +232,7 @@ const CampaignsSection = () => {
                             className="w-full justify-start text-left font-normal"
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {endDate ? format(endDate, 'PPP') : <span>Choisir une date</span>}
+                            {endDate ? endDate.toLocaleDateString('fr-FR') : <span>Choisir une date</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
@@ -319,7 +319,7 @@ const CampaignsSection = () => {
                       <span className="font-medium">Budget:</span> {campaign.budget}€
                     </div>
                     <div className="mt-1">
-                      <span className="font-medium">Période:</span> {format(new Date(campaign.startDate), 'dd/MM/yyyy')} - {format(new Date(campaign.endDate), 'dd/MM/yyyy')}
+                      <span className="font-medium">Période:</span> {new Date(campaign.startDate).toLocaleDateString('fr-FR')} - {new Date(campaign.endDate).toLocaleDateString('fr-FR')}
                     </div>
                   </div>
                 </div>

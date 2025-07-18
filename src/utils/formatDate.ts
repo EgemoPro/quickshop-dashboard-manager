@@ -1,8 +1,6 @@
+// Simple date formatting utilities without date-fns dependency issues
 
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-
-// Enhanced date formatting utilities compatible with date-fns v3
+// Enhanced date formatting utilities compatible with native JS Date
 export const formatDate = (date: Date | string, formatType: 'short' | 'long' | 'time' | 'datetime' = 'short'): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   
@@ -14,15 +12,34 @@ export const formatDate = (date: Date | string, formatType: 'short' | 'long' | '
   try {
     switch (formatType) {
       case 'short':
-        return format(dateObj, 'dd/MM/yyyy', { locale: fr });
+        return dateObj.toLocaleDateString('fr-FR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
       case 'long':
-        return format(dateObj, 'EEEE d MMMM yyyy', { locale: fr });
+        return dateObj.toLocaleDateString('fr-FR', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
       case 'time':
-        return format(dateObj, 'HH:mm', { locale: fr });
+        return dateObj.toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
       case 'datetime':
-        return format(dateObj, 'dd/MM/yyyy HH:mm', { locale: fr });
+        return `${dateObj.toLocaleDateString('fr-FR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        })} ${dateObj.toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })}`;
       default:
-        return format(dateObj, 'dd/MM/yyyy', { locale: fr });
+        return dateObj.toLocaleDateString('fr-FR');
     }
   } catch (error) {
     console.error('Error formatting date:', error);
@@ -74,7 +91,7 @@ export const getDateForInput = (date: Date | string): string => {
   }
   
   try {
-    return format(dateObj, 'yyyy-MM-dd');
+    return dateObj.toISOString().split('T')[0];
   } catch (error) {
     console.error('Error formatting date for input:', error);
     return '';
@@ -89,7 +106,7 @@ export const getTimeForInput = (date: Date | string): string => {
   }
   
   try {
-    return format(dateObj, 'HH:mm');
+    return dateObj.toTimeString().slice(0, 5);
   } catch (error) {
     console.error('Error formatting time for input:', error);
     return '';
@@ -99,7 +116,14 @@ export const getTimeForInput = (date: Date | string): string => {
 // Calendar specific formatting functions
 export const formatCalendarDate = (date: Date, formatStr: string): string => {
   try {
-    return format(date, formatStr, { locale: fr });
+    // Simple format mapping for basic calendar use
+    if (formatStr === 'HH:mm') {
+      return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+    if (formatStr === 'dd/MM/yyyy') {
+      return date.toLocaleDateString('fr-FR');
+    }
+    return date.toLocaleDateString('fr-FR');
   } catch (error) {
     console.error('Error formatting calendar date:', error);
     return '';

@@ -1,7 +1,6 @@
 
 import React from "react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { formatDate } from "@/utils/formatDate";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, MessageCircle, Package2 } from "lucide-react";
@@ -47,7 +46,7 @@ const DeleteEventDialog: React.FC<DeleteEventDialogProps> = ({
             <div>
               <h3 className="font-medium">{event.title}</h3>
               <p className="text-sm text-gray-500">
-                {format(event.start, "EEEE d MMMM yyyy, HH:mm", { locale: fr })}
+                {formatDate(event.start, 'datetime')}
               </p>
             </div>
           </div>

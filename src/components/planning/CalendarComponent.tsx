@@ -1,22 +1,32 @@
-
 import React from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
-import { format, parse, startOfWeek, getDay } from "date-fns";
-import { fr } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Loader2 } from "lucide-react";
 import { ScheduledEvent } from "@/store/slices/planningSlice";
 import EventComponent from "./EventComponent";
 
-const locales = { fr };
-
-// Create a proper localizer for react-big-calendar with date-fns v3
+// Simple localizer without external date-fns dependency
 const localizer = dateFnsLocalizer({
-  format: (date, formatStr) => format(date, formatStr, { locale: fr }),
-  parse: (str, formatStr) => parse(str, formatStr, new Date(), { locale: fr }),
-  startOfWeek: (date) => startOfWeek(date, { locale: fr }),
-  getDay,
-  locales
+  format: (date: Date, formatStr: string) => {
+    if (formatStr === 'HH:mm') {
+      return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+    if (formatStr === 'dd/MM/yyyy') {
+      return date.toLocaleDateString('fr-FR');
+    }
+    return date.toLocaleDateString('fr-FR');
+  },
+  parse: (str: string, formatStr: string) => {
+    return new Date(str);
+  },
+  startOfWeek: (date: Date) => {
+    const start = new Date(date);
+    const day = start.getDay();
+    const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Monday
+    return new Date(start.setDate(diff));
+  },
+  getDay: (date: Date) => date.getDay(),
+  locales: { fr: {} }
 });
 
 interface CalendarComponentProps {
@@ -32,28 +42,34 @@ const CalendarComponent: React.FC<CalendarComponentProps> = React.memo(({
   onSelectEvent, 
   onSelectSlot 
 }) => {
-  // Memoize event prop getter for performance
+  // Memoize event prop getter for performance with semantic color tokens
   const eventPropGetter = React.useCallback((event: ScheduledEvent) => {
-    let backgroundColor = "";
+    let className = "";
     
     switch (event.type) {
       case "product":
-        backgroundColor = "bg-blue-100";
+        className = "bg-primary/20 border-primary/50 text-primary-foreground";
         break;
       case "message":
-        backgroundColor = "bg-green-100";
+        className = "bg-secondary/20 border-secondary/50 text-secondary-foreground";
         break;
       case "marketing":
-        backgroundColor = "bg-purple-100";
+        className = "bg-accent/20 border-accent/50 text-accent-foreground";
         break;
       case "order":
-        backgroundColor = "bg-orange-100";
+        className = "bg-orange-100 border-orange-300 text-orange-800 dark:bg-orange-900 dark:border-orange-700 dark:text-orange-200";
         break;
       default:
-        backgroundColor = "bg-gray-100";
+        className = "bg-muted/20 border-muted/50 text-muted-foreground";
     }
     
-    return { className: backgroundColor };
+    return { 
+      className: `${className} rounded-md border-l-4 px-2 py-1 shadow-sm hover:shadow-md transition-shadow duration-200`,
+      style: {
+        fontWeight: '500',
+        fontSize: '0.875rem'
+      }
+    };
   }, []);
 
   // Memoize calendar messages for performance
@@ -69,6 +85,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = React.memo(({
     time: "Heure",
     event: "Événement",
     noEventsInRange: "Aucun événement dans cette période",
+    showMore: (total: number) => `+${total} de plus`
   }), []);
 
   // Memoize components object for performance
@@ -77,11 +94,13 @@ const CalendarComponent: React.FC<CalendarComponentProps> = React.memo(({
   }), []);
 
   return (
-    <div className="h-[600px] relative">
+    <div className="h-[600px] relative bg-background rounded-lg border shadow-sm">
       {isLoading ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-10">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="ml-2 text-sm font-medium">Chargement du calendrier...</span>
+        <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10 rounded-lg">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="text-sm font-medium text-muted-foreground">Chargement du calendrier...</span>
+          </div>
         </div>
       ) : null}
       
@@ -103,16 +122,19 @@ const CalendarComponent: React.FC<CalendarComponentProps> = React.memo(({
         defaultView="month"
         views={['month', 'week', 'day', 'agenda']}
         formats={{
-          timeGutterFormat: (date, culture, localizer) =>
-            localizer?.format(date, 'HH:mm', culture) ?? '',
-          eventTimeRangeFormat: ({ start, end }, culture, localizer) => {
-            return `${localizer?.format(start, 'HH:mm', culture)} - ${localizer?.format(end, 'HH:mm', culture)}`;
+          timeGutterFormat: (date: Date) => 
+            date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+          eventTimeRangeFormat: ({ start, end }: { start: Date; end: Date }) => {
+            const startTime = start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const endTime = end.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            return `${startTime} - ${endTime}`;
           },
-          agendaTimeFormat: (date, culture, localizer) =>
-            localizer?.format(date, 'HH:mm', culture) ?? '',
-          agendaDateFormat: (date, culture, localizer) =>
-            localizer?.format(date, 'dd/MM/yyyy', culture) ?? '',
+          agendaTimeFormat: (date: Date) =>
+            date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+          agendaDateFormat: (date: Date) =>
+            date.toLocaleDateString('fr-FR'),
         }}
+        className="calendar-custom"
       />
     </div>
   );
