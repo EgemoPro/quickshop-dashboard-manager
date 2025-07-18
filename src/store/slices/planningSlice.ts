@@ -82,36 +82,91 @@ const initialState: PlanningState = {
   searchTerm: ""
 };
 
+// Helper function to ensure dates are properly handled
+const ensureDate = (date: string | Date): Date => {
+  return typeof date === 'string' ? new Date(date) : date;
+};
+
 export const planningSlice = createSlice({
   name: "planning",
   initialState,
   reducers: {
     setEvents: (state, action: PayloadAction<ScheduledEvent[]>) => {
-      state.events = action.payload;
+      state.events = action.payload.map(event => ({
+        ...event,
+        start: ensureDate(event.start),
+        end: ensureDate(event.end)
+      }));
     },
     addEvent: (state, action: PayloadAction<ScheduledEvent>) => {
-      state.events.push(action.payload);
+      const newEvent = {
+        ...action.payload,
+        start: ensureDate(action.payload.start),
+        end: ensureDate(action.payload.end)
+      };
+      
+      // Validation
+      if (newEvent.start >= newEvent.end) {
+        state.error = "La date de fin doit être postérieure à la date de début";
+        return;
+      }
+      
+      // Check for duplicate IDs
+      if (state.events.some(event => event.id === newEvent.id)) {
+        state.error = "Un événement avec cet ID existe déjà";
+        return;
+      }
+      
+      state.events.push(newEvent);
+      state.error = null;
     },
     updateEvent: (state, action: PayloadAction<ScheduledEvent>) => {
-      const index = state.events.findIndex(event => event.id === action.payload.id);
+      const updatedEvent = {
+        ...action.payload,
+        start: ensureDate(action.payload.start),
+        end: ensureDate(action.payload.end)
+      };
+      
+      // Validation
+      if (updatedEvent.start >= updatedEvent.end) {
+        state.error = "La date de fin doit être postérieure à la date de début";
+        return;
+      }
+      
+      const index = state.events.findIndex(event => event.id === updatedEvent.id);
       if (index !== -1) {
-        state.events[index] = action.payload;
+        state.events[index] = updatedEvent;
+        state.error = null;
+      } else {
+        state.error = "Événement non trouvé";
       }
     },
     deleteEvent: (state, action: PayloadAction<string>) => {
+      const initialLength = state.events.length;
       state.events = state.events.filter(event => event.id !== action.payload);
+      
+      if (state.events.length === initialLength) {
+        state.error = "Événement non trouvé";
+      } else {
+        state.error = null;
+      }
     },
     setActiveTab: (state, action: PayloadAction<string>) => {
       state.activeTab = action.payload;
+      state.error = null;
     },
     setSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
+      state.error = null;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
+    },
+    clearError: (state) => {
+      state.error = null;
     }
   }
 });
@@ -124,7 +179,8 @@ export const {
   setActiveTab, 
   setSearchTerm,
   setLoading,
-  setError
+  setError,
+  clearError
 } = planningSlice.actions;
 
 export default planningSlice.reducer;

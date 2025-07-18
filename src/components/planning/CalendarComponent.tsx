@@ -9,10 +9,11 @@ import { ScheduledEvent } from "@/store/slices/planningSlice";
 import EventComponent from "./EventComponent";
 
 const locales = { fr };
-// Create a proper localizer for react-big-calendar
+
+// Create a proper localizer for react-big-calendar with date-fns v3
 const localizer = dateFnsLocalizer({
   format: (date, formatStr) => format(date, formatStr, { locale: fr }),
-  parse: (str, formatStr) => parse(str, formatStr, new Date()),
+  parse: (str, formatStr) => parse(str, formatStr, new Date(), { locale: fr }),
   startOfWeek: (date) => startOfWeek(date, { locale: fr }),
   getDay,
   locales
@@ -25,14 +26,14 @@ interface CalendarComponentProps {
   onSelectSlot: ({ start, end }: { start: Date; end: Date }) => void;
 }
 
-const CalendarComponent: React.FC<CalendarComponentProps> = ({ 
+const CalendarComponent: React.FC<CalendarComponentProps> = React.memo(({ 
   events, 
   isLoading, 
   onSelectEvent, 
   onSelectSlot 
 }) => {
-  // Function to determine the event background color based on event type
-  const eventPropGetter = (event: ScheduledEvent) => {
+  // Memoize event prop getter for performance
+  const eventPropGetter = React.useCallback((event: ScheduledEvent) => {
     let backgroundColor = "";
     
     switch (event.type) {
@@ -53,7 +54,27 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
     }
     
     return { className: backgroundColor };
-  };
+  }, []);
+
+  // Memoize calendar messages for performance
+  const messages = React.useMemo(() => ({
+    next: "Suivant",
+    previous: "Précédent",
+    today: "Aujourd'hui",
+    month: "Mois",
+    week: "Semaine",
+    day: "Jour",
+    agenda: "Agenda",
+    date: "Date",
+    time: "Heure",
+    event: "Événement",
+    noEventsInRange: "Aucun événement dans cette période",
+  }), []);
+
+  // Memoize components object for performance
+  const calendarComponents = React.useMemo(() => ({
+    event: EventComponent as any,
+  }), []);
 
   return (
     <div className="h-[600px] relative">
@@ -70,30 +91,33 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
         startAccessor="start"
         endAccessor="end"
         style={{ height: "100%" }}
-        components={{
-          event: EventComponent as any,
-          
-        }}
+        components={calendarComponents}
         onSelectEvent={onSelectEvent}
         onSelectSlot={onSelectSlot}
         selectable
         eventPropGetter={eventPropGetter}
-        messages={{
-          next: "Suivant",
-          previous: "Précédent",
-          today: "Aujourd'hui",
-          month: "Mois",
-          week: "Semaine",
-          day: "Jour",
-          agenda: "Agenda",
-          date: "Date",
-          time: "Heure",
-          event: "Événement",
-          noEventsInRange: "Aucun événement dans cette période",
+        messages={messages}
+        popup
+        step={30}
+        timeslots={2}
+        defaultView="month"
+        views={['month', 'week', 'day', 'agenda']}
+        formats={{
+          timeGutterFormat: (date, culture, localizer) =>
+            localizer?.format(date, 'HH:mm', culture) ?? '',
+          eventTimeRangeFormat: ({ start, end }, culture, localizer) => {
+            return `${localizer?.format(start, 'HH:mm', culture)} - ${localizer?.format(end, 'HH:mm', culture)}`;
+          },
+          agendaTimeFormat: (date, culture, localizer) =>
+            localizer?.format(date, 'HH:mm', culture) ?? '',
+          agendaDateFormat: (date, culture, localizer) =>
+            localizer?.format(date, 'dd/MM/yyyy', culture) ?? '',
         }}
       />
     </div>
   );
-};
+});
+
+CalendarComponent.displayName = "CalendarComponent";
 
 export default CalendarComponent;

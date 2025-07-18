@@ -1,5 +1,5 @@
+
 import React, { useEffect, useState } from "react";
-import { format, addDays } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -14,6 +14,7 @@ import {
   type EventType
 } from "@/store/slices/planningSlice";
 import { useToast } from "@/components/ui/use-toast";
+import { formatDate, addDays, getDateForInput, getTimeForInput } from "@/utils/formatDate";
 
 // Import des composants refactorisés
 import PlanningHeader from "@/components/planning/PlanningHeader";
@@ -29,7 +30,7 @@ import DeleteEventDialog from "@/components/planning/DeleteEventDialog";
 const ProductPlanning = () => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
-  const { events, isLoading, activeTab, searchTerm } = useAppSelector(state => state.planning);
+  const { events, isLoading, activeTab, searchTerm, error } = useAppSelector(state => state.planning);
 
   // Local state for dialogs and forms
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -40,9 +41,9 @@ const ProductPlanning = () => {
     title: "",
     description: "",
     type: "product" as EventType,
-    startDate: format(new Date(), "yyyy-MM-dd"),
+    startDate: getDateForInput(new Date()),
     startTime: "10:00",
-    endDate: format(new Date(), "yyyy-MM-dd"),
+    endDate: getDateForInput(new Date()),
     endTime: "11:00",
     productId: "",
     campaignId: "",
@@ -57,35 +58,48 @@ const ProductPlanning = () => {
     }, 1000);
   }, [dispatch]);
 
-  // Filter events based on active tab and search term
-  const filteredEvents = events.filter(event => {
-    const matchesType =
-      activeTab === "all" ||
-      (activeTab === "products" && event.type === "product") ||
-      (activeTab === "messages" && event.type === "message") ||
-      (activeTab === "marketing" && event.type === "marketing") ||
-      (activeTab === "orders" && event.type === "order");
+  // Show error toast if there's an error
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: error,
+        variant: "destructive"
+      });
+    }
+  }, [error, toast]);
 
-    const matchesSearch =
-      searchTerm === "" ||
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (event.description && event.description.toLowerCase().includes(searchTerm.toLowerCase()));
+  // Memoized filtered events for performance
+  const filteredEvents = React.useMemo(() => {
+    return events.filter(event => {
+      const matchesType =
+        activeTab === "all" ||
+        (activeTab === "products" && event.type === "product") ||
+        (activeTab === "messages" && event.type === "message") ||
+        (activeTab === "marketing" && event.type === "marketing") ||
+        (activeTab === "orders" && event.type === "order");
 
-    return matchesType && matchesSearch;
-  });
+      const matchesSearch =
+        searchTerm === "" ||
+        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (event.description && event.description.toLowerCase().includes(searchTerm.toLowerCase()));
+
+      return matchesType && matchesSearch;
+    });
+  }, [events, activeTab, searchTerm]);
 
   // Handle tab change
-  const handleTabChange = (value: string) => {
+  const handleTabChange = React.useCallback((value: string) => {
     dispatch(setActiveTab(value));
-  };
+  }, [dispatch]);
 
   // Handle search
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setSearchTerm(e.target.value));
-  };
+  }, [dispatch]);
 
   // Open add event dialog with default time
-  const openAddDialog = () => {
+  const openAddDialog = React.useCallback(() => {
     const now = new Date();
     const tomorrow = addDays(now, 1);
 
@@ -93,9 +107,9 @@ const ProductPlanning = () => {
       title: "",
       description: "",
       type: "product",
-      startDate: format(tomorrow, "yyyy-MM-dd"),
+      startDate: getDateForInput(tomorrow),
       startTime: "10:00",
-      endDate: format(tomorrow, "yyyy-MM-dd"),
+      endDate: getDateForInput(tomorrow),
       endTime: "11:00",
       productId: "",
       campaignId: "",
@@ -103,101 +117,137 @@ const ProductPlanning = () => {
     });
 
     setShowAddDialog(true);
-  };
+  }, []);
 
   // Handle form field changes
-  const handleEventFormChange = (field: string, value: string) => {
+  const handleEventFormChange = React.useCallback((field: string, value: string) => {
     setEventForm(prev => ({
       ...prev,
       [field]: value
     }));
-  };
+  }, []);
 
   // Open edit dialog with event data
-  const openEditDialog = (event: ScheduledEvent) => {
+  const openEditDialog = React.useCallback((event: ScheduledEvent) => {
     setCurrentEvent(event);
     setEventForm({
       title: event.title,
       description: event.description || "",
       type: event.type,
-      startDate: format(event.start, "yyyy-MM-dd"),
-      startTime: format(event.start, "HH:mm"),
-      endDate: format(event.end, "yyyy-MM-dd"),
-      endTime: format(event.end, "HH:mm"),
+      startDate: getDateForInput(event.start),
+      startTime: getTimeForInput(event.start),
+      endDate: getDateForInput(event.end),
+      endTime: getTimeForInput(event.end),
       productId: event.productId || "",
       campaignId: event.campaignId || "",
       orderId: event.orderId || ""
     });
 
     setShowEditDialog(true);
-  };
+  }, []);
 
   // Open delete confirmation dialog
-  const openDeleteDialog = (event: ScheduledEvent) => {
+  const openDeleteDialog = React.useCallback((event: ScheduledEvent) => {
     setCurrentEvent(event);
     setShowDeleteDialog(true);
-  };
+  }, []);
 
   // Handle add event
-  const handleAddEvent = () => {
-    const startDateTime = new Date(`${eventForm.startDate}T${eventForm.startTime}`);
-    const endDateTime = new Date(`${eventForm.endDate}T${eventForm.endTime}`);
+  const handleAddEvent = React.useCallback(() => {
+    try {
+      const startDateTime = new Date(`${eventForm.startDate}T${eventForm.startTime}`);
+      const endDateTime = new Date(`${eventForm.endDate}T${eventForm.endTime}`);
 
-    const newEvent: ScheduledEvent = {
-      id: Math.random().toString(36).substring(2, 11),
-      title: eventForm.title,
-      start: startDateTime,
-      end: endDateTime,
-      type: eventForm.type,
-      description: eventForm.description,
-      ...(eventForm.type === "product" && { productId: eventForm.productId || undefined }),
-      ...(eventForm.type === "marketing" && { campaignId: eventForm.campaignId || undefined }),
-      ...(eventForm.type === "order" && { orderId: eventForm.orderId || undefined })
-    };
+      // Validation
+      if (startDateTime >= endDateTime) {
+        toast({
+          title: "Erreur de validation",
+          description: "La date de fin doit être postérieure à la date de début.",
+          variant: "destructive"
+        });
+        return;
+      }
 
-    dispatch(addEvent(newEvent));
-    setShowAddDialog(false);
+      const newEvent: ScheduledEvent = {
+        id: Math.random().toString(36).substring(2, 11),
+        title: eventForm.title,
+        start: startDateTime,
+        end: endDateTime,
+        type: eventForm.type,
+        description: eventForm.description,
+        ...(eventForm.type === "product" && { productId: eventForm.productId || undefined }),
+        ...(eventForm.type === "marketing" && { campaignId: eventForm.campaignId || undefined }),
+        ...(eventForm.type === "order" && { orderId: eventForm.orderId || undefined })
+      };
 
-    toast({
-      title: "Événement ajouté",
-      description: `L'événement "${newEvent.title}" a été ajouté au calendrier.`
-    });
-  };
+      dispatch(addEvent(newEvent));
+      setShowAddDialog(false);
+
+      toast({
+        title: "Événement ajouté",
+        description: `L'événement "${newEvent.title}" a été ajouté au calendrier.`
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'ajouter l'événement. Vérifiez les dates saisies.",
+        variant: "destructive"
+      });
+    }
+  }, [eventForm, dispatch, toast]);
 
   // Handle edit event
-  const handleEditEvent = () => {
+  const handleEditEvent = React.useCallback(() => {
     if (!currentEvent) return;
 
-    const startDateTime = new Date(`${eventForm.startDate}T${eventForm.startTime}`);
-    const endDateTime = new Date(`${eventForm.endDate}T${eventForm.endTime}`);
+    try {
+      const startDateTime = new Date(`${eventForm.startDate}T${eventForm.startTime}`);
+      const endDateTime = new Date(`${eventForm.endDate}T${eventForm.endTime}`);
 
-    const updatedEvent: ScheduledEvent = {
-      ...currentEvent,
-      title: eventForm.title,
-      start: startDateTime,
-      end: endDateTime,
-      type: eventForm.type,
-      description: eventForm.description,
-      productId: undefined,
-      campaignId: undefined,
-      orderId: undefined,
-      ...(eventForm.type === "product" && { productId: eventForm.productId || undefined }),
-      ...(eventForm.type === "marketing" && { campaignId: eventForm.campaignId || undefined }),
-      ...(eventForm.type === "order" && { orderId: eventForm.orderId || undefined })
-    };
+      // Validation
+      if (startDateTime >= endDateTime) {
+        toast({
+          title: "Erreur de validation",
+          description: "La date de fin doit être postérieure à la date de début.",
+          variant: "destructive"
+        });
+        return;
+      }
 
-    dispatch(updateEvent(updatedEvent));
-    setShowEditDialog(false);
-    setCurrentEvent(null);
+      const updatedEvent: ScheduledEvent = {
+        ...currentEvent,
+        title: eventForm.title,
+        start: startDateTime,
+        end: endDateTime,
+        type: eventForm.type,
+        description: eventForm.description,
+        productId: undefined,
+        campaignId: undefined,
+        orderId: undefined,
+        ...(eventForm.type === "product" && { productId: eventForm.productId || undefined }),
+        ...(eventForm.type === "marketing" && { campaignId: eventForm.campaignId || undefined }),
+        ...(eventForm.type === "order" && { orderId: eventForm.orderId || undefined })
+      };
 
-    toast({
-      title: "Événement modifié",
-      description: `L'événement "${updatedEvent.title}" a été mis à jour.`
-    });
-  };
+      dispatch(updateEvent(updatedEvent));
+      setShowEditDialog(false);
+      setCurrentEvent(null);
+
+      toast({
+        title: "Événement modifié",
+        description: `L'événement "${updatedEvent.title}" a été mis à jour.`
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de modifier l'événement. Vérifiez les dates saisies.",
+        variant: "destructive"
+      });
+    }
+  }, [currentEvent, eventForm, dispatch, toast]);
 
   // Handle delete event
-  const handleDeleteEvent = () => {
+  const handleDeleteEvent = React.useCallback(() => {
     if (!currentEvent) return;
 
     dispatch(deleteEvent(currentEvent.id));
@@ -209,33 +259,33 @@ const ProductPlanning = () => {
       description: `L'événement a été supprimé du calendrier.`,
       variant: "destructive"
     });
-  };
+  }, [currentEvent, dispatch, toast]);
 
   // Handle slot selection in calendar
-  const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
+  const handleSelectSlot = React.useCallback(({ start, end }: { start: Date; end: Date }) => {
     setEventForm({
       ...eventForm,
-      startDate: format(start, "yyyy-MM-dd"),
-      startTime: format(start, "HH:mm"),
-      endDate: format(end, "yyyy-MM-dd"),
-      endTime: format(end, "HH:mm"),
+      startDate: getDateForInput(start),
+      startTime: getTimeForInput(start),
+      endDate: getDateForInput(end),
+      endTime: getTimeForInput(end),
     });
     setShowAddDialog(true);
-  };
+  }, [eventForm]);
 
   // Focus calendar
-  const handleFocusCalendar = () => {
+  const handleFocusCalendar = React.useCallback(() => {
     const calendarApi = document.querySelector('.rbc-calendar');
     if (calendarApi) {
       (calendarApi as any).focus();
     }
-  };
+  }, []);
 
   // Reset filters
-  const handleResetFilters = () => {
+  const handleResetFilters = React.useCallback(() => {
     dispatch(setActiveTab("all"));
     dispatch(setSearchTerm(""));
-  };
+  }, [dispatch]);
 
   return (
     <div className="container p-4 md:p-6 mx-auto animate-fade-in">
