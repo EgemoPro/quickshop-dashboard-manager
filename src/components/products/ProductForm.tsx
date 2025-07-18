@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ProductImage } from "@/store/slices/productsSlice";
+import { ProductImage } from "@/types/productSlicesTypes";
 import ImageUploader from "@/components/products/ImageUploader";
 import CategorySelect from "@/components/products/CategorySelect";
 import { CardContent } from "@/components/ui/card";

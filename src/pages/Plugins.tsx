@@ -109,7 +109,7 @@ const Plugins: React.FC = () => {
                           plugin.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab = activeTab === "all" || 
                       (activeTab === "installed" && plugin.installed) ||
-                      (activeTab === "category" && plugin.category === activeTab);
+                      plugin.category === activeTab;
     
     return matchesSearch && matchesTab;
   });

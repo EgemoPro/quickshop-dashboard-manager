@@ -49,4 +49,89 @@
       transform: translateY(0);
     }
   }
+
+  /* Modern Calendar Styles */
+  .calendar-modern {
+    @apply bg-transparent;
+  }
+
+  .calendar-modern .rbc-calendar {
+    @apply bg-transparent font-sans;
+  }
+
+  .calendar-modern .rbc-header {
+    @apply bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border/30 text-foreground font-semibold text-sm py-3 px-4;
+  }
+
+  .calendar-modern .rbc-month-view {
+    @apply bg-transparent border-none;
+  }
+
+  .calendar-modern .rbc-date-cell {
+    @apply text-muted-foreground hover:bg-accent/50 transition-colors duration-200 rounded-md m-0.5;
+  }
+
+  .calendar-modern .rbc-date-cell.rbc-off-range {
+    @apply text-muted-foreground/40;
+  }
+
+  .calendar-modern .rbc-today {
+    @apply bg-primary/10 text-primary font-semibold rounded-md;
+  }
+
+  .calendar-modern .rbc-toolbar {
+    @apply bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-4 mb-4 shadow-sm;
+  }
+
+  .calendar-modern .rbc-toolbar button {
+    @apply bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border/50 rounded-md px-3 py-2 font-medium transition-all duration-200 hover:shadow-sm;
+  }
+
+  .calendar-modern .rbc-toolbar button.rbc-active {
+    @apply bg-primary hover:bg-primary/90 text-primary-foreground shadow-md;
+  }
+
+  .calendar-modern .rbc-toolbar-label {
+    @apply text-lg font-bold text-foreground;
+  }
+
+  .calendar-modern .rbc-event {
+    @apply rounded-lg border-none shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer;
+  }
+
+  .calendar-modern .rbc-event:hover {
+    @apply transform scale-105 z-10;
+  }
+
+  .calendar-modern .rbc-day-slot .rbc-time-slot {
+    @apply border-border/20;
+  }
+
+  .calendar-modern .rbc-time-view .rbc-time-gutter {
+    @apply bg-muted/30 border-r border-border/30;
+  }
+
+  .calendar-modern .rbc-time-view .rbc-time-content {
+    @apply bg-transparent;
+  }
+
+  .calendar-modern .rbc-agenda-view table {
+    @apply bg-card/50 rounded-lg border border-border/50;
+  }
+
+  .calendar-modern .rbc-agenda-view .rbc-agenda-date-cell {
+    @apply bg-primary/5 text-primary font-semibold;
+  }
+
+  .calendar-modern .rbc-agenda-view .rbc-agenda-time-cell {
+    @apply text-muted-foreground font-medium;
+  }
+
+  .calendar-modern .rbc-agenda-view .rbc-agenda-event-cell {
+    @apply text-foreground;
+  }
+
+  .calendar-modern .rbc-current-time-indicator {
+    @apply bg-destructive;
+  }
 }

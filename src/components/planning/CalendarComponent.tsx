@@ -94,12 +94,15 @@ const CalendarComponent: React.FC<CalendarComponentProps> = React.memo(({
   }), []);
 
   return (
-    <div className="h-[600px] relative bg-background rounded-lg border shadow-sm">
+    <div className="h-[700px] relative bg-gradient-to-br from-background to-muted/20 rounded-xl border-2 border-border/50 shadow-lg overflow-hidden">
       {isLoading ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10 rounded-lg">
-          <div className="flex flex-col items-center gap-3">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="text-sm font-medium text-muted-foreground">Chargement du calendrier...</span>
+        <div className="absolute inset-0 flex items-center justify-center bg-background/90 backdrop-blur-md z-10 rounded-xl">
+          <div className="flex flex-col items-center gap-4 p-8 bg-card rounded-lg shadow-lg border">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <span className="text-base font-semibold text-foreground">Chargement du calendrier...</span>
+            <div className="w-32 h-1 bg-muted rounded-full overflow-hidden">
+              <div className="h-full bg-primary rounded-full animate-pulse"></div>
+            </div>
           </div>
         </div>
       ) : null}
@@ -134,7 +137,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = React.memo(({
           agendaDateFormat: (date: Date) =>
             date.toLocaleDateString('fr-FR'),
         }}
-        className="calendar-custom"
+        className="calendar-modern h-full"
       />
     </div>
   );

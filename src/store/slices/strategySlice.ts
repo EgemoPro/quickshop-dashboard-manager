@@ -69,6 +69,12 @@ export interface SEOSettings {
 }
 
 export interface StoreStrategy {
+  storeDescription?: string;
+  storeObjectives?: string;
+  targetAudience?: string;
+  competitiveAdvantage?: string;
+  marketPosition?: string;
+  growthPlans?: string;
   socialProfiles: SocialMediaProfile[];
   seoSettings: SEOSettings;
   marketInsights?: {
@@ -160,6 +166,8 @@ const initialState: StrategyState = {
       }
     ],
     seoSettings: {
+      metaTitle: "Shadow Shop - Artisanat Premium",
+      socialMediaSharing: true,
       keywords: ["artisanal", "fait main", "écologique", "durable", "premium", "qualité"],
       metaDescription: "Boutique en ligne proposant des produits artisanaux de qualité, fabriqués à la main avec des matériaux durables et écologiques.",
       sitemap: true,

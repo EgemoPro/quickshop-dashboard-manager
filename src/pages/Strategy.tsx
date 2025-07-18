@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { addKeyword, removeKeyword } from '@/store/slices/strategySlice';
+import { addKeyword, removeKeyword, SocialMediaProfile } from '@/store/slices/strategySlice';
 import { ProfileSection } from '@/components/strategy/ProfileSection';
 
 // Extended StoreInfo interface to match what we need
@@ -50,13 +50,7 @@ interface ExtendedStoreStrategy {
     robotsTxt?: string;
     allowIndexing?: boolean;
   };
-  socialProfiles: {
-    facebook: string;
-    instagram: string;
-    twitter: string;
-    linkedin: string;
-    youtube: string;
-  }[];
+  socialProfiles: SocialMediaProfile[];
 }
 
 const Strategy = () => {
