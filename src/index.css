@@ -135,3 +135,186 @@
     @apply bg-destructive;
   }
 }
+
+/* Calendar moderne */
+.calendar-modern .rbc-calendar {
+  background: hsl(var(--card));
+  border-radius: 0.75rem;
+  border: none;
+  font-family: inherit;
+}
+
+.calendar-modern .rbc-header {
+  background: linear-gradient(135deg, hsl(var(--primary)/0.05), hsl(var(--secondary)/0.05));
+  border: none;
+  border-bottom: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  padding: 0.75rem 0.5rem;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.025em;
+}
+
+@media (min-width: 640px) {
+  .calendar-modern .rbc-header {
+    padding: 1rem 0.75rem;
+    font-size: 0.85rem;
+  }
+}
+
+.calendar-modern .rbc-month-view,
+.calendar-modern .rbc-time-view {
+  border: none;
+  background: hsl(var(--background));
+}
+
+.calendar-modern .rbc-date-cell {
+  padding: 0.25rem;
+  border-right: 1px solid hsl(var(--border)/0.3);
+  background: hsl(var(--background));
+  transition: background-color 0.2s ease;
+  min-height: 3rem;
+}
+
+@media (min-width: 640px) {
+  .calendar-modern .rbc-date-cell {
+    padding: 0.5rem;
+    min-height: 4rem;
+  }
+}
+
+.calendar-modern .rbc-date-cell:hover {
+  background: hsl(var(--muted)/0.5);
+}
+
+.calendar-modern .rbc-today {
+  background: linear-gradient(135deg, hsl(var(--primary)/0.1), hsl(var(--primary)/0.05)) !important;
+  border: 2px solid hsl(var(--primary)/0.3);
+  border-radius: 0.5rem;
+}
+
+.calendar-modern .rbc-off-range-bg {
+  background: hsl(var(--muted)/0.3);
+}
+
+.calendar-modern .rbc-toolbar {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: hsl(var(--card));
+  border-radius: 0.5rem;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 2px 8px hsl(var(--shadow)/0.1);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .calendar-modern .rbc-toolbar {
+    margin-bottom: 1.5rem;
+    padding: 0 1rem;
+    border-radius: 0.75rem;
+    flex-wrap: nowrap;
+  }
+}
+
+.calendar-modern .rbc-toolbar button {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--secondary-foreground));
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  margin: 0.125rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .calendar-modern .rbc-toolbar button {
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0.25rem;
+  }
+}
+
+.calendar-modern .rbc-toolbar button:hover {
+  background: hsl(var(--secondary)/0.8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--shadow)/0.15);
+}
+
+.calendar-modern .rbc-toolbar button:active,
+.calendar-modern .rbc-toolbar button.rbc-active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+
+.calendar-modern .rbc-toolbar-label {
+  color: hsl(var(--foreground));
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0 0.5rem;
+  text-align: center;
+  flex: 1;
+}
+
+@media (min-width: 640px) {
+  .calendar-modern .rbc-toolbar-label {
+    font-size: 1.25rem;
+    margin: 0 1rem;
+    flex: initial;
+  }
+}
+
+.calendar-modern .rbc-event {
+  border: none !important;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
+  box-shadow: 0 1px 3px hsl(var(--shadow)/0.1);
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+@media (min-width: 640px) {
+  .calendar-modern .rbc-event {
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    box-shadow: 0 2px 4px hsl(var(--shadow)/0.1);
+    font-size: 0.875rem;
+  }
+}
+
+.calendar-modern .rbc-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--shadow)/0.2);
+}
+
+.calendar-modern .rbc-event.rbc-selected {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+.calendar-modern .rbc-slot-selection {
+  background: hsl(var(--primary)/0.2);
+  border: 2px dashed hsl(var(--primary));
+}
+
+/* Mobile optimizations */
+@media (max-width: 767px) {
+  .calendar-modern .rbc-month-view .rbc-date-cell {
+    font-size: 0.875rem;
+  }
+  
+  .calendar-modern .rbc-month-view .rbc-date-cell button {
+    padding: 0.25rem;
+  }
+  
+  .calendar-modern .rbc-event-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

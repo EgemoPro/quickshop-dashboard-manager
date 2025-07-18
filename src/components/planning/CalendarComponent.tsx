@@ -94,13 +94,13 @@ const CalendarComponent: React.FC<CalendarComponentProps> = React.memo(({
   }), []);
 
   return (
-    <div className="h-[700px] relative bg-gradient-to-br from-background to-muted/20 rounded-xl border-2 border-border/50 shadow-lg overflow-hidden">
+    <div className="h-[500px] sm:h-[600px] lg:h-[700px] relative bg-gradient-to-br from-background to-muted/20 rounded-xl border-2 border-border/50 shadow-lg overflow-hidden">
       {isLoading ? (
         <div className="absolute inset-0 flex items-center justify-center bg-background/90 backdrop-blur-md z-10 rounded-xl">
-          <div className="flex flex-col items-center gap-4 p-8 bg-card rounded-lg shadow-lg border">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <span className="text-base font-semibold text-foreground">Chargement du calendrier...</span>
-            <div className="w-32 h-1 bg-muted rounded-full overflow-hidden">
+          <div className="flex flex-col items-center gap-3 sm:gap-4 p-4 sm:p-8 bg-card rounded-lg shadow-lg border">
+            <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 animate-spin text-primary" />
+            <span className="text-sm sm:text-base font-semibold text-foreground text-center">Chargement du calendrier...</span>
+            <div className="w-24 sm:w-32 h-1 bg-muted rounded-full overflow-hidden">
               <div className="h-full bg-primary rounded-full animate-pulse"></div>
             </div>
           </div>
@@ -123,7 +123,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = React.memo(({
         step={30}
         timeslots={2}
         defaultView="month"
-        views={['month', 'week', 'day', 'agenda']}
+        views={window.innerWidth < 768 ? ['month', 'agenda'] : ['month', 'week', 'day', 'agenda']}
         formats={{
           timeGutterFormat: (date: Date) => 
             date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),

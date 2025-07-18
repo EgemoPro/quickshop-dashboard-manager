@@ -11,19 +11,25 @@ interface PlanningHeaderProps {
 
 const PlanningHeader: React.FC<PlanningHeaderProps> = ({ onFocusCalendar, onAddPublication }) => {
   return (
-    <CardHeader className="pb-3">
-      <div className="flex justify-between items-center flex-wrap gap-4">
-        <CardTitle>Calendrier des Publications</CardTitle>
-        <div className="flex gap-2">
+    <CardHeader className="pb-3 px-3 sm:px-6">
+      <div className="flex justify-between items-center flex-col sm:flex-row gap-3 sm:gap-4">
+        <CardTitle className="text-lg sm:text-xl">Calendrier des Publications</CardTitle>
+        <div className="flex gap-2 w-full sm:w-auto">
           <Button 
             variant="outline" 
             size="sm"
             onClick={onFocusCalendar}
+            className="flex-1 sm:flex-none"
           >
-            <CalendarIcon className="h-4 w-4 mr-2" />
-            Aujourd'hui
+            <CalendarIcon className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Aujourd'hui</span>
           </Button>
-          <Button variant="default" size="sm" onClick={onAddPublication}>
+          <Button 
+            variant="default" 
+            size="sm" 
+            onClick={onAddPublication}
+            className="hidden sm:flex flex-1 sm:flex-none"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Nouvelle Publication
           </Button>

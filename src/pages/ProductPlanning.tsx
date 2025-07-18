@@ -14,6 +14,8 @@ import {
   type EventType
 } from "@/store/slices/planningSlice";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { formatDate, addDays, getDateForInput, getTimeForInput } from "@/utils/formatDate";
 
 // Import des composants refactorisés
@@ -288,15 +290,26 @@ const ProductPlanning = () => {
   }, [dispatch]);
 
   return (
-    <div className="container p-4 md:p-6 mx-auto animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6">Planning de Publication</h1>
+    <div className="container p-3 sm:p-4 md:p-6 mx-auto animate-fade-in max-w-7xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold">Planning de Publication</h1>
+        <Button 
+          variant="default" 
+          size="sm" 
+          onClick={openAddDialog}
+          className="sm:hidden"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Nouveau
+        </Button>
+      </div>
 
-      <Card className="mb-6 relative">
+      <Card className="mb-4 sm:mb-6 relative overflow-hidden">
         <PlanningHeader
           onFocusCalendar={handleFocusCalendar}
           onAddPublication={openAddDialog}
         />
-        <CardContent>
+        <CardContent className="p-3 sm:p-6">
           <PlanningFilters
             activeTab={activeTab}
             searchTerm={searchTerm}
@@ -304,23 +317,27 @@ const ProductPlanning = () => {
             onSearchChange={handleSearch}
           />
 
-          <CalendarComponent
-            events={filteredEvents}
-            isLoading={isLoading}
-            onSelectEvent={openEditDialog}
-            onSelectSlot={handleSelectSlot}
-          />
+          <div className="mb-4">
+            <CalendarComponent
+              events={filteredEvents}
+              isLoading={isLoading}
+              onSelectEvent={openEditDialog}
+              onSelectSlot={handleSelectSlot}
+            />
+          </div>
 
-          <CalendarLegend />
+          <div className="hidden sm:block">
+            <CalendarLegend />
+          </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-2 relative">
-          <CardHeader>
-            <CardTitle>Publications Programmées</CardTitle>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <Card className="lg:col-span-2 relative order-2 lg:order-1">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg sm:text-xl">Publications Programmées</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 sm:p-6">
             <ScheduledEventsList
               events={filteredEvents}
               isLoading={isLoading}
@@ -330,11 +347,11 @@ const ProductPlanning = () => {
           </CardContent>
         </Card>
 
-        <Card className="relative">
-          <CardHeader>
-            <CardTitle>Statistiques</CardTitle>
+        <Card className="relative order-1 lg:order-2">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg sm:text-xl">Statistiques</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 sm:p-6">
             <PlanningStats
               events={events}
               isLoading={isLoading}
