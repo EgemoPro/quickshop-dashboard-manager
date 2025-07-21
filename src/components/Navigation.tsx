@@ -17,7 +17,8 @@ import {
   BlocksIcon,
   SquareChevronRight,
   MessageSquareDot,
-  Users2
+  Users2,
+  UserPlus2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "../lib/utils";
@@ -42,20 +43,36 @@ export const navigationItems = [
       { to: "/marketing", label: "Marketing", icon: ChartCandlestick },
     ]
   },
-  { to: "/analytics", icon: BarChart3, label: "Analytique" },
   // Combined Payments and Shipping under "Opérations"
   {
     icon: Truck,
     label: "Opérations",
     subItems: [
+      { to: "/shipping", label: "Expéditions", icon: Send },
       { to: "/payments", label: "Paiements", icon: Wallet },
-      { to: "/shipping", label: "Expéditions", icon: Send }
     ]
   },
-  { to: "/followers", icon: Users2, label: "Followers" },
-  { to: "/chat", icon: MessageSquareDot, label: "Chat" },
+  {
+    icon: Users2,
+    label: "Clients",
+    subItems: [
+      { to: "/followers", icon: UserPlus2, label: "Followers" },
+      { to: "/chat", icon: MessageSquareDot, label: "Chat" },
+      // { to: "/shipping", label: "Expéditions", icon: Send },
+      // { to: "/payments", label: "Paiements", icon: Wallet },
+    ]
+  },
+  {
+    icon: BlocksIcon,
+    label: "Plugins",
+    subItems: [
+      { to: "/plugins", icon: BlocksIcon, label: "Store" },
+      { to: "/analytics", icon: BarChart3, label: "Analytique" },
+      // { to: "/shipping", label: "Expéditions", icon: Send },
+      // { to: "/payments", label: "Paiements", icon: Wallet },
+    ]
+  },
   { to: "/strategy", icon: Store, label: "Stratégie" },
-  { to: "/plugins", icon: BlocksIcon, label: "Plugins" },
   { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
 ];
 
@@ -182,7 +199,7 @@ const Navigation = () => {
       <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-10"
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-sm z-10"
       >
         <nav className={cn("grid grid-cols-5 w-full", isMobile ? "px-2" : "")}>
           {mobileItems.map((item, index) => (
@@ -205,7 +222,7 @@ const Navigation = () => {
     <motion.div
       initial={{ x: -100 }}
       animate={{ x: 0 }}
-      className={`h-screen left-0 top-0 bottom-0  ${isExpanded ? "w-52" :"w-16" } bg-white border-r border-gray-200 shadow-lg overflow-hidden transition-all duration-300`}
+      className={`h-screen left-0 top-0 bottom-0  ${isExpanded ? "w-52" :"w-16" } bg-white border-r border-gray-200 shadow-sm overflow-hidden transition-all duration-300`}
       ref={navRef}
     >
       <nav className="relative flex flex-col p-1.5 pr-1 gap-1">

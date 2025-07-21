@@ -31,6 +31,7 @@ import AuthForm from "@/components/auth/auth-form";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { checkAuth, login, registerUser } from "./store/slices/authSlice";
 import Loader from "./components/ModernLoaderCard";
+import Plugins from "./pages/Plugins";
 
 const queryClient = new QueryClient();
 
@@ -170,7 +171,7 @@ const AppContent = () => {
         <Route path="/plugins" element={
           <ProtectedRoute isAuthenticated={isAuthenticated}>
             <DashboardLayout>
-              <Marketplace />
+              <Plugins />
             </DashboardLayout>
           </ProtectedRoute>
         } />

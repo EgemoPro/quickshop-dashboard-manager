@@ -9,6 +9,7 @@ import { setPeriod } from "@/store/slices/salesSlice";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 import { useCurrency } from "@/hooks/use-currency";
 import { useIsMobile } from "@/hooks/use-mobile";
+import CustomTooltip from "../CustomTooltip";
 
 interface SalesChartProps {
   darkMode: boolean;
@@ -20,18 +21,7 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
   const { currencySymbol } = useCurrency();
   const isMobile = useIsMobile()
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className={`p-3 rounded-md shadow-md ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'}`}>
-          <p className="font-medium text-sm">{`${label}`}</p>
-          <p className="text-sm text-blue-500">{`Ventes: ${payload[0].value}`}</p>
-          <p className="text-sm text-purple-500">{`Revenus: ${payload[1].value} ${currencySymbol}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
+  
 
   return (
     <motion.div
@@ -89,7 +79,7 @@ const SalesChart: React.FC<SalesChartProps> = ({ darkMode }) => {
                     axisLine={{ stroke: darkMode ? '#555' : '#ddd' }}
                     
                   />)}
-                  <Tooltip content={<CustomTooltip />} />
+                  <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
                   <Legend wrapperStyle={{ bottom: 0 }} />
                   <Bar 
                     dataKey="ventes" 

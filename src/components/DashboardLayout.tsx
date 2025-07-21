@@ -8,6 +8,7 @@ import { useAppDispatch } from "@/store/hooks";
 // import { productsApiRequestHandlerType } from "@/types/productSlicesTypes";
 import Navigation from "./Navigation";
 import { ScrollArea } from "./ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -45,7 +46,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         />
         <div className="flex w-full h-full -mt-16 -z-10" >
           <ScrollArea className="h-screen w-full sm:px-6 pt-10 ">
-            <div className="mt-10 h-full w-full">
+            <div className={cn("mt-10 h-full w-full", isMobile ? "p-2": "")}>
             {children}
             </div>
           </ScrollArea>
@@ -57,4 +58,4 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   );
 };
 
-export default DashboardLayout;
+export default DashboardLayout;   

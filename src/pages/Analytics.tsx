@@ -11,14 +11,17 @@ import { Badge } from "@/components/ui/badge";
 import { setPeriod } from "@/store/slices/salesSlice";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { formatCurrency } from "@/lib/format-numbers";
+// import { formatCurrency } from "@/lib/format-numbers";
+import CustomTooltip from "@/components/CustomTooltip";
+import { useCurrency } from "@/hooks/use-currency";
 
 const Analytics = () => {
   const dispatch = useAppDispatch();
   const isMobile = useIsMobile();
   const { salesData, period } = useAppSelector((state) => state.sales);
-  const { topSellingProducts, channelPerformance } = useAppSelector((state) => state.stats);
-  const {currencySymbol} = useAppSelector(state => state.settings);
+  const { topSellingProducts, channelPerformance, totalSales } = useAppSelector((state) => state.stats);
+  // const {} = useAppSelector(state => state.settings);
+  const  {formatCurrency, currencySymbol}= useCurrency()
   
   const [reportType, setReportType] = useState("sales");
   
@@ -26,7 +29,7 @@ const Analytics = () => {
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
   
   return (
-    <div className={cn(isMobile ? " " : "container max-w-6xl mx-auto p-4" , "")}>
+    <div className={cn(isMobile ? "p-2" : "container max-w-6xl mx-auto p-4" , "")}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -46,7 +49,7 @@ const Analytics = () => {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Ventes Totales</CardTitle>
-              <CardDescription className="text-2xl font-bold">{formatCurrency(12478,currencySymbol )} </CardDescription>
+              <CardDescription className="text-2xl font-bold">{formatCurrency(totalSales, {withSpace:true, withSymbol: true} )} </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-xs text-green-500 flex items-center">
@@ -140,17 +143,17 @@ const Analytics = () => {
                   {reportType === "sales" && (
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={salesData}>
-                        <CartesianGrid strokeDasharray="3 3" />
+                        {/* <CartesianGrid strokeDasharray="3 3" /> */}
                         <XAxis dataKey="name" />
                         {!isMobile && 
                           (<>
                             <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
                             <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
                           </>)}
-                        <Tooltip />
+                        <Tooltip content={<CustomTooltip darkMode={false}/>} />
                         <Legend />
-                        <Bar yAxisId="left" dataKey="ventes" name="Nombre de ventes" fill="#8884d8" />
-                        <Bar yAxisId="right" dataKey="revenus" name={`Revenus (${currencySymbol})`} fill="#82ca9d" />
+                        <Bar yAxisId="left" className="rounded-t-md" dataKey="ventes" name="Nombre de ventes" fill="#8884d8" radius={[10, 10, 0, 0]}  />
+                        <Bar yAxisId="right" className="rounded-t-md" dataKey="revenus" name={`Revenus (${currencySymbol})`} fill="#82ca9d" radius={[10, 10, 0, 0]}  />
                       </BarChart>
                     </ResponsiveContainer>
                   )}
@@ -175,7 +178,7 @@ const Analytics = () => {
                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                               ))}
                             </Pie>
-                            <Tooltip />
+                            <Tooltip  />
                             <Legend />
                           </PieChart>
                         </ResponsiveContainer>
@@ -222,7 +225,7 @@ const Analytics = () => {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
                         {!isMobile && (<YAxis />)}
-                        <Tooltip />
+                        <Tooltip content={<CustomTooltip darkMode={false} />} />
                         <Legend />
                         <Area type="monotone" dataKey="nouveaux" name="Nouveaux clients" stroke="#8884d8" fill="#8884d8" />
                         <Area type="monotone" dataKey="recurring" name="Clients fidèles" stroke="#82ca9d" fill="#82ca9d" />
@@ -243,7 +246,7 @@ const Analytics = () => {
                           <YAxis yAxisId="left" />
                           <YAxis yAxisId="right" orientation="right" />
                         </>)}
-                        <Tooltip />
+                        <Tooltip content={<CustomTooltip darkMode={false} />} />
                         <Legend />
                         <Line yAxisId="left" type="monotone" dataKey="ventes" name="Ventes" stroke="#8884d8" activeDot={{ r: 8 }} />
                         <Line yAxisId="right" type="monotone" dataKey="growth" name="Croissance (%)" stroke="#82ca9d" />

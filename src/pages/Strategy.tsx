@@ -128,12 +128,7 @@ const Strategy = () => {
       transition={{ duration: 0.5 }}
       className="w-full px-2 sm:px-4 py-6 sm:py-8"
     >
-      <header className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Stratégie</h1>
-        <p className="text-sm sm:text-base text-gray-600 mt-1">
-          Gérez votre profil utilisateur et optimisez votre boutique en ligne
-        </p>
-      </header>
+      
 
       <Tabs defaultValue="user" className="space-y-4 sm:space-y-6">
         <TabsList className="mb-4 sm:mb-6 w-full sm:w-auto flex justify-center sm:justify-start">

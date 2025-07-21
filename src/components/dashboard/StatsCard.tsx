@@ -3,6 +3,7 @@ import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { ArrowUpRight } from "lucide-react";
 import { useCurrency } from "@/hooks/use-currency";
+import { formatCurrency } from "@/lib/format-numbers";
 
 interface StatsCardProps {
   title: string;

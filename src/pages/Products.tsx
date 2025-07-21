@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertTriangle, Pencil } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addProduct, deleteProduct, updateProduct } from "@/store/slices/productsSlice";
@@ -16,6 +15,9 @@ import ProductFormCreate from "@/components/products/ProductFormCreate";
 import ProductFilters from "@/components/products/ProductFilters";
 import EmptyState from "@/components/products/EmptyState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet,SheetTrigger, SheetTitle,SheetContent,SheetHeader,SheetFooter,SheetDescription,SheetPortal,SheetOverlay,SheetClose } from "@/components/ui/sheet";
+
 
 const Products = () => {
   const dispatch = useAppDispatch();
@@ -230,17 +232,17 @@ const Products = () => {
         </Tabs>
 
         {/* Edit Product Modal */}
-        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-          <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden bg-white rounded-xl">
-            <DialogHeader className="px-6 pt-6 pb-2">
-              <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+        <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <SheetContent className="sm:max-w-[650px] p-2 bg-white rounded-l-md">
+            <SheetHeader className="px-6 pt-6 pb-2">
+              <SheetTitle className="text-2xl font-bold flex items-center gap-2">
                 <Pencil className="h-5 w-5 text-blue-500" />
                 Modifier le produit
-              </DialogTitle>
-              <DialogDescription className="text-gray-500">
+              </SheetTitle>
+              <SheetDescription className="text-gray-500">
                 Modifiez les informations du produit ci-dessous.
-              </DialogDescription>
-            </DialogHeader>
+              </SheetDescription>
+            </SheetHeader>
 
             <ProductForm
               formState={formState}
@@ -249,7 +251,7 @@ const Products = () => {
               onImagesChange={handleImagesChange}
             />
 
-            <DialogFooter className="px-6 py-4 bg-gray-50 border-t">
+            <SheetFooter className="px-6 py-4 bg-gray-50 border-t">
               <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
                 Annuler
               </Button>
@@ -257,9 +259,9 @@ const Products = () => {
                 <Pencil className="h-4 w-4" />
                 Mettre à jour
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
 
         {/* Delete Confirmation Dialog */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

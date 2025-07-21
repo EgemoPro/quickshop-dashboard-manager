@@ -11,6 +11,7 @@ import { ProfileSection } from './ProfileSection';
 import { Upload, Image as ImageIcon } from 'lucide-react';
 import { updateStoreInfo } from '@/store/slices/authSlice';
 import { handleImageFileChange } from '@/utils/imageUpload';
+import { AspectRatio } from '../ui/aspect-ratio';
 
 // Add the missing properties to StoreStrategy type 
 interface StoreStrategy {
@@ -230,15 +231,15 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
             </div>
           </div>
           
-          <div className="grid gap-2">
+          <div className="grid gap-2 ">
             <Label className="mb-1">Bannière</Label>
-            <div className="bg-gray-50 p-4 rounded-md">
-              <div className="flex justify-center mb-4">
+            <div className="flex flex-col bg-gray-50 p-4 rounded-md min-h-80 gap-3">
+              <AspectRatio ratio={6/3}>
                 {storeData.banner ? (
                   <img 
                     src={storeData.banner} 
                     alt="Bannière actuelle" 
-                    className="h-32 w-full object-cover border rounded-md cursor-pointer"
+                    className="h-full w-full object-cover border rounded-md cursor-pointer"
                     onClick={handleBannerClick}
                   />
                 ) : (
@@ -249,7 +250,7 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
                     <ImageIcon className="h-8 w-8 text-gray-400" />
                   </div>
                 )}
-              </div>
+              </AspectRatio>
               
               <input
                 type="file"
@@ -295,56 +296,7 @@ const StoreProfileStrategy: React.FC<StoreProfileStrategyProps> = ({
               placeholder="Décrivez votre boutique en quelques phrases..."
             />
           </div>
-          <div>
-            <Label htmlFor="storeObjectives">Objectifs commerciaux</Label>
-            <Textarea
-              id="storeObjectives"
-              value={strategyData.storeObjectives}
-              onChange={(e) => handleChange('storeObjectives', e.target.value)}
-              className="mt-1 h-24"
-              placeholder="Quels sont vos objectifs à court et long terme..."
-            />
-          </div>
-          <div>
-            <Label htmlFor="targetAudience">Public cible</Label>
-            <Textarea
-              id="targetAudience"
-              value={strategyData.targetAudience}
-              onChange={(e) => handleChange('targetAudience', e.target.value)}
-              className="mt-1 h-24"
-              placeholder="Décrivez votre audience cible..."
-            />
-          </div>
-          <div>
-            <Label htmlFor="competitiveAdvantage">Avantages concurrentiels</Label>
-            <Textarea
-              id="competitiveAdvantage"
-              value={strategyData.competitiveAdvantage}
-              onChange={(e) => handleChange('competitiveAdvantage', e.target.value)}
-              className="mt-1 h-24"
-              placeholder="Quels sont vos avantages par rapport à la concurrence..."
-            />
-          </div>
-          <div>
-            <Label htmlFor="marketPosition">Positionnement sur le marché</Label>
-            <Textarea
-              id="marketPosition"
-              value={strategyData.marketPosition}
-              onChange={(e) => handleChange('marketPosition', e.target.value)}
-              className="mt-1 h-24"
-              placeholder="Comment vous positionnez-vous sur le marché..."
-            />
-          </div>
-          <div>
-            <Label htmlFor="growthPlans">Plans de croissance</Label>
-            <Textarea
-              id="growthPlans"
-              value={strategyData.growthPlans}
-              onChange={(e) => handleChange('growthPlans', e.target.value)}
-              className="mt-1 h-24"
-              placeholder="Quels sont vos plans pour développer votre activité..."
-            />
-          </div>
+          
           <Button onClick={handleSave} className="w-full sm:w-auto mt-2">
             Enregistrer les modifications
           </Button>

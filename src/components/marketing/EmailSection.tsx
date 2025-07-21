@@ -78,7 +78,7 @@ const EmailSection = () => {
   };
 
   return (
-    <Card className="mt-6">
+    <Card className="">
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>

@@ -220,7 +220,9 @@ const initialState: StrategyState = {
         googleMyBusiness: "",
         localKeywords: ["artisanat paris", "boutique artisanale locale"],
         locationPages: false
-      }
+      },
+      socialMediaSharing: false,
+      metaTitle: ""
     },
     marketInsights: {
       customerPersonas: [

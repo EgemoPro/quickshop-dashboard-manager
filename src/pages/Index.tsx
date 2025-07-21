@@ -19,12 +19,15 @@ import RecentMessages from "@/components/dashboard/RecentMessages";
 import ModuleSystem from "@/components/dashboard/ModuleSystem";
 import UserProfile from "@/components/dashboard/UserProfile";
 import DraggableCard from "@/components/dashboard/DraggableCard";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const DashboardContent = () => {
+  const dispatch = useAppDispatch();
   const stats = useAppSelector(state => state.stats);
   const { cardPositions } = useAppSelector(state => state.dashboardLayout);
-  const dispatch = useAppDispatch();
-  
+  const isMobile = useIsMobile()
+
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
@@ -116,7 +119,7 @@ const DashboardContent = () => {
     <DndProvider backend={HTML5Backend}>
       <>
         {/* Stats Cards */}
-        <section className="mb-8 grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <section className={cn("mb-8 grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6", isMobile ? "p-2" : "")}>
           <motion.div 
             custom={0}
             variants={fadeInUp}

@@ -1,6 +1,11 @@
 
 import { useAppSelector } from "@/store/hooks";
 
+const formatNumber = (num: number, slice: string = ","): string => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, slice);
+};
+
+
 export const useCurrency = () => {
   const { currency, currencySymbol } = useAppSelector(state => state.settings);
   
@@ -33,8 +38,8 @@ export const useCurrency = () => {
     if (isNaN(numAmount)) return '0';
     
     // Formater le nombre
-    const formattedAmount = numAmount.toFixed(2).replace(/\.00$/, '');
-    
+    // const formattedAmount = numAmount.toFixed(2).replace(/\.00$/, '');
+    const formattedAmount = formatNumber(numAmount," ")
     // Renvoyer le montant formaté avec ou sans symbole
     if (!withSymbol) return formattedAmount;
     

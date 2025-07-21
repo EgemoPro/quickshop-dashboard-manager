@@ -135,7 +135,7 @@ const LoyaltySection = () => {
   };
 
   return (
-    <Card className="mt-6">
+    <Card className="">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
