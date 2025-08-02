@@ -142,67 +142,85 @@ const ProductFormCreate: React.FC<ProductFormCreateProps> = ({ onSubmit, currenc
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Créer un nouveau produit</h1>
-        <p className="text-gray-600">Remplissez les informations détaillées de votre produit</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-6">
+            <Package className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-3">
+            Créer un nouveau produit
+          </h1>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Donnez vie à votre produit en remplissant toutes les informations nécessaires pour une présentation professionnelle
+          </p>
+        </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Informations générales */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5" />
+        <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-sm">
+          <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-t-lg">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Package className="h-5 w-5 text-primary" />
+              </div>
               Informations générales
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="sku">SKU (optionnel)</Label>
+          <CardContent className="space-y-6 p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="sku" className="text-sm font-medium text-foreground/80">SKU (optionnel)</Label>
                 <Input
                   id="sku"
                   value={formData.sku}
                   onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))}
                   placeholder="Ex: TSHIRT-001"
+                  className="border-muted-foreground/20 focus:border-primary/50 transition-all duration-200"
                 />
               </div>
-              <div>
-                <Label htmlFor="name">Nom du produit *</Label>
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-medium text-foreground/80">
+                  Nom du produit <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="Ex: T-shirt Premium"
+                  className="border-muted-foreground/20 focus:border-primary/50 transition-all duration-200"
                   required
                 />
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="description">Description *</Label>
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-sm font-medium text-foreground/80">
+                Description <span className="text-destructive">*</span>
+              </Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Décrivez votre produit en détail..."
-                className="min-h-[100px]"
+                placeholder="Décrivez votre produit en détail, ses caractéristiques, ses avantages..."
+                className="min-h-[120px] border-muted-foreground/20 focus:border-primary/50 transition-all duration-200 resize-none"
                 required
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="brand">Marque</Label>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="brand" className="text-sm font-medium text-foreground/80">Marque</Label>
                 <Input
                   id="brand"
                   value={formData.brand}
                   onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
                   placeholder="Ex: Nike"
+                  className="border-muted-foreground/20 focus:border-primary/50 transition-all duration-200"
                 />
               </div>
-              <div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-foreground/80">Catégorie</Label>
                 <CategorySelect 
                   selectedCategory={formData.category} 
                   onCategoryChange={(category) => setFormData(prev => ({ ...prev, category }))}
@@ -213,43 +231,63 @@ const ProductFormCreate: React.FC<ProductFormCreateProps> = ({ onSubmit, currenc
         </Card>
 
         {/* Prix et stock */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Prix et inventaire</CardTitle>
+        <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-sm">
+          <CardHeader className="bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 rounded-t-lg">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-emerald-500/10 rounded-lg">
+                <Package className="h-5 w-5 text-emerald-600" />
+              </div>
+              Prix et inventaire
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="price">Prix ({currencySymbol}) *</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                  placeholder="29.99"
-                  required
-                />
+          <CardContent className="space-y-6 p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="price" className="text-sm font-medium text-foreground/80">
+                  Prix ({currencySymbol}) <span className="text-destructive">*</span>
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                    {currencySymbol}
+                  </span>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                    placeholder="29.99"
+                    className="pl-8 border-muted-foreground/20 focus:border-emerald-500/50 transition-all duration-200"
+                    required
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="originalPrice">Prix original ({currencySymbol})</Label>
-                <Input
-                  id="originalPrice"
-                  type="number"
-                  step="0.01"
-                  value={formData.originalPrice}
-                  onChange={(e) => setFormData(prev => ({ ...prev, originalPrice: e.target.value }))}
-                  placeholder="39.99"
-                />
+              <div className="space-y-2">
+                <Label htmlFor="originalPrice" className="text-sm font-medium text-foreground/80">Prix original ({currencySymbol})</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                    {currencySymbol}
+                  </span>
+                  <Input
+                    id="originalPrice"
+                    type="number"
+                    step="0.01"
+                    value={formData.originalPrice}
+                    onChange={(e) => setFormData(prev => ({ ...prev, originalPrice: e.target.value }))}
+                    placeholder="39.99"
+                    className="pl-8 border-muted-foreground/20 focus:border-emerald-500/50 transition-all duration-200"
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="stock">Stock</Label>
+              <div className="space-y-2">
+                <Label htmlFor="stock" className="text-sm font-medium text-foreground/80">Stock disponible</Label>
                 <Input
                   id="stock"
                   type="number"
                   value={formData.stock}
                   onChange={(e) => setFormData(prev => ({ ...prev, stock: parseInt(e.target.value) || 0 }))}
                   placeholder="100"
+                  className="border-muted-foreground/20 focus:border-emerald-500/50 transition-all duration-200"
                 />
               </div>
             </div>
@@ -414,15 +452,24 @@ const ProductFormCreate: React.FC<ProductFormCreateProps> = ({ onSubmit, currenc
           </CardContent>
         </Card>
 
-        <div className="flex justify-end gap-4 pt-6 border-t">
-          <Button type="button" variant="outline">
+        <div className="flex flex-col sm:flex-row justify-end gap-4 pt-8 border-t border-border/50">
+          <Button 
+            type="button" 
+            variant="outline"
+            className="px-8 py-3 border-2 hover:bg-muted/50 transition-all duration-200"
+          >
             Annuler
           </Button>
-          <Button type="submit">
+          <Button 
+            type="submit"
+            className="px-8 py-3 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-200"
+          >
+            <Package className="h-4 w-4 mr-2" />
             Créer le produit
           </Button>
         </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

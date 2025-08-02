@@ -77,8 +77,7 @@ const Products = () => {
     for(let element in newProduct){
       if(element === "images"){
         for(let img in newProduct[element]){
-          formData.append("images", newProduct[element][img]?.file)
-          // console.log()
+          formData.append("images", newProduct[element][img]?.url)
         }
       }
       formData.append(element, JSON.stringify(newProduct[element]));
