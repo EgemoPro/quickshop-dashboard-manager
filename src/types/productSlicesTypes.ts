@@ -12,6 +12,7 @@ export interface ProductSize {
 
 export interface Product {
   id: string;
+  storeId?:string;
   sku: string;
   name: string;
   description: string;

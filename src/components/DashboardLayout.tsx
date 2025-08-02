@@ -19,6 +19,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false)
   // const location = useLocation();
   const isMobile = useIsMobile();
 
@@ -36,9 +37,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   return (
     <div className={`max-h-screen flex transition-colors duration-300 ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-gray-50/90 text-gray-800'}`}>
-      <Navigation />
+      <Navigation isExpanded={isExpanded} setIsExpanded={setIsExpanded}  />
       <main className={` flex flex-row flex-wrap  w-full h-  ${isMobile ? 'pl-0 pb-20 w-full' : ''} transition-all duration-300 backdrop-blur-sm`}>
         <DashboardHeader
+          isExpanded={isExpanded}
+          setIsExpanded = {setIsExpanded}
           darkMode={darkMode}
           toggleDarkMode={toggleDarkMode}
           mobileMenuOpen={mobileMenuOpen}

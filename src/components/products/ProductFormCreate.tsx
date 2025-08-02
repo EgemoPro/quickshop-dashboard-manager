@@ -45,7 +45,8 @@ const ProductFormCreate: React.FC<ProductFormCreateProps> = ({ onSubmit, currenc
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+    // const formDataToSubmit = new FormData()
+
     if (!formData.name || !formData.description || !formData.price) {
       toast({
         title: "Erreur",
@@ -141,7 +142,7 @@ const ProductFormCreate: React.FC<ProductFormCreateProps> = ({ onSubmit, currenc
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-7xl mx-auto p-6 space-y-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Créer un nouveau produit</h1>
         <p className="text-gray-600">Remplissez les informations détaillées de votre produit</p>

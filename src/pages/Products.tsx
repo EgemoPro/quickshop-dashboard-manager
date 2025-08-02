@@ -17,6 +17,7 @@ import EmptyState from "@/components/products/EmptyState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet,SheetTrigger, SheetTitle,SheetContent,SheetHeader,SheetFooter,SheetDescription,SheetPortal,SheetOverlay,SheetClose } from "@/components/ui/sheet";
+import { useCurrency } from "@/hooks/use-currency";
 
 
 const Products = () => {
@@ -24,7 +25,7 @@ const Products = () => {
   const { toast } = useToast();
   const { lowStockProducts, isLoading } = useAppSelector((state) => state.products);
   const {user} = useAppSelector(state=> state.auth)
-  const { currencySymbol } = useAppSelector((state) => state.settings);
+  const { currencySymbol } = useCurrency()
 
   // Local state for UI
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,21 +65,41 @@ const Products = () => {
   };
 
   // Handle creating a new product
-  const handleCreateProduct = (newProductData: any) => {
+  const handleCreateProduct = async (newProductData: any) => {
+    const formData = new FormData();
+
     const newProduct: Product = {
-      shopId: user.id,
-      ...newProductData,
-      reviews: 0,
+      storeId: user.id,
       available: true,
+      ...newProductData
     };
-
-    dispatch(addProduct(newProduct));
-    setActiveTab("list");
-
-    toast({
-      title: "Produit ajouté",
-      description: `${newProduct.name} a été ajouté avec succès.`,
-    });
+    
+    for(let element in newProduct){
+      if(element === "images"){
+        for(let img in newProduct[element]){
+          formData.append("images", newProduct[element][img]?.file)
+          // console.log()
+        }
+      }
+      formData.append(element, JSON.stringify(newProduct[element]));
+    }
+    console.log(formData)
+    try {
+      dispatch(addProduct(formData));
+      setActiveTab("list");
+  
+      toast({
+        title: "Produit ajouté",
+        description: `${newProduct.name} a été ajouté avec succès.`,
+      });
+      
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: "Erreur",
+        description:"Echec l'or de l'ajout du produit"
+      })
+    }
   };
 
   // Handle editing a product

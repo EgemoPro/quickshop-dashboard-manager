@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Bell, UserCircle, Menu, LogOut, HelpCircle, Search } from "lucide-react";
+import { Moon, Sun, Bell, UserCircle, Menu, LogOut, HelpCircle, PanelRight, PanelLeft } from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
 import {
   DropdownMenu,
@@ -15,20 +15,26 @@ import { logout } from "@/store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import SearchInputModal from "../SearchDialog";
-import { is } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+// import { is } from "date-fns/locale";
+
 
 interface DashboardHeaderProps {
   darkMode: boolean;
   toggleDarkMode: () => void;
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (open: boolean) => void;
+  isExpanded: boolean;
+  setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ 
-  darkMode, 
-  toggleDarkMode, 
-  mobileMenuOpen, 
-  setMobileMenuOpen 
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({
+  darkMode,
+  toggleDarkMode,
+  mobileMenuOpen,
+  setMobileMenuOpen,
+  isExpanded,
+  setIsExpanded
 }) => {
   const {
     isLoading,
@@ -45,7 +51,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     // Any side effects or initializations can be done here
     const handleKeyDown = (event: KeyboardEvent) => {
       // console.log(event.key)
-      if(event.key === "/"){
+      if (event.key === "/") {
         setIsSearchOpen(true);
       }
       if (event.key === "Escape") {
@@ -72,7 +78,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
 
   return (
-    <header className={`w-full h-14  ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} shadow-sm px-4 sm:px-6 py-2 transition-colors duration-300`}>
+    <header className={`w-full h-14  ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} shadow-sm px-2 sm:px-3 py-2 transition-colors duration-300`}>
+      {!isMobile &&
+        <Button className="absolute" onClick={() => setIsExpanded(!isExpanded)} variant="secondary"  >
+          <PanelLeft className={`transform ${isExpanded ? "rotate-180" : ""} duration-150`} />
+        </Button>
+      }
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center md:hidden">
           <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -81,7 +92,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </Button>
         </div>
 
-        {!isMobile && <div className="hidden md:flex items-center ml-16 space-x-4 ">
+        {!isMobile && <div className={cn("hidden md:flex  items-center justify-between",isExpanded ? "ml-10" : "")}>
           <SearchInputModal ref={searchModalRef} onOpen={isSearchOpen} />
         </div>}
 
@@ -89,12 +100,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="relative">
             {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
-          
+
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
           </Button>
-          
+
           <div className="hidden sm:flex items-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

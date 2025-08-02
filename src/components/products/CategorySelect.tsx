@@ -79,8 +79,8 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ selectedCategory, onCat
         <Label htmlFor="category">Catégorie</Label>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="flex items-center text-xs">
-              <Plus className="h-3 w-3 mr-1" /> Nouvelle catégorie
+            <Button variant="ghost" size="sm" className="flex items-center text-xs bg-gray-50 duration-150 ">
+              <Plus className="h-3 w-3 mr-1" /> 
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">

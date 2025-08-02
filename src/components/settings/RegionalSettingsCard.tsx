@@ -7,12 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setCurrency, setLanguage, setTheme } from "@/store/slices/settingsSlice";
 import { useToast } from "@/components/ui/use-toast";
+import { useCurrency } from "@/hooks/use-currency";
 
 const RegionalSettingsCard = () => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
-  const { language, currency, theme } = useAppSelector((state) => state.settings);
-
+  const { language, theme } = useAppSelector((state) => state.settings);
+  const {currency} = useCurrency();
   const handleCurrencyChange = (value: string) => {
     dispatch(setCurrency(value));
     toast({

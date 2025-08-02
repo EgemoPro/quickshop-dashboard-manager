@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
@@ -26,11 +26,27 @@ interface ShipmentCardProps {
   onTrackShipment: (trackingNumber: string) => void;
 }
 
-const ShipmentCard: React.FC<ShipmentCardProps> = ({ 
-  shipment, 
-  onViewDetails, 
-  onTrackShipment 
+interface MapsCoords {
+  lon: string;
+  lat: string;
+}
+
+const ShipmentCard: React.FC<ShipmentCardProps> = ({
+  shipment,
+  onViewDetails,
+  onTrackShipment
 }) => {
+
+
+  const [isMapsLanched, setIsMapsLanched] = useState<boolean>(false)
+  const [map, setMap] = useState<MapsCoords>()
+
+  const toggleMapsLanch = () =>{
+    onTrackShipment(shipment.trackingNumber)
+    setIsMapsLanched(!isMapsLanched)
+  }
+
+
   return (
     <Card className="hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="pb-2">
@@ -73,30 +89,37 @@ const ShipmentCard: React.FC<ShipmentCardProps> = ({
             <p className="font-semibold">{shipment.lastUpdate ? new Date(shipment.lastUpdate).toLocaleDateString() : "N/A"}</p>
           </div>
         </div>
+        {isMapsLanched &&
+          (<div className='w-full h-30'>
+
+            <h1>Maps</h1>
+
+          </div>)
+        }
       </CardContent>
       <CardFooter className="flex justify-between pt-2 gap-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           className="flex-1"
           onClick={() => onViewDetails(shipment.id)}
         >
           <FileText className="h-4 w-4 mr-2" />
           Détails
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
           className="flex-1"
         >
           <Map className="h-4 w-4 mr-2" />
           Adresse
         </Button>
-        <Button 
-          variant="default" 
+        <Button
+          variant="default"
           size="sm"
           className="flex-1"
-          onClick={() => onTrackShipment(shipment.trackingNumber)}
+          onClick={toggleMapsLanch}
         >
           <ExternalLink className="h-4 w-4 mr-2" />
           Suivi

@@ -61,8 +61,8 @@ export interface SettingsState {
 }
 
 const initialState: SettingsState = {
-  currency: "EUR",
-  currencySymbol: "€",
+  currency: "XOF",
+  currencySymbol: "FCFA",
   language: "fr",
   theme: "light",
   paymentMethods: {
@@ -152,7 +152,7 @@ const currencySymbols: Record<string, string> = {
   USD: "$",
   GBP: "£",
   CAD: "C$",
-  XOF: "CFA",
+  XOF: "FCFA",
 };
 
 export const settingsSlice = createSlice({

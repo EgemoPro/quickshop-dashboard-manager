@@ -171,7 +171,7 @@ const utils = {
     description: "Une boutique spécialisée dans les produits artisanaux de qualité.",
     logo: "https://api.dicebear.com/7.x/initials/svg?seed=BD",
     banner: "https://placehold.co/1200x300/e2e8f0/1e293b?text=Bannière+Neo+Art",
-    verified: true,
+    verified: false,
     createdAt: "2022-03-15T10:30:00Z",
   }
 }

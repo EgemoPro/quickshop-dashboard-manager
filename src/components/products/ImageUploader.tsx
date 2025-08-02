@@ -11,14 +11,22 @@ interface ImageUploaderProps {
   onImagesChange: (images: ProductImage[]) => void;
 }
 
+type ImageWithFile = {
+  file?: File;
+  url: string;
+  alt: string;
+};
+
+
 const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange }) => {
   const [previewImages, setPreviewImages] = useState<ProductImage[]>(images || []);
   const { toast } = useToast();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newImages = acceptedFiles.map(file => {
+    const newImages: ImageWithFile[] = acceptedFiles.map(file => {
       const previewUrl = URL.createObjectURL(file);
       return {
+        file,
         url: previewUrl,
         alt: file.name
       };
@@ -26,15 +34,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange })
 
     const updatedImages = [...previewImages, ...newImages];
     setPreviewImages(updatedImages);
-    onImagesChange(updatedImages);
-    
+    onImagesChange(updatedImages); // Renvoie aussi les File pour l’upload
+
     toast({
       title: "Images ajoutées",
       description: `${acceptedFiles.length} image(s) ajoutée(s) avec succès.`,
     });
   }, [previewImages, onImagesChange, toast]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
@@ -46,7 +54,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange })
     const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
     onImagesChange(updatedImages);
-    
+
     toast({
       title: "Image supprimée",
       description: "L'image a été supprimée avec succès.",
@@ -56,11 +64,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange })
 
   return (
     <div className="space-y-4">
-      <div 
-        {...getRootProps()} 
-        className={`border-2 border-dashed rounded-lg p-6 cursor-pointer text-center transition-colors ${
-          isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary/50'
-        }`}
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-lg p-6 cursor-pointer text-center transition-colors ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary/50'
+          }`}
       >
         <input {...getInputProps()} />
         <div className="flex flex-col items-center justify-center gap-2">
@@ -78,19 +85,19 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange })
           </Button>
         </div>
       </div>
-      
+
       {previewImages.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4 mt-4">
           {previewImages.map((image, index) => (
             <div key={index} className="relative group rounded-md overflow-hidden border border-gray-200">
-              <img 
-                src={image.url} 
-                alt={image.alt || `Image ${index + 1}`} 
-                className="h-32 w-full object-cover" 
+              <img
+                src={image.url}
+                alt={image.alt || `Image ${index + 1}`}
+                className="h-32 w-full object-cover"
               />
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button 
-                  size="icon" 
+                <Button
+                  size="icon"
                   variant="destructive"
                   onClick={(e) => {
                     e.stopPropagation();

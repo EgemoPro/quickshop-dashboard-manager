@@ -13,7 +13,7 @@ import { handleRequest } from "@/utils/handleRequest";
 
 export const productsApiRequestHandler = createAsyncThunk(
   "products/productsApiRequestHandler",
-  async ({ limit = 10, page = 1 }:productsApiRequestHandlerType , 
+  async ({ limit = 10, page = 1 }: productsApiRequestHandlerType,
     { rejectWithValue }) => {
     try {
       const response = await handleRequest(() =>
@@ -25,7 +25,7 @@ export const productsApiRequestHandler = createAsyncThunk(
       const { products } = response.data.payload;
 
       return products.map(p => {
-        const {title: name, _id: id, price,  ...reste} = p;
+        const { title: name, _id: id, price, ...reste } = p;
         return {
           name,
           id,
@@ -38,31 +38,45 @@ export const productsApiRequestHandler = createAsyncThunk(
     }
   }
 );
-
+//Partial<FormDataEntryValue>
 // Ajouter un produit
 export const addProduct = createAsyncThunk(
   "products/addProduct",
-  async (newProduct: Partial<Product>, { rejectWithValue }) => {
+  async (newProduct:any , { rejectWithValue }) => {
     const {
       name: title,
       id,
       ...reste
     } = newProduct;
     try {
+      // sku: `id-${Math.ceil(Math.random()*1000).toString().padStart(4,'0')}`,
+      // const data = {}
       const response = await handleRequest(() =>
         api.post("/products/new", {
           title,
-          sku: `id-${Math.ceil(Math.random()*1000).toString().padStart(4,'0')}`,
           ...reste
         })
       );
-      const product = response.data.payload;
-      return {
-        ...product,
-        price: JSON.stringify(product.price)
-      } as Product;
+      return response.data
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : "Échec ajout produit");
+    }
+  }
+);
+
+
+export const deleteProductAsync = createAsyncThunk(
+  "products/deleteProduct",
+  async (productId: string, { rejectWithValue }) => {
+    try {
+      const response = await handleRequest(() =>
+        api.delete(`/products/${productId}`)
+      );
+      // On suppose que la réponse contient l'id supprimé dans payload._id
+      const { _id: id } = response.data.payload;
+      return id;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Échec suppression produit");
     }
   }
 );
@@ -168,7 +182,7 @@ export const productsSlice = createSlice({
       })
       .addCase(productsApiRequestHandler.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = <string>action.payload;
+        state.error = action.payload as string || "Échec de la récupération des produits";
       })
       // Add case for addProductAsync
       .addCase(addProduct.pending, (state) => {
@@ -177,9 +191,22 @@ export const productsSlice = createSlice({
       })
       .addCase(addProduct.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.lowStockProducts.push(action.payload);
+        // state.lowStockProducts.push(action.payload);
       })
       .addCase(addProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Add case for deleteProductAsync
+      .addCase(deleteProductAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteProductAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.lowStockProducts = state.lowStockProducts.filter(p => p.id !== action.payload);
+      })
+      .addCase(deleteProductAsync.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })

@@ -18,7 +18,8 @@ import {
   SquareChevronRight,
   MessageSquareDot,
   Users2,
-  UserPlus2
+  UserPlus2,
+  DownloadIcon
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "../lib/utils";
@@ -66,7 +67,7 @@ export const navigationItems = [
     icon: BlocksIcon,
     label: "Plugins",
     subItems: [
-      { to: "/plugins", icon: BlocksIcon, label: "Store" },
+      { to: "/plugins", icon: DownloadIcon, label: "Store" },
       { to: "/analytics", icon: BarChart3, label: "Analytique" },
       // { to: "/shipping", label: "Expéditions", icon: Send },
       // { to: "/payments", label: "Paiements", icon: Wallet },
@@ -171,10 +172,10 @@ const NavigationItem = ({ to, icon: Icon, label, subItems, showLabels, closeAllE
 
 
 
-const Navigation = () => {
+const Navigation = ({isExpanded, setIsExpanded}) => {
   const isMobile = useIsMobile();
   const location = useLocation();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
 
   const handleToggleExpand = () => {
@@ -226,9 +227,6 @@ const Navigation = () => {
       ref={navRef}
     >
       <nav className="relative flex flex-col p-1.5 pr-1 gap-1">
-        <span onClick={handleToggleExpand}  className="absolute text-gray-300/90 hover:text-gray-300 cursor-pointer -right-1.5 z-10 p-2 ">
-          <SquareChevronRight size={18} className={`tranform ${isExpanded ? "rotate-180" : ""} transition-transform duration-500`} />
-        </span>
         {/* logo avec un h-16 w-16 */}
         {navigationItems.map((item, index) => (
           <NavigationItem

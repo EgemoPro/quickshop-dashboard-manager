@@ -129,7 +129,7 @@ const Plugins: React.FC = () => {
 
   return (
       <div className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Plugins</h1>
             <p className="text-muted-foreground">
@@ -139,7 +139,7 @@ const Plugins: React.FC = () => {
           <Button>
             <Download className="mr-2 h-4 w-4" /> Découvrir plus de plugins
           </Button>
-        </div>
+        </div> */}
 
         <div className="border rounded-lg overflow-hidden bg-card">
           <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
