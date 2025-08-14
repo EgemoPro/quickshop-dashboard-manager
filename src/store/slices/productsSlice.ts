@@ -10,7 +10,6 @@ import {
 import { handleRequest } from "@/utils/handleRequest";
 
 
-
 export const productsApiRequestHandler = createAsyncThunk(
   "products/productsApiRequestHandler",
   async ({ limit = 10, page = 1 }: productsApiRequestHandlerType,
@@ -73,8 +72,8 @@ export const deleteProductAsync = createAsyncThunk(
         api.delete(`/products/${productId}`)
       );
       // On suppose que la réponse contient l'id supprimé dans payload._id
-      const { _id: id } = response.data.payload;
-      return id;
+  
+      return response.data?.payload._id;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : "Échec suppression produit");
     }

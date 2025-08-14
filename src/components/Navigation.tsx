@@ -19,7 +19,11 @@ import {
   MessageSquareDot,
   Users2,
   UserPlus2,
-  DownloadIcon
+  DownloadIcon,
+  PackagePlus,
+  Megaphone,
+  Waypoints,
+  LinkIcon
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "../lib/utils";
@@ -33,11 +37,11 @@ import { NavigationItemProps} from "../types/navigationTypes"
 // Refactored navigation items with combined pages where appropriate
 export const navigationItems = [
   { to: "/dashboard", icon: Home, label: "Accueil" },
-  { to: "/products", icon: Package2, label: "Produits" },
+  { to: "/products", icon: PackagePlus, label: "Produits" },
   { to: "/orders", icon: ShoppingCart, label: "Commandes" },
   // Combined Planning and Marketing under "Campagnes"
   {
-    icon: MousePointerClick,
+    icon: Megaphone,
     label: "Campagnes",
     subItems: [
       { to: "/planning", label: "Planning", icon: Calendar },
@@ -73,7 +77,14 @@ export const navigationItems = [
       // { to: "/payments", label: "Paiements", icon: Wallet },
     ]
   },
-  { to: "/strategy", icon: Store, label: "Stratégie" },
+  {
+    label: "Tunnel de vente",
+    icon: Waypoints,
+    subItems: [
+      { to: "/strategy", icon: Store, label: "Stratégie" },
+      { to: "/sell-link", icon: LinkIcon, label: "Stratégie" },
+    ]
+  },
   { to: "/settings", icon: SettingsIcon, label: "Paramètres" },
 ];
 
@@ -223,7 +234,7 @@ const Navigation = ({isExpanded, setIsExpanded}) => {
     <motion.div
       initial={{ x: -100 }}
       animate={{ x: 0 }}
-      className={`h-screen left-0 top-0 bottom-0  ${isExpanded ? "w-52" :"w-16" } bg-white border-r border-gray-200 shadow-sm overflow-hidden transition-all duration-300`}
+      className={`h-screen left-0 top-0 bottom-0  ${isExpanded ? "w-60" :"w-16" } bg-white border-r border-gray-200 shadow-sm overflow-hidden transition-all duration-300`}
       ref={navRef}
     >
       <nav className="relative flex flex-col p-1.5 pr-1 gap-1">

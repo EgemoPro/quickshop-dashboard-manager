@@ -1,6 +1,7 @@
 
 export interface ProductImage {
   id?: string;
+  file?: File;
   url: string;
   alt?: string;
 }
