@@ -45,7 +45,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange })
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif']
     },
     maxSize: 5 * 1024 * 1024, // 5MB
   });
