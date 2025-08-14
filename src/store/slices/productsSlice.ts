@@ -42,19 +42,13 @@ export const productsApiRequestHandler = createAsyncThunk(
 // Ajouter un produit
 export const addProduct = createAsyncThunk(
   "products/addProduct",
-  async (newProduct:any , { rejectWithValue }) => {
-    const {
-      name: title,
-      id,
-      ...reste
-    } = newProduct;
+  async (formData: FormData, { rejectWithValue }) => {
     try {
-      // sku: `id-${Math.ceil(Math.random()*1000).toString().padStart(4,'0')}`,
-      // const data = {}
       const response = await handleRequest(() =>
-        api.post("/products/new", {
-          title,
-          ...reste
+        api.post("/products/new", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         })
       );
       return response.data
@@ -64,6 +58,26 @@ export const addProduct = createAsyncThunk(
   }
 );
 
+
+// Mettre à jour un produit
+export const updateProductAsync = createAsyncThunk(
+  "products/updateProduct",
+  async (formData: FormData, { rejectWithValue }) => {
+    try {
+      const productId = formData.get("id");
+      const response = await handleRequest(() =>
+        api.put(`/products/${productId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+      );
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Échec mise à jour produit");
+    }
+  }
+);
 
 export const deleteProductAsync = createAsyncThunk(
   "products/deleteProduct",
@@ -124,11 +138,9 @@ export const productsSlice = createSlice({
     // addProduct: (state, action: PayloadAction<Product>) => {
     //   state.lowStockProducts.push(action.payload);
     // },
-    updateProduct: (state, action: PayloadAction<Product>) => {
-      const index = state.lowStockProducts.findIndex(p => p.id === action.payload.id);
-      if (index !== -1) {
-        state.lowStockProducts[index] = action.payload;
-      }
+    updateProduct: (state, action: PayloadAction<FormData>) => {
+      // Pour FormData, on ne peut pas accéder directement aux données ici
+      // La logique de mise à jour sera gérée par l'async thunk
     },
     deleteProduct: (state, action: PayloadAction<string>) => {
       state.lowStockProducts = state.lowStockProducts.filter(p => p.id !== action.payload);
@@ -207,6 +219,19 @@ export const productsSlice = createSlice({
         state.lowStockProducts = state.lowStockProducts.filter(p => p.id !== action.payload);
       })
       .addCase(deleteProductAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Add case for updateProductAsync
+      .addCase(updateProductAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateProductAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        // La mise à jour sera gérée côté serveur
+      })
+      .addCase(updateProductAsync.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })

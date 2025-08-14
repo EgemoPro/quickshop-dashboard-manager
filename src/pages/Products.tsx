@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertTriangle, Pencil } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addProduct, deleteProduct, updateProduct } from "@/store/slices/productsSlice";
+import { addProduct, deleteProduct, updateProductAsync } from "@/store/slices/productsSlice";
 import { type Product } from "@/types/productSlicesTypes";
 import { useToast } from "@/components/ui/use-toast";
 import ProductCard from "@/components/products/ProductCard";
@@ -68,28 +68,34 @@ const Products = () => {
   const handleCreateProduct = async (newProductData: any) => {
     const formData = new FormData();
 
-    const newProduct: Product = {
-      storeId: user.id,
-      available: true,
-      ...newProductData
-    };
-    
-    for(let element in newProduct){
-      if(element === "images"){
-        for(let img in newProduct[element]){
-          formData.append("images", newProduct[element][img]?.url)
+    // Add basic product data
+    formData.append("name", newProductData.name);
+    formData.append("price", newProductData.price.toString());
+    formData.append("stock", newProductData.stock.toString());
+    formData.append("category", newProductData.category);
+    formData.append("description", newProductData.description || "");
+    formData.append("availabilityZone", newProductData.availabilityZone || "everywhere");
+    formData.append("storeId", user.id);
+    formData.append("available", "true");
+
+    // Add images to FormData
+    if (newProductData.images && Array.isArray(newProductData.images)) {
+      newProductData.images.forEach((image: any, index: number) => {
+        if (image.file) {
+          formData.append("images", image.file);
+        } else if (image.url) {
+          formData.append("imageUrls", image.url);
         }
-      }
-      formData.append(element, JSON.stringify(newProduct[element]));
+      });
     }
-    console.log(formData)
+
     try {
       dispatch(addProduct(formData));
       setActiveTab("list");
   
       toast({
         title: "Produit ajouté",
-        description: `${newProduct.name} a été ajouté avec succès.`,
+        description: `${newProductData.name} a été ajouté avec succès.`,
       });
       
     } catch (error) {
@@ -105,24 +111,37 @@ const Products = () => {
   const handleEditProduct = () => {
     if (!currentProduct) return;
 
-    const updatedProduct: Product = {
-      ...currentProduct,
-      name: formState.name,
-      price: parseFloat(formState.price),
-      stock: formState.stock,
-      category: formState.category,
-      images: formState.images,
-      description: formState.description,
-      availabilityZone: formState.availabilityZone,
-    };
+    const formData = new FormData();
 
-    dispatch(updateProduct(updatedProduct));
+    // Add basic product data
+    formData.append("id", currentProduct.id);
+    formData.append("name", formState.name);
+    formData.append("price", formState.price);
+    formData.append("stock", formState.stock.toString());
+    formData.append("category", formState.category);
+    formData.append("description", formState.description || "");
+    formData.append("availabilityZone", formState.availabilityZone || "everywhere");
+    formData.append("storeId", currentProduct.storeId);
+    formData.append("available", currentProduct.available.toString());
+
+    // Add images to FormData
+    if (formState.images && Array.isArray(formState.images)) {
+      formState.images.forEach((image: any, index: number) => {
+        if (image.file) {
+          formData.append("images", image.file);
+        } else if (image.url) {
+          formData.append("imageUrls", image.url);
+        }
+      });
+    }
+
+    dispatch(updateProductAsync(formData));
     setIsEditModalOpen(false);
     resetForm();
 
     toast({
       title: "Produit mis à jour",
-      description: `${updatedProduct.name} a été mis à jour avec succès.`,
+      description: `${formState.name} a été mis à jour avec succès.`,
     });
   };
 
