@@ -11,7 +11,7 @@ import { type Product } from "@/types/productSlicesTypes";
 import { useToast } from "@/components/ui/use-toast";
 import ProductCard from "@/components/products/ProductCard";
 import ProductForm from "@/components/products/ProductForm";
-import ProductFormCreate from "@/components/products/ProductFormCreate";
+import MultiStepProductForm from "@/components/products/MultiStepProductForm";
 import ProductFilters from "@/components/products/ProductFilters";
 import EmptyState from "@/components/products/EmptyState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -263,7 +263,7 @@ const Products = () => {
           </TabsContent>
 
           <TabsContent value="create">
-            <ProductFormCreate 
+            <MultiStepProductForm 
               onSubmit={handleCreateProduct}
               currencySymbol={currencySymbol}
             />
