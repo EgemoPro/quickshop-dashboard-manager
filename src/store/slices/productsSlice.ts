@@ -28,7 +28,7 @@ export const productsApiRequestHandler = createAsyncThunk(
         return {
           name,
           id,
-          price: JSON.stringify(price),
+          price: typeof price === 'object' ? price.value || 0 : Number(price) || 0,
           ...reste
         }
       }) as Product[];

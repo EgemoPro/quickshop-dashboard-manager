@@ -75,8 +75,15 @@ const Products = () => {
     formData.append("category", newProductData.category);
     formData.append("description", newProductData.description || "");
     formData.append("availabilityZone", newProductData.availabilityZone || "everywhere");
-    formData.append("storeId", user.id);
+    formData.append("storeId", user?.id || "");
     formData.append("available", "true");
+    formData.append("sku", newProductData.sku || `SKU-${Date.now()}`);
+    formData.append("brand", newProductData.brand || "");
+    
+    // Add arrays as JSON strings
+    formData.append("tags", JSON.stringify(newProductData.tags || []));
+    formData.append("colors", JSON.stringify(newProductData.colors || []));
+    formData.append("sizes", JSON.stringify(newProductData.sizes || []));
 
     // Add images to FormData
     if (newProductData.images && Array.isArray(newProductData.images)) {
@@ -116,13 +123,15 @@ const Products = () => {
     // Add basic product data
     formData.append("id", currentProduct.id);
     formData.append("name", formState.name);
-    formData.append("price", formState.price);
+    formData.append("price", formState.price.toString());
     formData.append("stock", formState.stock.toString());
     formData.append("category", formState.category);
     formData.append("description", formState.description || "");
     formData.append("availabilityZone", formState.availabilityZone || "everywhere");
-    formData.append("storeId", currentProduct.storeId);
+    formData.append("storeId", currentProduct.storeId || user?.id || "");
     formData.append("available", currentProduct.available.toString());
+    formData.append("sku", currentProduct.sku || `SKU-${Date.now()}`);
+    formData.append("brand", currentProduct.brand || "");
 
     // Add images to FormData
     if (formState.images && Array.isArray(formState.images)) {
