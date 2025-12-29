@@ -303,66 +303,232 @@ const MultiStepProductForm: React.FC<MultiStepProductFormProps> = ({ onSubmit, c
           </p>
         </motion.div>
 
-        {/* Progress */}
+        {/* Modern Stepper */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
           className="mb-12"
         >
-          <div className="flex justify-between mb-6">
-            {steps.map((step, index) => (
-              <div key={step.id} className="flex flex-col items-center flex-1">
-                <motion.div
-                  animate={{
-                    backgroundColor: currentStep >= step.id ? "hsl(var(--primary))" : "hsl(var(--muted))",
-                    color: currentStep >= step.id ? "hsl(var(--primary-foreground))" : "hsl(var(--muted-foreground))",
-                    scale: currentStep === step.id ? 1.1 : 1,
-                    boxShadow: currentStep >= step.id ? "0 8px 25px hsl(var(--primary)/0.3)" : "0 2px 8px hsl(var(--muted)/0.2)"
-                  }}
-                  whileHover={{ scale: currentStep >= step.id ? 1.15 : 1.05 }}
-                  className="w-14 h-14 rounded-full flex items-center justify-center text-sm font-bold border-2 border-primary/30 mb-3 cursor-pointer transition-all duration-300"
-                  onClick={() => {
-                    if (step.id < currentStep || validateStep(step.id)) {
-                      setCurrentStep(step.id);
-                    }
-                  }}
-                >
-                  {currentStep > step.id ? (
-                    <CheckCircle className="h-6 w-6" />
-                  ) : currentStep === step.id ? (
-                    step.icon
-                  ) : (
-                    step.icon
-                  )}
-                </motion.div>
-                <div className="text-center max-w-24">
-                  <span className={`text-sm font-semibold block ${currentStep >= step.id ? 'text-primary' : 'text-muted-foreground'}`}>
-                    {step.title}
-                  </span>
-                  <span className="text-xs text-muted-foreground mt-1 block">
-                    {step.description}
-                  </span>
-                </div>
-                {index < steps.length - 1 && (
-                  <motion.div 
-                    className="absolute top-7 left-1/2 w-full h-0.5 bg-gradient-to-r from-transparent via-border to-transparent"
-                    style={{ zIndex: -1 }}
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: currentStep > step.id ? 1 : 0 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="relative">
-            <Progress value={progress} className="h-3 bg-muted/50" />
+          {/* Stepper Container */}
+          <div className="relative bg-card/60 backdrop-blur-xl border border-border/40 rounded-2xl p-6 shadow-xl">
+            {/* Background Glow Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-2xl" />
+            
+            {/* Steps Row */}
+            <div className="relative flex items-start justify-between">
+              {steps.map((step, index) => {
+                const isCompleted = currentStep > step.id;
+                const isCurrent = currentStep === step.id;
+                const isClickable = step.id < currentStep || (step.id <= currentStep);
+                
+                return (
+                  <React.Fragment key={step.id}>
+                    {/* Step Item */}
+                    <div className="flex flex-col items-center relative z-10 flex-1">
+                      {/* Step Circle */}
+                      <motion.button
+                        type="button"
+                        onClick={() => {
+                          if (step.id < currentStep) {
+                            setCurrentStep(step.id);
+                          } else if (step.id === currentStep + 1 && validateStep(currentStep)) {
+                            setCurrentStep(step.id);
+                          }
+                        }}
+                        disabled={step.id > currentStep + 1}
+                        className={`relative group ${isClickable ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                        whileHover={isClickable ? { scale: 1.08 } : {}}
+                        whileTap={isClickable ? { scale: 0.95 } : {}}
+                      >
+                        {/* Outer Ring Animation */}
+                        <motion.div
+                          className={`absolute -inset-2 rounded-full ${
+                            isCurrent ? 'bg-primary/20' : 'bg-transparent'
+                          }`}
+                          animate={{
+                            scale: isCurrent ? [1, 1.2, 1] : 1,
+                            opacity: isCurrent ? [0.5, 0.2, 0.5] : 0
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                        
+                        {/* Main Circle */}
+                        <motion.div
+                          className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-500 ${
+                            isCompleted 
+                              ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30' 
+                              : isCurrent
+                                ? 'bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/40'
+                                : 'bg-muted/80 border-2 border-border/50'
+                          }`}
+                          initial={false}
+                          animate={{
+                            boxShadow: isCurrent 
+                              ? '0 8px 32px hsl(var(--primary)/0.4), 0 0 0 4px hsl(var(--primary)/0.1)' 
+                              : isCompleted
+                                ? '0 8px 24px rgba(16, 185, 129, 0.3)'
+                                : '0 2px 8px hsl(var(--muted)/0.3)'
+                          }}
+                        >
+                          <AnimatePresence mode="wait">
+                            {isCompleted ? (
+                              <motion.div
+                                key="check"
+                                initial={{ scale: 0, rotate: -180 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                exit={{ scale: 0, rotate: 180 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                              >
+                                <CheckCircle className="h-7 w-7 text-white" />
+                              </motion.div>
+                            ) : (
+                              <motion.div
+                                key="icon"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                className={`${isCurrent ? 'text-primary-foreground' : 'text-muted-foreground'}`}
+                              >
+                                {React.cloneElement(step.icon as React.ReactElement, { 
+                                  className: 'h-6 w-6' 
+                                })}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                          
+                          {/* Hover Glow */}
+                          {isClickable && (
+                            <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          )}
+                        </motion.div>
+                        
+                        {/* Step Number Badge */}
+                        <motion.div
+                          className={`absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                            isCompleted 
+                              ? 'bg-emerald-400 text-white shadow-md'
+                              : isCurrent
+                                ? 'bg-primary text-primary-foreground shadow-md'
+                                : 'bg-muted-foreground/20 text-muted-foreground'
+                          }`}
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
+                          {step.id}
+                        </motion.div>
+                      </motion.button>
+                      
+                      {/* Step Info */}
+                      <motion.div 
+                        className="mt-4 text-center max-w-[120px]"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 + index * 0.1 }}
+                      >
+                        <motion.span 
+                          className={`block text-sm font-semibold transition-colors duration-300 ${
+                            isCompleted 
+                              ? 'text-emerald-600' 
+                              : isCurrent 
+                                ? 'text-primary' 
+                                : 'text-muted-foreground'
+                          }`}
+                        >
+                          {step.title}
+                        </motion.span>
+                        <span className={`text-xs mt-1 block transition-colors duration-300 ${
+                          isCurrent ? 'text-muted-foreground' : 'text-muted-foreground/60'
+                        }`}>
+                          {step.description}
+                        </span>
+                      </motion.div>
+                    </div>
+                    
+                    {/* Connector Line */}
+                    {index < steps.length - 1 && (
+                      <div className="flex-shrink-0 relative mt-8 mx-2">
+                        <div className="w-full min-w-[40px] lg:min-w-[80px] h-1 bg-muted/50 rounded-full overflow-hidden">
+                          <motion.div
+                            className={`h-full rounded-full ${
+                              isCompleted 
+                                ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' 
+                                : 'bg-gradient-to-r from-primary to-primary/60'
+                            }`}
+                            initial={{ width: "0%" }}
+                            animate={{ 
+                              width: isCompleted ? "100%" : isCurrent ? "50%" : "0%" 
+                            }}
+                            transition={{ duration: 0.5, ease: "easeOut" }}
+                          />
+                        </div>
+                        
+                        {/* Animated Dots on Line */}
+                        {isCurrent && (
+                          <motion.div
+                            className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary"
+                            animate={{ 
+                              x: [0, 40, 0],
+                              opacity: [0, 1, 0]
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+            
+            {/* Progress Bar */}
             <motion.div 
-              className="absolute top-0 left-0 h-3 bg-gradient-to-r from-primary to-primary/80 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            />
+              className="mt-8 relative"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-muted-foreground">Progression</span>
+                <motion.span 
+                  className="text-sm font-bold text-primary"
+                  key={progress}
+                  initial={{ scale: 1.2 }}
+                  animate={{ scale: 1 }}
+                >
+                  {Math.round(progress)}%
+                </motion.span>
+              </div>
+              <div className="relative h-2 bg-muted/30 rounded-full overflow-hidden">
+                <motion.div 
+                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary via-primary to-emerald-500 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                />
+                {/* Shimmer Effect */}
+                <motion.div
+                  className="absolute inset-y-0 w-20 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  animate={{ x: [-80, 400] }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "linear",
+                    repeatDelay: 1
+                  }}
+                />
+              </div>
+            </motion.div>
           </div>
         </motion.div>
 
