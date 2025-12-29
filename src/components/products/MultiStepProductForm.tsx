@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,6 +28,7 @@ import { ProductImage, ProductSize } from "@/types/productSlicesTypes";
 import { useToast } from "@/hooks/use-toast";
 import ImageUploader from "./ImageUploader";
 import CategorySelect from "./CategorySelect";
+import FormFieldError from "./FormFieldError";
 
 interface MultiStepProductFormProps {
   onSubmit: (product: any) => void;
@@ -101,6 +102,34 @@ const MultiStepProductForm: React.FC<MultiStepProductFormProps> = ({ onSubmit, c
   const [newTag, setNewTag] = useState('');
   const [newColor, setNewColor] = useState('#000000');
   const [newSize, setNewSize] = useState({ name: '', dimensions: '' });
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+
+  // Validation errors computed from form data
+  const errors = useMemo(() => {
+    const errs: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      errs.name = "Le nom du produit est requis";
+    }
+    if (!formData.description.trim()) {
+      errs.description = "La description est requise";
+    }
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      errs.price = "Le prix doit être supérieur à 0";
+    }
+    
+    return errs;
+  }, [formData.name, formData.description, formData.price]);
+
+  // Get error for a field only if it has been touched
+  const getFieldError = (field: string) => {
+    return touchedFields.has(field) ? errors[field] : undefined;
+  };
+
+  // Mark a field as touched when user interacts with it
+  const handleFieldBlur = (field: string) => {
+    setTouchedFields(prev => new Set(prev).add(field));
+  };
 
   const validateStep = (stepId: number) => {
     const step = steps.find(s => s.id === stepId);
@@ -117,6 +146,14 @@ const MultiStepProductForm: React.FC<MultiStepProductFormProps> = ({ onSubmit, c
   const canProceed = () => validateStep(currentStep);
 
   const nextStep = () => {
+    // Mark all fields in current step as touched when trying to proceed
+    const currentStepData = steps.find(s => s.id === currentStep);
+    if (currentStepData) {
+      const newTouched = new Set(touchedFields);
+      currentStepData.fields.forEach(field => newTouched.add(field));
+      setTouchedFields(newTouched);
+    }
+    
     if (canProceed() && currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     } else if (!canProceed()) {
@@ -599,18 +636,20 @@ const MultiStepProductForm: React.FC<MultiStepProductFormProps> = ({ onSubmit, c
                         <Package className="h-4 w-4 text-primary" />
                         Nom du produit <span className="text-destructive font-bold">*</span>
                       </Label>
-                      <motion.div
-                        whileFocus={{ scale: 1.02 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      >
+                      <FormFieldError error={getFieldError('name')}>
                         <Input
                           id="name"
                           value={formData.name}
                           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                          onBlur={() => handleFieldBlur('name')}
                           placeholder="Ex: T-shirt Premium"
-                          className="h-12 border-2 border-muted/50 focus:border-primary/70 rounded-xl transition-all duration-300 hover:border-primary/50"
+                          className={`h-12 border-2 rounded-xl transition-all duration-300 pr-10 ${
+                            getFieldError('name') 
+                              ? 'border-destructive/70 focus:border-destructive hover:border-destructive/50' 
+                              : 'border-muted/50 focus:border-primary/70 hover:border-primary/50'
+                          }`}
                         />
-                      </motion.div>
+                      </FormFieldError>
                     </motion.div>
                   </div>
 
@@ -618,13 +657,20 @@ const MultiStepProductForm: React.FC<MultiStepProductFormProps> = ({ onSubmit, c
                     <Label htmlFor="description" className="text-sm font-medium text-foreground/80">
                       Description <span className="text-destructive">*</span>
                     </Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Décrivez votre produit en détail, ses caractéristiques, ses avantages..."
-                      className="min-h-[120px] border-muted-foreground/20 focus:border-primary/50 transition-all duration-200 resize-none"
-                    />
+                    <FormFieldError error={getFieldError('description')}>
+                      <Textarea
+                        id="description"
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        onBlur={() => handleFieldBlur('description')}
+                        placeholder="Décrivez votre produit en détail, ses caractéristiques, ses avantages..."
+                        className={`min-h-[120px] transition-all duration-200 resize-none pr-10 ${
+                          getFieldError('description') 
+                            ? 'border-destructive/70 focus:border-destructive' 
+                            : 'border-muted-foreground/20 focus:border-primary/50'
+                        }`}
+                      />
+                    </FormFieldError>
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -666,20 +712,27 @@ const MultiStepProductForm: React.FC<MultiStepProductFormProps> = ({ onSubmit, c
                       <Label htmlFor="price" className="text-sm font-medium text-foreground/80">
                         Prix ({currencySymbol}) <span className="text-destructive">*</span>
                       </Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                          {currencySymbol}
-                        </span>
-                        <Input
-                          id="price"
-                          type="number"
-                          step="0.01"
-                          value={formData.price}
-                          onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                          placeholder="29.99"
-                          className="pl-8 border-muted-foreground/20 focus:border-emerald-500/50 transition-all duration-200"
-                        />
-                      </div>
+                      <FormFieldError error={getFieldError('price')}>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground z-10">
+                            {currencySymbol}
+                          </span>
+                          <Input
+                            id="price"
+                            type="number"
+                            step="0.01"
+                            value={formData.price}
+                            onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                            onBlur={() => handleFieldBlur('price')}
+                            placeholder="29.99"
+                            className={`pl-8 pr-10 transition-all duration-200 ${
+                              getFieldError('price') 
+                                ? 'border-destructive/70 focus:border-destructive' 
+                                : 'border-muted-foreground/20 focus:border-emerald-500/50'
+                            }`}
+                          />
+                        </div>
+                      </FormFieldError>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="originalPrice" className="text-sm font-medium text-foreground/80">Prix original ({currencySymbol})</Label>
