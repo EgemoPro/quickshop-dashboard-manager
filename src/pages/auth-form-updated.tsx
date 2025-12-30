@@ -13,9 +13,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
+import AuthFormFieldError from "@/components/auth/AuthFormFieldError"
 
 // Zod schemas for form validation
 const passwordlessSchema = z.object({
@@ -74,6 +75,7 @@ export default function AuthForm({
     defaultValues: {
       email: "",
     },
+    mode: "onBlur",
   })
 
   // Form for traditional login
@@ -83,6 +85,7 @@ export default function AuthForm({
       email: "",
       password: "",
     },
+    mode: "onBlur",
   })
 
   // Form for registration
@@ -94,6 +97,7 @@ export default function AuthForm({
       password: "",
       confirmPassword: "",
     },
+    mode: "onBlur",
   })
 
   const handlePasswordlessSubmit = async (data: z.infer<typeof passwordlessSchema>) => {
@@ -240,21 +244,25 @@ export default function AuthForm({
                         <FormField
                           control={passwordlessForm.control}
                           name="email"
-                          render={({ field }) => (
+                          render={({ field, fieldState }) => (
                             <FormItem>
                               <FormLabel>Email</FormLabel>
                               <FormControl>
-                                <div className="relative">
-                                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                  <Input
-                                    placeholder="name@example.com"
-                                    className="pl-10"
-                                    {...field}
-                                    disabled={isLoading}
-                                  />
-                                </div>
+                                <AuthFormFieldError error={fieldState.error?.message}>
+                                  <div className="relative">
+                                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+                                    <Input
+                                      placeholder="name@example.com"
+                                      className={cn(
+                                        "pl-10 pr-10 transition-all duration-200",
+                                        fieldState.error && "border-destructive focus:border-destructive"
+                                      )}
+                                      {...field}
+                                      disabled={isLoading}
+                                    />
+                                  </div>
+                                </AuthFormFieldError>
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -328,21 +336,25 @@ export default function AuthForm({
                         <FormField
                           control={loginForm.control}
                           name="email"
-                          render={({ field }) => (
+                          render={({ field, fieldState }) => (
                             <FormItem>
                               <FormLabel>Email</FormLabel>
                               <FormControl>
-                                <div className="relative">
-                                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                  <Input
-                                    placeholder="name@example.com"
-                                    className="pl-10"
-                                    {...field}
-                                    disabled={isLoading}
-                                  />
-                                </div>
+                                <AuthFormFieldError error={fieldState.error?.message}>
+                                  <div className="relative">
+                                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+                                    <Input
+                                      placeholder="name@example.com"
+                                      className={cn(
+                                        "pl-10 pr-10 transition-all duration-200",
+                                        fieldState.error && "border-destructive focus:border-destructive"
+                                      )}
+                                      {...field}
+                                      disabled={isLoading}
+                                    />
+                                  </div>
+                                </AuthFormFieldError>
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -350,33 +362,37 @@ export default function AuthForm({
                         <FormField
                           control={loginForm.control}
                           name="password"
-                          render={({ field }) => (
+                          render={({ field, fieldState }) => (
                             <FormItem>
                               <FormLabel>Password</FormLabel>
                               <FormControl>
-                                <div className="relative">
-                                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                  <Input
-                                    type={showLoginPassword ? "text" : "password"}
-                                    placeholder="••••••••"
-                                    className="pl-10 pr-10"
-                                    {...field}
-                                    disabled={isLoading}
-                                  />
-                                  <button
-                                    type="button"
-                                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
-                                    onClick={() => setShowLoginPassword(!showLoginPassword)}
-                                    tabIndex={-1}
-                                  >
-                                    {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                    <span className="sr-only">
-                                      {showLoginPassword ? "Hide password" : "Show password"}
-                                    </span>
-                                  </button>
-                                </div>
+                                <AuthFormFieldError error={fieldState.error?.message} iconOffset="right-10">
+                                  <div className="relative">
+                                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+                                    <Input
+                                      type={showLoginPassword ? "text" : "password"}
+                                      placeholder="••••••••"
+                                      className={cn(
+                                        "pl-10 pr-16 transition-all duration-200",
+                                        fieldState.error && "border-destructive focus:border-destructive"
+                                      )}
+                                      {...field}
+                                      disabled={isLoading}
+                                    />
+                                    <button
+                                      type="button"
+                                      className="absolute right-3 top-3 text-muted-foreground hover:text-foreground z-10"
+                                      onClick={() => setShowLoginPassword(!showLoginPassword)}
+                                      tabIndex={-1}
+                                    >
+                                      {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                      <span className="sr-only">
+                                        {showLoginPassword ? "Hide password" : "Show password"}
+                                      </span>
+                                    </button>
+                                  </div>
+                                </AuthFormFieldError>
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -450,21 +466,25 @@ export default function AuthForm({
                         <FormField
                           control={registerForm.control}
                           name="email"
-                          render={({ field }) => (
+                          render={({ field, fieldState }) => (
                             <FormItem>
                               <FormLabel>Email</FormLabel>
                               <FormControl>
-                                <div className="relative">
-                                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                  <Input
-                                    placeholder="name@example.com"
-                                    className="pl-10"
-                                    {...field}
-                                    disabled={isLoading}
-                                  />
-                                </div>
+                                <AuthFormFieldError error={fieldState.error?.message}>
+                                  <div className="relative">
+                                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+                                    <Input
+                                      placeholder="name@example.com"
+                                      className={cn(
+                                        "pl-10 pr-10 transition-all duration-200",
+                                        fieldState.error && "border-destructive focus:border-destructive"
+                                      )}
+                                      {...field}
+                                      disabled={isLoading}
+                                    />
+                                  </div>
+                                </AuthFormFieldError>
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -472,16 +492,25 @@ export default function AuthForm({
                         <FormField
                           control={registerForm.control}
                           name="fullName"
-                          render={({ field }) => (
+                          render={({ field, fieldState }) => (
                             <FormItem>
                               <FormLabel>Full Name</FormLabel>
                               <FormControl>
-                                <div className="relative">
-                                  <UserRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                  <Input placeholder="John Doe" className="pl-10" {...field} disabled={isLoading} />
-                                </div>
+                                <AuthFormFieldError error={fieldState.error?.message}>
+                                  <div className="relative">
+                                    <UserRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+                                    <Input 
+                                      placeholder="John Doe" 
+                                      className={cn(
+                                        "pl-10 pr-10 transition-all duration-200",
+                                        fieldState.error && "border-destructive focus:border-destructive"
+                                      )}
+                                      {...field} 
+                                      disabled={isLoading} 
+                                    />
+                                  </div>
+                                </AuthFormFieldError>
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -489,37 +518,41 @@ export default function AuthForm({
                         <FormField
                           control={registerForm.control}
                           name="password"
-                          render={({ field }) => (
+                          render={({ field, fieldState }) => (
                             <FormItem>
                               <FormLabel>Password</FormLabel>
                               <FormControl>
-                                <div className="relative">
-                                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                  <Input
-                                    type={showRegisterPassword ? "text" : "password"}
-                                    placeholder="••••••••"
-                                    className="pl-10 pr-10"
-                                    {...field}
-                                    disabled={isLoading}
-                                  />
-                                  <button
-                                    type="button"
-                                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
-                                    onClick={() => setShowRegisterPassword(!showRegisterPassword)}
-                                    tabIndex={-1}
-                                  >
-                                    {showRegisterPassword ? (
-                                      <EyeOff className="h-4 w-4" />
-                                    ) : (
-                                      <Eye className="h-4 w-4" />
-                                    )}
-                                    <span className="sr-only">
-                                      {showRegisterPassword ? "Hide password" : "Show password"}
-                                    </span>
-                                  </button>
-                                </div>
+                                <AuthFormFieldError error={fieldState.error?.message} iconOffset="right-10">
+                                  <div className="relative">
+                                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+                                    <Input
+                                      type={showRegisterPassword ? "text" : "password"}
+                                      placeholder="••••••••"
+                                      className={cn(
+                                        "pl-10 pr-16 transition-all duration-200",
+                                        fieldState.error && "border-destructive focus:border-destructive"
+                                      )}
+                                      {...field}
+                                      disabled={isLoading}
+                                    />
+                                    <button
+                                      type="button"
+                                      className="absolute right-3 top-3 text-muted-foreground hover:text-foreground z-10"
+                                      onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                                      tabIndex={-1}
+                                    >
+                                      {showRegisterPassword ? (
+                                        <EyeOff className="h-4 w-4" />
+                                      ) : (
+                                        <Eye className="h-4 w-4" />
+                                      )}
+                                      <span className="sr-only">
+                                        {showRegisterPassword ? "Hide password" : "Show password"}
+                                      </span>
+                                    </button>
+                                  </div>
+                                </AuthFormFieldError>
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -527,33 +560,37 @@ export default function AuthForm({
                         <FormField
                           control={registerForm.control}
                           name="confirmPassword"
-                          render={({ field }) => (
+                          render={({ field, fieldState }) => (
                             <FormItem>
                               <FormLabel>Confirm Password</FormLabel>
                               <FormControl>
-                                <div className="relative">
-                                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                  <Input
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    placeholder="••••••••"
-                                    className="pl-10 pr-10"
-                                    {...field}
-                                    disabled={isLoading}
-                                  />
-                                  <button
-                                    type="button"
-                                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    tabIndex={-1}
-                                  >
-                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                    <span className="sr-only">
-                                      {showConfirmPassword ? "Hide password" : "Show password"}
-                                    </span>
-                                  </button>
-                                </div>
+                                <AuthFormFieldError error={fieldState.error?.message} iconOffset="right-10">
+                                  <div className="relative">
+                                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+                                    <Input
+                                      type={showConfirmPassword ? "text" : "password"}
+                                      placeholder="••••••••"
+                                      className={cn(
+                                        "pl-10 pr-16 transition-all duration-200",
+                                        fieldState.error && "border-destructive focus:border-destructive"
+                                      )}
+                                      {...field}
+                                      disabled={isLoading}
+                                    />
+                                    <button
+                                      type="button"
+                                      className="absolute right-3 top-3 text-muted-foreground hover:text-foreground z-10"
+                                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                      tabIndex={-1}
+                                    >
+                                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                      <span className="sr-only">
+                                        {showConfirmPassword ? "Hide password" : "Show password"}
+                                      </span>
+                                    </button>
+                                  </div>
+                                </AuthFormFieldError>
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
