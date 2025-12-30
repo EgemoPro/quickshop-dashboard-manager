@@ -1,17 +1,24 @@
-
 "use client"
 
 import type React from "react"
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { ArrowRight, Check, Loader2 } from "lucide-react"
+import { ArrowRight, Check, Loader2, Mail } from "lucide-react"
+import { z } from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
+import AuthFormFieldError from "@/components/auth/AuthFormFieldError"
+
+const emailSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address" }),
+})
 
 type LoginFormProps = {
   onSubmit?: (email: string) => Promise<void>
@@ -32,21 +39,27 @@ export default function PasswordlessLogin({
   description = "Enter your email to sign in to your account",
   className,
 }: LoginFormProps) {
-  const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [lastEmail, setLastEmail] = useState("")
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const form = useForm<z.infer<typeof emailSchema>>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      email: "",
+    },
+    mode: "onBlur",
+  })
+
+  const handleSubmit = async (data: z.infer<typeof emailSchema>) => {
     setIsLoading(true)
+    setLastEmail(data.email)
 
     try {
       if (onSubmit) {
-        await onSubmit(email)
-      }
-
-      // If no custom onSubmit is provided, simulate success after 1.5s
-      else {
+        await onSubmit(data.email)
+      } else {
+        // If no custom onSubmit is provided, simulate success after 1.5s
         await new Promise((resolve) => setTimeout(resolve, 1500))
       }
 
@@ -98,7 +111,7 @@ export default function PasswordlessLogin({
           <Card className="mt-8">
             <CardHeader>
               <CardTitle className="text-2xl">{isSuccess ? "Check your email" : "Sign In"}</CardTitle>
-              <CardDescription>{isSuccess ? `We've sent a magic link to ${email}` : description}</CardDescription>
+              <CardDescription>{isSuccess ? `We've sent a magic link to ${lastEmail}` : description}</CardDescription>
             </CardHeader>
             <CardContent>
               {isSuccess ? (
@@ -110,23 +123,36 @@ export default function PasswordlessLogin({
                   <Check className="h-10 w-10 text-primary" />
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit}>
-                  <div className="grid gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="name@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="transition-all duration-200 focus:ring-2 focus:ring-primary/50"
-                      />
-                    </div>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field, fieldState }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <AuthFormFieldError error={fieldState.error?.message}>
+                              <div className="relative">
+                                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+                                <Input
+                                  type="email"
+                                  placeholder="name@example.com"
+                                  className={cn(
+                                    "pl-10 pr-10 transition-all duration-200 focus:ring-2 focus:ring-primary/50",
+                                    fieldState.error && "border-destructive focus:border-destructive focus:ring-destructive/50"
+                                  )}
+                                  {...field}
+                                  disabled={isLoading}
+                                />
+                              </div>
+                            </AuthFormFieldError>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Button type="submit" className="w-full" disabled={isLoading || !email}>
+                      <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoading ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (
@@ -135,8 +161,8 @@ export default function PasswordlessLogin({
                         {isLoading ? "Sending Link..." : "Send Magic Link"}
                       </Button>
                     </motion.div>
-                  </div>
-                </form>
+                  </form>
+                </Form>
               )}
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
