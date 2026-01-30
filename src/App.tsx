@@ -32,6 +32,8 @@ import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { checkAuth, login, registerUser } from "./store/slices/authSlice";
 import Loader from "./components/ModernLoaderCard";
 import Plugins from "./pages/Plugins";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { useApiErrorToast } from "./hooks/useApiErrorToast";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +53,9 @@ const AppContent = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Hook for global API error toasts
+  useApiErrorToast();
 
   const isLoginPage = location.pathname === "/login";
 
@@ -210,17 +215,19 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </Provider>
+  <ErrorBoundary>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </Provider>
+  </ErrorBoundary>
 );
 
 export default App;
